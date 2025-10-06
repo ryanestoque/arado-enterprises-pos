@@ -11,12 +11,12 @@ export default function Dashboard() {
   const payments = data as Payment[]
 
   return(
-    <div>
+    <>
       <header>
         <SiteHeader title="Dashboard"/>
       </header>
-      <div className="flex flex-1 flex-col">
-        <div className="@container/main w-full flex flex-1 flex-col gap-2">
+      <main className="flex flex-1 flex-col">
+        <section className="@container/main w-full flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
             <SectionCards />
             <div className="px-4 lg:px-6">
@@ -33,8 +33,8 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
-        </div>
-      </div>
-    </div>
+        </section>
+      </main>
+    </>
   )
 }
