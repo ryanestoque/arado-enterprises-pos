@@ -152,7 +152,7 @@ export function ChartArea() {
   })
   return (
     <Card className="@container/card">
-      <CardHeader className="relative">
+      <CardHeader className="relative ">
         <CardTitle>Sales Summary</CardTitle>
         <CardDescription>
           <span className="@[540px]/card:block hidden">
@@ -180,19 +180,19 @@ export function ChartArea() {
           </ToggleGroup>
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger
-              className="@[767px]/card:hidden flex w-40"
+              className="@[767px]/card:hidden flex w-25 text-xs sm:text-sm"
               aria-label="Select a value"
             >
               <SelectValue placeholder="Last 3 months" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
-              <SelectItem value="90d" className="rounded-lg">
+              <SelectItem value="90d" className="rounded-lg text-xs sm:text-sm">
                 Last 3 months
               </SelectItem>
-              <SelectItem value="30d" className="rounded-lg">
+              <SelectItem value="30d" className="rounded-lg text-xs sm:text-sm">
                 Last 30 days
               </SelectItem>
-              <SelectItem value="7d" className="rounded-lg">
+              <SelectItem value="7d" className="rounded-lg text-xs sm:text-sm">
                 Last 7 days
               </SelectItem>
             </SelectContent>

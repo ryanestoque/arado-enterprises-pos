@@ -4,7 +4,7 @@ import { SectionCards } from "@/components/common/SectionCards";
 import { SiteHeader } from "@/components/common/SiteHeader";
 import { columns } from "@/components/common/Columns";
 import type { Payment } from "@/components/common/Columns"
-import data from "./data.json"
+import data from "../../data/recent_payments.json"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Dashboard() {

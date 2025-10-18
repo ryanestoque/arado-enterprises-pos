@@ -28,7 +28,7 @@ const items = [
   },
   {
     title: "Sales",
-    url: "#",
+    url: "/app/pos",
     icon: Calculator,
     isActive: true,
     items: [
@@ -105,7 +105,6 @@ export default function AppSidebar() {
             <SidebarMenu>
               {items.map((item) =>
                 item.items.length > 0 ? (
-                  // If item has submenus -> use Collapsible
                   <Collapsible
                     key={item.title}
                     asChild
@@ -136,7 +135,6 @@ export default function AppSidebar() {
                     </SidebarMenuItem>
                   </Collapsible>
                 ) : (
-                  // If no submenus -> render normally
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild tooltip={item.title}>
                       <Link to={item.url}>

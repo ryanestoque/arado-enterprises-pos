@@ -1,58 +1,69 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import ProductCards from "./ProductCards"
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
+import { Button } from "../ui/button";
+import { useCategories } from "@/hooks/useMockAPI";
 
 export function ProductTabs() {
+  const [open, setOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("all")
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 640) setOpen(true);
+      else setOpen(false);
+    };
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const {data : categories = [], error, isLoading } = useCategories()
+
   return (
-    <Tabs defaultValue="all" className="w-full">
-      <div className="overflow-x-auto">
-        <TabsList className="flex w-max min-w-full mb-4">
-          <TabsTrigger className="w-full" value="all">All</TabsTrigger>
-          <TabsTrigger className="w-full" value="tools">Tools</TabsTrigger>
-          <TabsTrigger className="w-full" value="construction">Construction</TabsTrigger>
-          <TabsTrigger className="w-full" value="plumbing">Plumbing</TabsTrigger>
-          <TabsTrigger className="w-full" value="electrical">Electrical</TabsTrigger>
-          <TabsTrigger className="w-full" value="fixtures">Fixtures</TabsTrigger>
-          <TabsTrigger className="w-full" value="others">Others</TabsTrigger>
-        </TabsList>
-      </div>
-      <TabsContent value="all">
-        <div className="grid gap-4 grid-cols-1 @[409px]:grid-cols-2 @[574px]:grid-cols-3 md:@[202px]:grid-cols-1 md:@[294px]:grid-cols-2 @lg:grid-cols-2 xl:@[538px]:grid-cols-3 xl:@[630px]:grid-cols-4">
-          {/* Product Cards here */}
-          <Card>
-            <CardHeader>
-              <div className="flex justify-center items-center aspect-square">
-                <img src="/hammer.webp" alt="Hammer" className="p-1 max-w-full max-h-full object-contain aspect-square" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="font-medium text-sm">Hammer</p>
-              <p className="font-bold text-base">₱250.00</p>
-            </CardContent>
-          </Card>
-           <Card>
-            <CardHeader>
-              <div className="flex justify-center items-center aspect-square">
-                <img src="/hammer.webp" alt="Hammer" className="p-1 max-w-full max-h-full object-contain aspect-square" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="font-medium text-sm">Hammer</p>
-              <p className="font-bold text-base">₱250.00</p>
-            </CardContent>
-          </Card>
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col" defaultValue="all" activationMode="manual">
+      <Collapsible open={open} onOpenChange={setOpen} className="sticky top-0 z-10 bg-white -mx-[2px]">
+        <div className="sm:hidden mb-2 justify-self-end">
+          <CollapsibleTrigger>
+            <Button
+              variant="outline"
+              className="flex justify-between items-center"
+            >
+              {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+          </CollapsibleTrigger>
         </div>
-      </TabsContent>
-
-      <TabsContent value="tools">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {/* Drinks only */}
-        </div>
-      </TabsContent>
-
-      <TabsContent value="construction">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {/* Snacks only */}
-        </div>
+        <CollapsibleContent
+          className="flex flex-col overflow-hidden   
+          data-[state=open]:animate-collapsible-down"
+        >
+          <TabsList 
+            className="
+              flex flex-wrap gap-2 flex-1
+              rounded-none bg-white -mx-[2px] pb-4 text-muted-foreground/75
+            "
+          >
+            <TabsTrigger className="flex-1" value="all">
+              All
+            </TabsTrigger>
+            {categories.map((category) => (
+              <TabsTrigger
+                key={category.category_id}
+                value={category.category_id}
+                className="flex-1"
+              >
+                {category.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </CollapsibleContent>
+      </Collapsible>
+      <TabsContent value={activeTab} className="grid gap-4 grid-cols-1 sm:grid-cols-3 xl:grid-cols-4 mt-4">
+        {activeTab === "all"
+          ? <ProductCards />
+          : <ProductCards categoryId={activeTab} />}
       </TabsContent>
     </Tabs>
   )
