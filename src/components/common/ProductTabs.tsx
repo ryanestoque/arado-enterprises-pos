@@ -6,7 +6,12 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/colla
 import { Button } from "../ui/button";
 import { useCategories } from "@/hooks/useMockAPI";
 
-export function ProductTabs() {
+interface ProductTabsProps {
+  sortBy: "A-Z" | "Z-A" | "price-asc" | "price-desc"| "stock-asc" | "stock-desc"
+  searchQuery: string
+}
+
+export function ProductTabs({ sortBy, searchQuery }: ProductTabsProps) {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("all")
 
@@ -62,8 +67,8 @@ export function ProductTabs() {
       </Collapsible>
       <TabsContent value={activeTab} className="grid gap-4 grid-cols-1 sm:grid-cols-3 xl:grid-cols-4 mt-4">
         {activeTab === "all"
-          ? <ProductCards />
-          : <ProductCards categoryId={activeTab} />}
+          ? <ProductCards sortBy={sortBy} searchQuery={searchQuery} />
+          : <ProductCards categoryId={activeTab} sortBy={sortBy} searchQuery={searchQuery} />}
       </TabsContent>
     </Tabs>
   )

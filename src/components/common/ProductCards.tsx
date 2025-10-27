@@ -5,18 +5,43 @@ import { useProducts } from '@/hooks/useMockAPI'
 
 interface ProductCardsProps {
   categoryId?: string
+  sortBy: "A-Z" | "Z-A" | "price-asc" | "price-desc"| "stock-asc" | "stock-desc"
+  searchQuery: string
 }
 
-export default function ProductCards({ categoryId } : ProductCardsProps) {
+export default function ProductCards({ categoryId, sortBy, searchQuery } : ProductCardsProps) {
   const { data: products = [], error, isLoading } = useProducts()
 
   const filtered = categoryId
     ? products?.filter((p) => p.category_id === categoryId)
     : products
+  
+  const searched = filtered?.filter((p) =>
+    p.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const sorted = [...searched].sort((a, b) => {
+    switch (sortBy) {
+      case "A-Z":
+        return a.name.localeCompare(b.name)
+      case "Z-A":
+        return b.name.localeCompare(a.name)
+      case "price-asc":
+        return a.price - b.price
+      case "price-desc":
+        return b.price - a.price
+      case "stock-asc":
+        return a.stock_quantity - b.stock_quantity
+      case "stock-desc":
+        return b.stock_quantity - a.stock_quantity
+      default:
+        return 0
+    }
+  })
 
   return(
     <>
-      {filtered.map((p) => (
+      {sorted.map((p) => (
         <TooltipProvider key={p.product_id}>
           <Tooltip>
           <TooltipTrigger className="text-left">
