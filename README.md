@@ -1,5 +1,5 @@
 Steps on how to run
-- Ryan, 11/1/2025
+[ Ryan, 11/1/2025 ]
 
 Open terminal/powershell/whateverYouHaveInYourMachine
 
@@ -15,8 +15,12 @@ npm install
 
 # In one terminal:
 cd backend
-npm run dev     ( runs the Express server )
+npm run dev     
+
+( runs the Express server )
 
 # In another terminal:
 cd frontend
-npm run dev     ( runs the React/Vite app )
+npm run dev     
+
+( runs the React/Vite app )
