@@ -15,8 +15,8 @@ npm install
 
 # In one terminal:
 cd backend
-npm run dev     # runs the Express server
+npm run dev     ( runs the Express server )
 
 # In another terminal:
 cd frontend
-npm run dev     # runs the React/Vite app
+npm run dev     ( runs the React/Vite app )
