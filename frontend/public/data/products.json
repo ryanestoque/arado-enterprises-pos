@@ -1,0 +1,92 @@
+[
+  {
+    "name": "Hammer",
+    "description": "description 1",
+    "price": "70.14",
+    "stock_quantity": 40,
+    "sku": "sku 1",
+    "product_id": "1",
+    "category_id": "1"
+  },
+  {
+    "name": "Nails (1 kg)",
+    "description": "description 2",
+    "price": "838.93",
+    "stock_quantity": 47,
+    "sku": "sku 2",
+    "product_id": "2",
+    "category_id": "2"
+  },
+  {
+    "name": "Saw",
+    "description": "description 3",
+    "price": "767.48",
+    "stock_quantity": 56,
+    "sku": "sku 3",
+    "product_id": "3",
+    "category_id": "1"
+  },
+  {
+    "name": "Screwdriver",
+    "description": "description 4",
+    "price": "254.10",
+    "stock_quantity": 81,
+    "sku": "sku 4",
+    "product_id": "4",
+    "category_id": "1"
+  },
+  {
+    "name": "Hollow Blocks",
+    "description": "description 5",
+    "price": "776.42",
+    "stock_quantity": 66,
+    "sku": "sku 5",
+    "product_id": "5",
+    "category_id": "2"
+  },
+  {
+    "name": "Sand",
+    "description": "description 6",
+    "price": "626.58",
+    "stock_quantity": 52,
+    "sku": "sku 6",
+    "product_id": "6",
+    "category_id": "3"
+  },
+  {
+    "name": "Extension Cord",
+    "description": "description 7",
+    "price": "473.85",
+    "stock_quantity": 44,
+    "sku": "sku 7",
+    "product_id": "7",
+    "category_id": "4"
+  },
+  {
+    "name": "Pliers",
+    "description": "description 8",
+    "price": "349.43",
+    "stock_quantity": 4,
+    "sku": "sku 8",
+    "product_id": "8",
+    "category_id": "5"
+  },
+  {
+    "name": "Wires",
+    "description": "description 9",
+    "price": "755.45",
+    "stock_quantity": 56,
+    "sku": "sku 9",
+    "product_id": "9",
+    "category_id": "6"
+  },
+  {
+    "name": "Steel Tape",
+    "description": "description 10",
+    "price": "980.19",
+    "stock_quantity": 99,
+    "sku": "sku 10",
+    "product_id": "10",
+    "category_id": "1"
+  }
+]

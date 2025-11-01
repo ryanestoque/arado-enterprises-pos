@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { Button } from "../ui/button";
-import { useCategories } from "@/hooks/useMockAPI";
+import { useCategory } from "@/hooks/useMockAPI";
 
 interface ProductTabsProps {
   sortBy: "A-Z" | "Z-A" | "price-asc" | "price-desc"| "stock-asc" | "stock-desc"
@@ -25,7 +25,7 @@ export function ProductTabs({ sortBy, searchQuery }: ProductTabsProps) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const {data : categories = [], error, isLoading } = useCategories()
+  const {data : categories = [], error, isLoading } = useCategory()
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col" defaultValue="all" activationMode="manual">

@@ -1,7 +1,7 @@
-import PaymentTable from "@/components/common/PaymentTable";
-import POSLeftHeader from "@/components/common/POSLeftHeader";
-import POSRightFooter from "@/components/common/POSRightFooter";
-import { ProductTabs } from "@/components/common/ProductTabs";
+import PaymentTable from "@/components/pos/PaymentTable";
+import POSLeftHeader from "@/components/pos/POSLeftHeader";
+import POSRightFooter from "@/components/pos/POSRightFooter";
+import { ProductTabs } from "@/components/pos/ProductTabs";
 import { SiteHeader } from "@/components/common/SiteHeader";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";

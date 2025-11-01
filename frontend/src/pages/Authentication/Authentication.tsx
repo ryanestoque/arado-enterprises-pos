@@ -1,5 +1,5 @@
-import AdminAuthCard from "@/components/common/AdminAuthCard";
-import CashierAuthCard from "@/components/common/CashierAuthCard";
+import AdminAuthCard from "@/components/authentication/AdminAuthCard";
+import CashierAuthCard from "@/components/authentication/CashierAuthCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Authentication() {

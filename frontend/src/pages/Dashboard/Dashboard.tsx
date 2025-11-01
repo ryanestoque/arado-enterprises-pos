@@ -1,14 +1,15 @@
-import { ChartArea } from "@/components/common/ChartArea";
-import { DataTable } from "@/components/common/DataTable";
-import { SectionCards } from "@/components/common/SectionCards";
+import { ChartArea } from "@/components/dashboard/ChartArea";
+import { DataTable } from "@/components/dashboard/DataTable";
+import { SectionCards } from "@/components/dashboard/SectionCards";
 import { SiteHeader } from "@/components/common/SiteHeader";
-import { columns } from "@/components/common/Columns";
-import type { Payment } from "@/components/common/Columns"
-import data from "../../data/recent_payments.json"
+import { columns, type Payment } from "@/components/dashboard/Columns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export default function Dashboard() {
-  const payments = data as Payment[]
+  const { data, error, isLoading } = useSWR<Payment[]>("http://localhost:3001/recent_payment", fetcher)
 
   return(
     <>
@@ -29,8 +30,8 @@ export default function Dashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <DataTable columns={columns} data={payments} />
-              </CardContent>
+                <DataTable columns={columns} data={data || []} />
+              </CardContent>  
             </Card>
           </div>
         </section>

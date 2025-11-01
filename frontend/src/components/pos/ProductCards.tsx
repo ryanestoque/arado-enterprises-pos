@@ -1,7 +1,7 @@
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
-import { useProducts } from '@/hooks/useMockAPI'
+import { useProduct } from '@/hooks/useMockAPI'
 
 interface ProductCardsProps {
   categoryId?: string
@@ -10,7 +10,7 @@ interface ProductCardsProps {
 }
 
 export default function ProductCards({ categoryId, sortBy, searchQuery } : ProductCardsProps) {
-  const { data: products = [], error, isLoading } = useProducts()
+  const { data: products = [], error, isLoading } = useProduct()
 
   const filtered = categoryId
     ? products?.filter((p) => p.category_id === categoryId)
