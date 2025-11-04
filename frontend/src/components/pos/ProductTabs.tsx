@@ -4,14 +4,16 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { Button } from "../ui/button";
-import { useCategory } from "@/hooks/useMockAPI";
+import { useCategory } from "@/hooks/useAPI";
 
 interface ProductTabsProps {
+  localProducts: any[]
+  onAddToCart: (product: any) => void;
   sortBy: "A-Z" | "Z-A" | "price-asc" | "price-desc"| "stock-asc" | "stock-desc"
   searchQuery: string
 }
 
-export function ProductTabs({ sortBy, searchQuery }: ProductTabsProps) {
+export function ProductTabs({ sortBy, searchQuery, onAddToCart,localProducts }: ProductTabsProps) {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("all")
 
@@ -67,8 +69,19 @@ export function ProductTabs({ sortBy, searchQuery }: ProductTabsProps) {
       </Collapsible>
       <TabsContent value={activeTab} className="grid gap-4 grid-cols-1 sm:grid-cols-3 xl:grid-cols-4 mt-4">
         {activeTab === "all"
-          ? <ProductCards sortBy={sortBy} searchQuery={searchQuery} />
-          : <ProductCards categoryId={activeTab} sortBy={sortBy} searchQuery={searchQuery} />}
+          ? <ProductCards 
+              sortBy={sortBy} 
+              searchQuery={searchQuery} 
+              onAddToCart={onAddToCart}
+              localProducts={localProducts}
+            />
+          : <ProductCards 
+              categoryId={activeTab} 
+              sortBy={sortBy} 
+              searchQuery={searchQuery} 
+              onAddToCart={onAddToCart}
+              localProducts={localProducts}
+            />}
       </TabsContent>
     </Tabs>
   )

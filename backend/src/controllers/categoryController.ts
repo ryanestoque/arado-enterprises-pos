@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import db from "../db"
+import db from "../config/db"
 
 export const getAllCategories = async (req: Request, res: Response) => {
   try {

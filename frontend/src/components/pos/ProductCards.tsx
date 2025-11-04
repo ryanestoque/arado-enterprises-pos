@@ -1,20 +1,21 @@
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
-import { useProduct } from '@/hooks/useMockAPI'
 
 interface ProductCardsProps {
+  localProducts: any[]
   categoryId?: string
   sortBy: "A-Z" | "Z-A" | "price-asc" | "price-desc"| "stock-asc" | "stock-desc"
   searchQuery: string
+  onAddToCart: (product: any) => void;
 }
 
-export default function ProductCards({ categoryId, sortBy, searchQuery } : ProductCardsProps) {
-  const { data: products = [], error, isLoading } = useProduct()
+export default function ProductCards({ categoryId, sortBy, searchQuery, onAddToCart, localProducts } : ProductCardsProps) {
+  // const { data: products = [], error, isLoading } = useProduct()
 
   const filtered = categoryId
-    ? products?.filter((p) => p.category_id === categoryId)
-    : products
+    ? localProducts?.filter((p) => p.category_id === categoryId)
+    : localProducts
   
   const searched = filtered?.filter((p) =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -42,13 +43,16 @@ export default function ProductCards({ categoryId, sortBy, searchQuery } : Produ
   return(
     <>
       {sorted.map((p) => (
-        <TooltipProvider key={p.product_id}>
+        <TooltipProvider>
           <Tooltip>
           <TooltipTrigger className="text-left">
-            <Card className="cursor-pointer relative">
+            <Card 
+              key={p.product_id}
+              onClick={() => onAddToCart(p.product_id)} 
+              className="cursor-pointer relative active:scale-95 duration-150">
               <CardHeader>
-                <Badge variant={p.stock_quantity > 9 ? "inStock" : (p.stock_quantity < 9 && p.stock_quantity > 0 ? "lowStock" : "destructive")} className="text-[0.65rem] truncate absolute top-2 right-2">
-                  {p.stock_quantity > 9 ? "In Stock" : (p.stock_quantity < 9 && p.stock_quantity > 0 ? "Low Stock" : "Sold Out")}
+                <Badge variant={p.stock_quantity > 9 ? "inStock" : (p.stock_quantity < 10 && p.stock_quantity > 0 ? "lowStock" : "destructive")} className="text-[0.65rem] truncate absolute top-2 right-2">
+                  {p.stock_quantity > 9 ? "In Stock" : (p.stock_quantity < 10 && p.stock_quantity > 0 ? "Low Stock" : "Sold Out")}
                 </Badge>
                 <div className="flex justify-center items-center aspect-square pt-2">
                   <img 
@@ -60,7 +64,7 @@ export default function ProductCards({ categoryId, sortBy, searchQuery } : Produ
               <CardContent>
                 <p className="font-regular text-sm xl:text-base truncate">{p.name}</p>
                 <p className="font-bold text-lg xl:text-xl truncate mt-[1px] xl:mt-0.5">₱{p.price}</p>
-                <p className="text-xs xl:text-sm text-muted-foreground mt-2">{p.stock_quantity} items left</p>
+                <p className="text-xs xl:text-sm text-muted-foreground mt-2 truncate">{p.stock_quantity} items left</p>
               </CardContent>
             </Card>
             </TooltipTrigger>

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import db from "../db";
+import db from "../config/db";
 
 export const getAllProducts = async (req: Request, res: Response) => {
   try {
@@ -7,6 +7,6 @@ export const getAllProducts = async (req: Request, res: Response) => {
     res.json(rows);
   } catch(err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Failed to fetch products" });
   }
 }

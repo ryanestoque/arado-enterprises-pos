@@ -22,7 +22,8 @@ interface Payment {
   discount_amount: number,
   total_amount: number,
   status: string,
-  cashier_name: string
+  cashier_name: string,
+  user_id: number
 }
 
 const fetcher = async <T>(url: string): Promise<T> => {
@@ -32,8 +33,8 @@ const fetcher = async <T>(url: string): Promise<T> => {
 }
 
 const CATEGORY_URL = "http://localhost:5000/api/category"
-const PRODUCT_URL = "http://localhost:3001/product"
-const PAYMENT_URL = "http://localhost:3001/recent_payment"
+const PRODUCT_URL = "http://localhost:5000/api/product"
+const PAYMENT_URL = "http://localhost:5000/api/payment"
 
 export function useProduct() {
   return useSWR<Product[]>(PRODUCT_URL, fetcher)
