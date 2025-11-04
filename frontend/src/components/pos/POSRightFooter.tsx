@@ -21,7 +21,7 @@ export default function POSRightFooter( { cart, userId, onCheckoutSuccess, remov
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const discount = 0.00;
-  const vatRate = 0.12;
+  const vatRate = 0.00;
   const vat = subtotal * vatRate;
   const dueAmount = subtotal - discount + vat;
 
@@ -59,6 +59,7 @@ export default function POSRightFooter( { cart, userId, onCheckoutSuccess, remov
           onConfirm={handleConfirm}
           onCancel={() => setOpen(false)}
         />
+        
         <CheckoutButton 
           cart={cart} 
           userId={userId}

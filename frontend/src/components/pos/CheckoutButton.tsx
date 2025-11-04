@@ -1,5 +1,7 @@
 import useSWRMutation from 'swr/mutation'
 import { Button } from '../ui/button'
+import { useState } from 'react'
+import { ConfirmDialog } from '../common/ConfirmDialog'
 
 async function postPayment(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
@@ -16,6 +18,7 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess }: {
   userId: number,
   onCheckoutSuccess?: () => void 
   }) {
+
   const { trigger, isMutating, data, error } = useSWRMutation("http://localhost:5000/api/payment", postPayment)
 
   const handleCheckout = async () => {
@@ -44,13 +47,33 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess }: {
     }
   }
 
+  const [open, setOpen] = useState(false);
+  
+  const handleConfirm = () => {
+    handleCheckout();
+    setOpen(false)
+  }
+
   return (
-    <Button
-      className='flex-1'
-      onClick={handleCheckout}
-      disabled={isMutating || cart.length === 0}
-    >
-      {isMutating ? 'Processing...' : 'Proceed to pay'}
-    </Button>
+    <>
+      <Button
+        className='flex-1'
+        onClick={() => setOpen(true)}
+        disabled={isMutating || cart.length === 0}
+      >
+        {isMutating ? 'Processing...' : 'Proceed to pay'}
+      </Button>
+
+      <ConfirmDialog
+        open={open}
+        onOpenChange={setOpen}
+        title="Proceed to pay?"
+        description="A receipt will be generated afterwards."
+        confirmText="Proceed"
+        cancelText="Cancel"
+        onConfirm={handleConfirm}
+        onCancel={() => setOpen(false)}
+      />
+    </>
   )
 }
