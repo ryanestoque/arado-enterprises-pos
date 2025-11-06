@@ -92,9 +92,11 @@ export default function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton>
               <Hammer />
-              <span className="text-base font-semibold tracking-tight">
-                Arado Enterprises
-              </span>
+              <Link to={"/app/dashboard"}>
+                <span className="text-base font-semibold tracking-tight">
+                  Arado Enterprises
+                </span>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

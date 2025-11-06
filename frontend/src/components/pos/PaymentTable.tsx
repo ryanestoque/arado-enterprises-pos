@@ -5,6 +5,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "../ui/toast";
 
 interface CartTableProps {
   cart: any[];
@@ -14,10 +16,12 @@ interface CartTableProps {
 
 export default function PaymentTable({ cart, onQuantityChange, onRemove }: CartTableProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const { toast } = useToast();
   
     const toggleChevron = () => {
       setIsOpen(!isOpen);
     }
+
 
   return(
     <Table >
@@ -32,7 +36,7 @@ export default function PaymentTable({ cart, onQuantityChange, onRemove }: CartT
       </TableHeader>
       <TableBody>
         {cart.map((item) => (
-          <Collapsible asChild>
+          <Collapsible asChild key={item.product_id}>
             <>
               <CollapsibleTrigger asChild onClick={toggleChevron}>
                 <TableRow className="cursor-pointer border-b-0 data-[state=open]:bg-muted">
@@ -73,9 +77,9 @@ export default function PaymentTable({ cart, onQuantityChange, onRemove }: CartT
                     data-[state=open]:animate-collapsible-down 
                     data-[state=closed]:animate-collapsible-up">
                     <TableRow>
-                    <TableCell className="bg-muted p-4">
-                      <div className="flex justify-evenly items-center gap-4">
-                        <div className="flex items-center gap-2">
+                    <TableCell className="bg-muted p-4 ps-12">
+                      <div className="flex justify-evenly items-center gap-4 xl:gap-8">
+                        <div className="flex items-center gap-2 flex-1">
                           <Label htmlFor="quantity">Quantity</Label>
                           <Input 
                             id="quantity"
@@ -86,33 +90,30 @@ export default function PaymentTable({ cart, onQuantityChange, onRemove }: CartT
                             onChange={(e) => {
                               const value = Number(e.target.value);
 
-                              // allow empty input for manual editing
-                              if (e.target.value === "") {
-                                onQuantityChange(item.product_id, 0);
-                                return;
-                              }
-
-                              // prevent invalid values
                               if (value < 1) return;
                               if (value > item.stock_quantity + item.quantity) {
-                                alert("Not enough stock available!");
+                                toast({
+                                  variant: "destructive",
+                                  title: "Insufficient stock",
+                                  description: "Restock " + item.name + " if needed." ,
+                                  action: <ToastAction altText="Try again">I understand</ToastAction>,
+                                })
                                 return;
                               }
 
                               onQuantityChange(item.product_id, value);
                             }}/>
                         </div>
-                        <div className="flex items-center gap-2" >
-                          <Label htmlFor="discount">Discount&nbsp;(%)</Label>
+                        <div className="flex items-center gap-2 flex-1" >
+                          <Label htmlFor="discount">Disc.&nbsp;(%)</Label>
                           <Input 
                             id="discount" 
                             type="number" 
                             min={0} 
                             defaultValue={0}/>
                         </div>
-                        <Button variant="destructive" size={"default"} onClick={() => onRemove(item.product_id)}>
+                        <Button variant="destructive" size={"icon"} onClick={() => onRemove(item.product_id)}>
                           <Trash2 />
-                          Remove
                         </Button>
                       </div>
                     </TableCell>

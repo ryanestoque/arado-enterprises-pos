@@ -2,6 +2,8 @@ import useSWRMutation from 'swr/mutation'
 import { Button } from '../ui/button'
 import { useState } from 'react'
 import { ConfirmDialog } from '../common/ConfirmDialog'
+import { useToast } from '@/hooks/use-toast'
+import { ToastAction } from '../ui/toast'
 
 async function postPayment(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
@@ -13,23 +15,27 @@ async function postPayment(url: string, { arg }: { arg: any }) {
   return res.json()
 }
 
-export default function CheckoutButton({ cart, userId, onCheckoutSuccess }: { 
+export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtotal, dueAmount, discount, discountReason }: { 
   cart: any[], 
   userId: number,
-  onCheckoutSuccess?: () => void 
+  onCheckoutSuccess?: () => void,
+  subtotal: number,
+  dueAmount: number,
+  discount: any,
+  discountReason: any
   }) {
-
+    
   const { trigger, isMutating, data, error } = useSWRMutation("http://localhost:5000/api/payment", postPayment)
+  const [isSuccess, setSuccess] = useState<boolean>(true);
 
   const handleCheckout = async () => {
-    const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
     const payload = {
       user_id: userId,
-      original_total: total,
-      discount_amount: 0,
-      total_amount: total,
+      original_total: subtotal,
+      discount_amount: discount,
+      total_amount: dueAmount,
       payment_method: 'Cash',
-      discount_reason: '',
+      discount_reason: discountReason,
       items: cart.map(item => ({
         product_id: item.product_id,
         quantity: item.quantity,
@@ -39,19 +45,32 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess }: {
 
     try {
       await trigger(payload)
-      // alert("Payment successful!")
+      setSuccess(true)
       onCheckoutSuccess?.()
     } catch (error) {
       console.error(error)
-      // alert("Payment failed. Please try again.")
+      setSuccess(false)
     }
   }
 
   const [open, setOpen] = useState(false);
+  const { toast } = useToast()
   
   const handleConfirm = () => {
     handleCheckout();
     setOpen(false)
+    if(isSuccess) {
+      toast({
+        title: "Payment Successful",
+        action: <ToastAction altText='OK'>OK</ToastAction>
+      })
+    } else {
+      toast({
+        title: "Payment Failed",
+        variant: "destructive",
+        action: <ToastAction altText='Try again'>Try again</ToastAction>
+      })
+    }
   }
 
   return (

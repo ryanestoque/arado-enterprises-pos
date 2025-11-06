@@ -1,3 +1,4 @@
+import { PackageX } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
@@ -11,8 +12,6 @@ interface ProductCardsProps {
 }
 
 export default function ProductCards({ categoryId, sortBy, searchQuery, onAddToCart, localProducts } : ProductCardsProps) {
-  // const { data: products = [], error, isLoading } = useProduct()
-
   const filtered = categoryId
     ? localProducts?.filter((p) => p.category_id === categoryId)
     : localProducts
@@ -40,14 +39,25 @@ export default function ProductCards({ categoryId, sortBy, searchQuery, onAddToC
     }
   })
 
+  if(sorted.length === 0) {
+    return(
+      <div className="flex items-center justify-center h-full gap-4 flex-col col-span-full py-10 text-muted-foreground">
+        <PackageX 
+          strokeWidth={1}
+          width={80}
+          height={80}/>
+        <p className="text-sm">No products found</p>
+      </div>
+    )
+  }
+
   return(
-    <>
+    <> 
       {sorted.map((p) => (
-        <TooltipProvider>
+        <TooltipProvider key={p.product_id}>
           <Tooltip>
           <TooltipTrigger className="text-left">
             <Card 
-              key={p.product_id}
               onClick={() => onAddToCart(p.product_id)} 
               className="cursor-pointer relative active:scale-95 duration-150">
               <CardHeader>

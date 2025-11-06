@@ -6,6 +6,8 @@ import { SiteHeader } from "@/components/common/SiteHeader";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { useProduct } from "@/hooks/useAPI";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 export default function POS() {
   const { data: products = [], error, isLoading } = useProduct()
@@ -14,6 +16,7 @@ export default function POS() {
   const [searchQuery, setSearchQuery] = useState("")
   const [cart, setCart] = useState<any[]>([])
   const [localProducts, setLocalProducts] = useState<any[]>([])
+  const { toast } = useToast();
 
   useEffect(() => {
     if (products.length > 0) {
@@ -26,13 +29,17 @@ export default function POS() {
   }, [products])
 
   const handleAddToCart = (productId: number) => {
-    // First, update the cart
     setCart((prevCart) => {
       const product = localProducts.find((p) => p.product_id === productId);
       if (!product) return prevCart;
 
       if (product.stock_quantity == 0) {
-        alert("Out of stock!");
+        toast({
+          variant: "destructive",
+          title: "Insufficient stock",
+          description: "Restock " + product.name + " if needed." ,
+          action: <ToastAction altText="I understand">I understand</ToastAction>,
+        })
         return prevCart;
       }
 
@@ -136,7 +143,7 @@ export default function POS() {
           </CardContent>
           <CardFooter></CardFooter>
         </Card>
-        <Card className="max-h-[90vh] sm:max-h-[100vh] lg:max-h-[calc(100vh-7rem)] flex-[0.6] min-w-0 flex flex-col overflow-hidden">
+        <Card className="max-h-[90vh] sm:max-h-[100vh] lg:max-h-[calc(100vh-7rem)] flex-[0.8] xl:flex-[0.6] min-w-0 flex flex-col overflow-hidden">
           <CardHeader>
             <CardTitle  className="text-lg">Payment</CardTitle>
           </CardHeader>

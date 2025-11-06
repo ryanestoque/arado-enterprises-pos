@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import CheckoutButton from "./CheckoutButton";
 import { ConfirmDialog } from "../common/ConfirmDialog";
+import { DiscountPopover } from "./DiscountPopover";
 
 interface POSRightFooterProps {
   cart: any[];
@@ -12,18 +13,25 @@ interface POSRightFooterProps {
 
 export default function POSRightFooter( { cart, userId, onCheckoutSuccess, removeItems }: POSRightFooterProps) {
   const [open, setOpen] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [discountReason, setDiscountReason] = useState("");
+
+  const handleClearDiscount = () => {
+    setDiscount(0);
+    setDiscountReason("");
+  };
 
   const handleConfirm = () => {
     removeItems();
+    setDiscount(0)
+    setDiscountReason("")
     setOpen(false)
   }
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-
-  const discount = 0.00;
   const vatRate = 0.00;
   const vat = subtotal * vatRate;
-  const dueAmount = subtotal - discount + vat;
+  const dueAmount = (subtotal + vat) * (1 - (discount / 100));
 
   return(
     <>
@@ -36,7 +44,7 @@ export default function POSRightFooter( { cart, userId, onCheckoutSuccess, remov
         </div>
         <div className="flex flex-col text-end gap-2">
           <p className="text-sm font-medium">₱{ subtotal.toFixed(2) }</p>
-          <p className="text-sm font-medium">₱{ discount.toFixed(2) }</p>
+          <p className="text-sm font-medium">{ discount }%</p>
           <p className="text-sm font-medium">₱{ vat.toFixed(2) }</p>
           <p className="mt-2 text-lg font-semibold">₱{ dueAmount.toFixed(2) }</p>
         </div>
@@ -48,6 +56,13 @@ export default function POSRightFooter( { cart, userId, onCheckoutSuccess, remov
           disabled={cart.length === 0}
           onClick={() => setOpen(true)}
           >Clear items</Button>
+
+        <DiscountPopover 
+          discount={discount}
+          setDiscount={setDiscount}
+          discountReason={discountReason}
+          setDiscountReason={setDiscountReason}
+          cart={cart}/>
 
         <ConfirmDialog
           open={open}
@@ -61,9 +76,16 @@ export default function POSRightFooter( { cart, userId, onCheckoutSuccess, remov
         />
         
         <CheckoutButton 
+          dueAmount={dueAmount}
+          subtotal={subtotal}
           cart={cart} 
           userId={userId}
-          onCheckoutSuccess={onCheckoutSuccess}
+          onCheckoutSuccess={() => {
+            onCheckoutSuccess?.();
+            handleClearDiscount(); // ⬅ reset here after checkout
+          }}
+          discount={discount}
+          discountReason={discountReason}
           />
       </div>
     </>
