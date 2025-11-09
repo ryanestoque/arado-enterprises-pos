@@ -69,17 +69,14 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
     }
   }
 
-  const [open, setOpen] = useState(false);
   const { toast } = useToast()
   
   const handleConfirm = () => {
     handleCheckout();
-    setOpen(false);
-    setCash("");
     if(isSuccess) {
       toast({
         title: "Payment Successful",
-        action: <ToastAction altText='OK' className='p-1'>OK</ToastAction>
+        action: <ToastAction altText='OK' className='p-4'>OK</ToastAction>
       })
     } else {
       toast({
@@ -96,8 +93,8 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
         <DialogTrigger asChild>
           <Button
             className='flex-1'
-            onClick={() => setOpen(true)}
             disabled={isMutating || cart.length === 0}
+            onClick={() => setCash("")}
           >
           {isMutating ? 'Processing...' : 'Proceed to pay'}
         </Button>
@@ -119,7 +116,7 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
                 className="col-span-3"
                 type="number"
                 min={0}
-                value={cash}
+                value={undefined}
                 onChange={(e) => setCash(Number(e.target.value))}
               />
             </div>
@@ -131,14 +128,14 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
           <DialogFooter className="flex flex-col gap-2 md:gap-0">
             <DialogClose asChild>
               <Button 
-                onClick={() => setCash("")}
                 type="button" 
                 variant="outline">
                 Cancel
               </Button>
             </DialogClose>
             <DialogClose asChild>
-              <Button type="submit" 
+              <Button 
+                type="submit" 
                 onClick={handleConfirm} 
                 disabled={Number(cash) < dueAmount}>
                   Pay
