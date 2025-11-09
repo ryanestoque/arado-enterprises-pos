@@ -1,5 +1,6 @@
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "../ui/separator"
+import AddProductBtn from "../inventory/products/AddProductBtn"
 
 export function SiteHeader({ title }: { title: string }) {
   return (
@@ -12,6 +13,9 @@ export function SiteHeader({ title }: { title: string }) {
         />
         <h1 className="text-base font-medium">{ title }</h1>
       </div>
+      {title === "Products" ?
+      <AddProductBtn /> : ""
+      }
     </header>
   )
 }

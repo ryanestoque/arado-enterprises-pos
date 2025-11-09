@@ -11,11 +11,11 @@ import { ToastAction } from "@/components/ui/toast";
 
 export default function POS() {
   const { data: products = [], error, isLoading } = useProduct()
+  const [localProducts, setLocalProducts] = useState<any[]>([])
 
   const [sortBy, setSortBy] = useState<"A-Z" | "Z-A" | "price-asc" | "price-desc" | "stock-asc" | "stock-desc">("A-Z")
   const [searchQuery, setSearchQuery] = useState("")
   const [cart, setCart] = useState<any[]>([])
-  const [localProducts, setLocalProducts] = useState<any[]>([])
   const { toast } = useToast();
 
   useEffect(() => {

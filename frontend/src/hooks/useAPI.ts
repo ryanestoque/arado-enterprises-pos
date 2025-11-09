@@ -8,6 +8,9 @@ interface Product {
   stock_quantity: number
   sku: string
   category_id: string
+  category_name: string
+  supplier_id: string
+  supplier_name: string
 }
 
 interface Category {
@@ -24,6 +27,8 @@ interface Payment {
   status: string,
   cashier_name: string,
   user_id: number
+  amount_given: number
+  change_amount: number
 }
 
 const fetcher = async <T>(url: string): Promise<T> => {

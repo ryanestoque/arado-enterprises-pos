@@ -8,7 +8,7 @@ interface ProductCardsProps {
   categoryId?: string
   sortBy: "A-Z" | "Z-A" | "price-asc" | "price-desc"| "stock-asc" | "stock-desc"
   searchQuery: string
-  onAddToCart: (product: any) => void;
+  onAddToCart?: (product: any) => void;
 }
 
 export default function ProductCards({ categoryId, sortBy, searchQuery, onAddToCart, localProducts } : ProductCardsProps) {
@@ -57,8 +57,8 @@ export default function ProductCards({ categoryId, sortBy, searchQuery, onAddToC
         <TooltipProvider key={p.product_id}>
           <Tooltip>
           <TooltipTrigger className="text-left">
-            <Card 
-              onClick={() => onAddToCart(p.product_id)} 
+            <Card
+              onClick={() => onAddToCart?.(p.product_id)} 
               className="cursor-pointer relative active:scale-95 duration-150">
               <CardHeader>
                 <Badge variant={p.stock_quantity > 9 ? "inStock" : (p.stock_quantity < 10 && p.stock_quantity > 0 ? "lowStock" : "destructive")} className="text-[0.65rem] truncate absolute top-2 right-2">

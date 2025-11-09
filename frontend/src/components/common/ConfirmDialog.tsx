@@ -18,6 +18,7 @@ interface ConfirmDialogProps {
   cancelText?: string
   onConfirm?: () => void
   onCancel?: () => void
+  withInput?: boolean
 }
 
 export function ConfirmDialog({
@@ -29,6 +30,7 @@ export function ConfirmDialog({
   cancelText = "No",
   onConfirm,
   onCancel,
+  withInput
 }: ConfirmDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>

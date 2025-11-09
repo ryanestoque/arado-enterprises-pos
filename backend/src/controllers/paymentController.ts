@@ -15,14 +15,16 @@ export const makePayment = async (req: Request, res: Response) => {
       total_amount,
       payment_method,
       discount_reason,
-      items
+      items,
+      amount_given,
+      change_amount
     } = req.body
 
     // Insert payment record
     const [paymentResult] = await connection.query<ResultSetHeader>(
-      `INSERT INTO payment (date, user_id, original_total, discount_amount, total_amount, payment_method, discount_reason)
-       VALUES (NOW(), ?, ?, ?, ?, ?, ?)`,
-      [user_id, original_total, discount_amount, total_amount, payment_method, discount_reason]
+      `INSERT INTO payment (date, user_id, original_total, discount_amount, total_amount, payment_method, discount_reason, amount_given, change_amount)
+       VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [user_id, original_total, discount_amount, total_amount, payment_method, discount_reason, amount_given, change_amount]
     )
 
     const payment_id = paymentResult.insertId

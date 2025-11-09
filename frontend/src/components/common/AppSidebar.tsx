@@ -44,10 +44,18 @@ const items = [
   },
   {
     title: "Inventory",
-    url: "#",
+    url: "/app/inventory",
     icon: PackageSearch,
+    isActive: true,
     items: [
-      
+      {
+        title: "Categories",
+        url: "/app/categories",
+      },
+      {
+        title: "Products",
+        url: "/app/products"
+      },
     ]
   },
   {

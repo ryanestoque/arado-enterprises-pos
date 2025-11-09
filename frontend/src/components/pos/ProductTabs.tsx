@@ -8,7 +8,7 @@ import { useCategory } from "@/hooks/useAPI";
 
 interface ProductTabsProps {
   localProducts: any[]
-  onAddToCart: (product: any) => void;
+  onAddToCart?: (product: any) => void;
   sortBy: "A-Z" | "Z-A" | "price-asc" | "price-desc"| "stock-asc" | "stock-desc"
   searchQuery: string
 }

@@ -1,10 +1,10 @@
 import { ChartArea } from "@/components/dashboard/ChartArea";
-import { DataTable } from "@/components/dashboard/DataTable";
 import { SectionCards } from "@/components/dashboard/SectionCards";
 import { SiteHeader } from "@/components/common/SiteHeader";
 import { columns, type Payment } from "@/components/dashboard/Columns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useSWR from "swr";
+import { DataTable } from "@/components/common/DataTable";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
@@ -24,13 +24,13 @@ export default function Dashboard() {
               <ChartArea/>
             </div>
             <Card className="mx-4 lg:mx-6">
-              <CardHeader>  
+              <CardHeader className="pb-2">  
                 <CardTitle>
                   <h2 className="font-semibold">Recent Transactions</h2>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <DataTable columns={columns} data={data || []} />
+                <DataTable columns={columns} data={data || []} searchPlaceholder="Filter payment..."/>
               </CardContent>  
             </Card>
           </div>

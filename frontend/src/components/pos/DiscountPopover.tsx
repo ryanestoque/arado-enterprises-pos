@@ -25,7 +25,7 @@ export function DiscountPopover({ cart, discount, setDiscount, discountReason, s
             min={0}
             max={100}
             onChange={(e) => {
-              if(Number(e.target.value) < 1 || Number(e.target.value) > 100) {
+              if(Number(e.target.value) < 0 || Number(e.target.value) > 100) {
                 return
               }
               setDiscount(Number(e.target.value))
