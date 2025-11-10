@@ -1,0 +1,228 @@
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+// Zod Schema
+const productSchema = z.object({
+  name: z.string().min(1, "Product name is required"),
+  description: z.string().optional(),
+  category_id: z.number().optional(),
+  supplier_id: z.number().optional(),
+  price: z.number().min(1, "Price is required"),
+  cost: z.number().min(1, "Cost is required"),
+  stock_quantity: z.number().min(1, "Stock quantity is required"),
+  reorder_level: z.number().optional(),
+  barcode: z.string().optional(),
+  sku: z.string().min(1, "SKU is required"),
+});
+
+export type ProductFormValues = z.infer<typeof productSchema>;
+
+interface ProductFormProps {
+  defaultValues?: Partial<ProductFormValues>;
+  categories?: { category_id: number; name: string }[];
+  suppliers?: { supplier_id: number; name: string }[];
+  onSubmit: (values: ProductFormValues) => void;
+  submitLabel?: string;
+  isMutating?: any
+}
+
+export default function ProductForm({
+  defaultValues,
+  categories = [],
+  suppliers = [],
+  onSubmit,
+  submitLabel = "Save",
+  isMutating
+}: ProductFormProps) {
+  const form = useForm<ProductFormValues>({
+    resolver: zodResolver(productSchema),
+    defaultValues,
+  });
+
+  useEffect(() => {
+    if (defaultValues) form.reset(defaultValues);
+  }, [defaultValues]);
+
+  return (
+    <Form {...form}>
+      <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)}>
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Product name</FormLabel>
+              <FormControl>
+                <Input {...form.register("name")} placeholder="e.g. Hammer" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Input {...form.register("description")} placeholder="Add a short description..." {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="category_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <FormControl>
+                <Select 
+                  onValueChange={(v) => form.setValue("category_id", Number(v))}
+                  defaultValue={defaultValues?.category_id?.toString()}
+                  >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((c) => (
+                    <SelectItem key={c.category_id} value={String(c.category_id)}>
+                    {c.name}
+                    </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="supplier_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Supplier</FormLabel>
+              <FormControl>
+                <Select 
+                  onValueChange={(v) => form.setValue("supplier_id", Number(v))}
+                  defaultValue={defaultValues?.category_id?.toString()}
+                  >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select supplier" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {suppliers.map((s) => (
+                    <SelectItem key={s.supplier_id} value={String(s.supplier_id)}>
+                    {s.name}
+                    </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Price</FormLabel>
+              <FormControl>
+                <Input type="number" step="0.01" {...form.register("price", { valueAsNumber: true })} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="cost"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Cost</FormLabel>
+              <FormControl>
+                <Input type="number" step="0.01" {...form.register("cost", { valueAsNumber: true })} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="stock_quantity"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Stock Quantity</FormLabel>
+              <FormControl>
+                <Input type="number" min={1} {...form.register("stock_quantity", { valueAsNumber: true })} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="reorder_level"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Reorder Level</FormLabel>
+              <FormControl>
+                <Input type="number" min={1} {...form.register("reorder_level", { valueAsNumber: true })} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="barcode"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Barcode</FormLabel>
+              <FormControl>
+                <Input {...form.register("barcode")} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="sku"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>SKU</FormLabel>
+              <FormControl>
+                <Input {...form.register("sku")} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+     
+        <Button 
+          disabled={isMutating}
+          type="submit">{submitLabel}</Button>
+      </form>
+    </Form>
+  );
+}

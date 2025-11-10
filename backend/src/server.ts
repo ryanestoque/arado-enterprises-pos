@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import productRoutes from "./routes/product"
 import categoryRoutes from "./routes/category"
 import paymentRoutes from "./routes/payment"
+import supplierRoutes from "./routes/supplier"
 
 dotenv.config()
 
@@ -20,6 +21,7 @@ app.get("/", async (req : Request, res : Response) => {
 app.use("/api/product", productRoutes)
 app.use("/api/category", categoryRoutes)
 app.use("/api/payment", paymentRoutes)
+app.use("/api/supplier", supplierRoutes)
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

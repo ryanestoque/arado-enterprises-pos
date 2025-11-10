@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import db from "../config/db";
+import { ResultSetHeader } from "mysql2";
 
 export const getAllProducts = async (req: Request, res: Response) => {
   try {
@@ -18,5 +19,36 @@ export const getAllProducts = async (req: Request, res: Response) => {
   } catch(err) {
     console.error(err);
     res.status(500).json({ message: "Failed to fetch products" });
+  }
+}
+
+export const addProducts = async (req: Request, res: Response) => {
+  try {
+    const {
+      name,
+      description,
+      category_id,
+      supplier_id,
+      price,
+      cost,
+      stock_quantity,
+      reorder_level,
+      sku,
+      barcode,
+    } = req.body
+
+    const sql = `
+      INSERT INTO Product 
+      (name, description, category_id, supplier_id, price, cost, stock_quantity, reorder_level, sku, barcode)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    const values = [name, description, category_id, supplier_id, price, cost, stock_quantity, reorder_level, sku, barcode];
+
+    const [result] = await db.query<ResultSetHeader>(sql, values);
+    res.json({ success: true, product_id: result.insertId})
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to add product" });
   }
 }

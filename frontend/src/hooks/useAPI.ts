@@ -1,20 +1,22 @@
 import useSWR from 'swr';
 
 interface Product {
-  product_id: string
+  product_id: number
   name: string
   description: string
+  category_id: number
+  supplier_id: number
   price: number
   stock_quantity: number
+  reorder_level: number
   sku: string
-  category_id: string
+  barcode: string
   category_name: string
-  supplier_id: string
   supplier_name: string
 }
 
 interface Category {
-  category_id: string
+  category_id: number
   name: string
 }
 
@@ -31,6 +33,15 @@ interface Payment {
   change_amount: number
 }
 
+interface Supplier {
+  supplier_id: number
+  name: string
+  contact_person: string
+  phone: string
+  email: string
+  address: string
+}
+
 const fetcher = async <T>(url: string): Promise<T> => {
   const res = await fetch(url)
   if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`)
@@ -40,6 +51,7 @@ const fetcher = async <T>(url: string): Promise<T> => {
 const CATEGORY_URL = "http://localhost:5000/api/category"
 const PRODUCT_URL = "http://localhost:5000/api/product"
 const PAYMENT_URL = "http://localhost:5000/api/payment"
+const SUPPLIER_URL = "http://localhost:5000/api/supplier"
 
 export function useProduct() {
   return useSWR<Product[]>(PRODUCT_URL, fetcher)
@@ -51,4 +63,8 @@ export function useCategory() {
 
 export function usePayment() {
   return useSWR<Payment[]>(PAYMENT_URL, fetcher)
+}
+
+export function useSupplier() {
+  return useSWR<Supplier[]>(SUPPLIER_URL, fetcher)
 }
