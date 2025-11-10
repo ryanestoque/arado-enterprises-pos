@@ -25,11 +25,13 @@ export default function AddProductBtn() {
 
   const { trigger, isMutating } = useSWRMutation("http://localhost:5000/api/product", postProduct)
   const [isSuccess, setSuccess] = useState<boolean>(true);
+  const [open, setOpen] = useState(false)
 
   const handleAddProduct = async (values: ProductFormValues) => {
     try {
       await trigger(values)
       setSuccess(true)
+      setOpen(false)
     } catch (error) {
       console.error(error)
       setSuccess(false)
@@ -56,7 +58,7 @@ export default function AddProductBtn() {
   }
 
   return(
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger>      
         <Button
           className="mx-4 lg:mx-6"

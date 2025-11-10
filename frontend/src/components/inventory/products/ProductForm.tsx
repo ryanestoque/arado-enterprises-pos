@@ -46,7 +46,7 @@ export default function ProductForm({
   suppliers = [],
   onSubmit,
   submitLabel = "Save",
-  isMutating
+  isMutating,
 }: ProductFormProps) {
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
