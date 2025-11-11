@@ -83,10 +83,25 @@ export const updateProduct = async (req: Request, res: Response) => {
     ];
   
     await db.query(sql, values)
-
     res.json({ success: true })
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to add product" });
+    res.status(500).json({ message: "Failed to update product" });
+  }
+}
+
+export const deleteProduct = async (req: Request, res: Response) => {
+  try{
+    const { product_id } = req.params;
+  
+    const sql = `
+      DELETE FROM Product WHERE product_id=?
+    `
+
+    await db.query(sql, product_id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to delete product" });
   }
 }

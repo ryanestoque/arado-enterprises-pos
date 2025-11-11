@@ -21,18 +21,31 @@ async function updateProduct(url: string, { arg }: { arg: any }) {
   return res.json()
 }
 
+async function deleteProduct(url: string) {
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!res.ok) throw new Error("Failed to delete product")
+}
+
 
 export default function InventoryActions({ product }: { product: Product }) {
   const { data: categories = [] } = useCategory()
   const { data: suppliers = [] } = useSupplier()
 
-  const { trigger, isMutating } = useSWRMutation(`http://localhost:5000/api/product/${product.product_id}`, updateProduct)
+  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/product/${product.product_id}`, updateProduct)
+  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`http://localhost:5000/api/product/${product.product_id}`, deleteProduct)
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [open, setOpen] = useState(false)
+  const { toast } = useToast()
 
   const handleEditProduct = async (values: ProductFormValues) => {
     try {
-      await trigger(values)
+      await updateTrigger(values)
       setSuccess(true)
       mutate("http://localhost:5000/api/product")
       setOpen(false)
@@ -42,8 +55,6 @@ export default function InventoryActions({ product }: { product: Product }) {
     }
   }
 
-  const { toast } = useToast()
-  
   const handleConfirm = async (values: ProductFormValues) => {
     await handleEditProduct(values)
 
@@ -58,6 +69,15 @@ export default function InventoryActions({ product }: { product: Product }) {
         variant: "destructive",
         action: <ToastAction altText="Try again">Try again</ToastAction>
       })
+    }
+  }
+
+  const handleDelete = async () => {
+    try {
+      await deleteTrigger()
+      mutate("http://localhost:5000/api/product")
+    } catch (error) {
+      console.error(error)
     }
   }
 
@@ -77,7 +97,7 @@ export default function InventoryActions({ product }: { product: Product }) {
           <ProductForm 
             submitLabel="Save"
             onSubmit={handleConfirm}
-            isMutating={isMutating}
+            isMutating={isUpdating}
             categories={categories}
             suppliers={suppliers}
             defaultValues={product}
@@ -91,9 +111,7 @@ export default function InventoryActions({ product }: { product: Product }) {
         </SheetContent>
       </Sheet>
 
-
-
-      <Button size="sm" variant="destructive" onClick={() => console.log("Delete", product)}>
+      <Button size="sm" variant="destructive" onClick={handleDelete} disabled={isDeleting}>
         <Trash2 className="w-4 h-4" />
       </Button>
     </div>

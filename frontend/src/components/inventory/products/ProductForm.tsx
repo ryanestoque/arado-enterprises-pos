@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// Zod Schema
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().default("").optional(),
