@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -47,8 +46,7 @@ export default function ProductForm({
   suppliers = [],
   onSubmit,
   submitLabel = "Save",
-  isMutating,
-  initialValues,
+  isMutating
 }: ProductFormProps) {
 
   const form = useForm<ProductFormValues>({
