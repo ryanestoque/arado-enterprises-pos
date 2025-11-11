@@ -18,14 +18,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 // Zod Schema
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
-  description: z.string().optional(),
-  category_id: z.coerce.number<number>().optional(),
-  supplier_id: z.coerce.number<number>().optional(),
+  description: z.string().default("").optional(),
+  category_id: z.coerce.number<number>(),
+  supplier_id: z.coerce.number<number>(),
   price: z.coerce.number<number>().min(1, "Price is required"),
   cost: z.coerce.number<number>().min(1, "Cost is required"),
   stock_quantity: z.coerce.number<number>().min(1, "Stock quantity is required"),
   reorder_level: z.coerce.number<number>().optional(),
-  barcode: z.string().optional(),
+  barcode: z.string().default("").optional(),
   sku: z.string().min(1, "SKU is required"),
 });
 
@@ -70,7 +70,11 @@ export default function ProductForm({
             <FormItem>
               <FormLabel>Product name</FormLabel>
               <FormControl>
-                <Input placeholder="e.g. Hammer" {...field} />
+                <Input 
+                  autoComplete="off"
+                  placeholder="e.g. Hammer" 
+                  {...field}
+                  />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -83,7 +87,10 @@ export default function ProductForm({
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input placeholder="Add a short description..." {...field} />
+                <Input 
+                  autoComplete="off"
+                  placeholder="Add a short description..." 
+                  {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -202,7 +209,9 @@ export default function ProductForm({
             <FormItem>
               <FormLabel>Barcode</FormLabel>
               <FormControl>
-                <Input {...field}/>
+                <Input 
+                  autoComplete="off"
+                  {...field}/>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -215,7 +224,10 @@ export default function ProductForm({
             <FormItem>
               <FormLabel>SKU</FormLabel>
               <FormControl>
-                <Input {...field}/>
+                <Input 
+                  autoComplete="off"
+                  placeholder="e.g. ABCD-1234"
+                  {...field}/>
               </FormControl>
               <FormMessage />
             </FormItem>

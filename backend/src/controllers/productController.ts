@@ -77,8 +77,8 @@ export const updateProduct = async (req: Request, res: Response) => {
     `
 
     const values = [
-      name, description ?? null, category_id, supplier_id,
-      price, cost, stock_quantity, reorder_level ?? 0, sku, barcode ?? null,
+      name, description ?? "", category_id, supplier_id,
+      price, cost, stock_quantity, reorder_level ?? 0, sku, barcode ?? "",
       product_id
     ];
   
