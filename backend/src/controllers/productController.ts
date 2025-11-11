@@ -52,3 +52,41 @@ export const addProducts = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to add product" });
   }
 }
+
+export const updateProduct = async (req: Request, res: Response) => {
+  try {
+    const { product_id } = req.params;
+    const {
+      name,
+      description,
+      category_id,
+      supplier_id,
+      price,
+      cost,
+      stock_quantity,
+      reorder_level,
+      sku,
+      barcode,
+    } = req.body
+  
+    const sql = `
+      UPDATE Product SET 
+        name=?, description=?, category_id=?, supplier_id=?, price=?, cost=?, 
+        stock_quantity=?, reorder_level=?, sku=?, barcode=?
+      WHERE product_id=?
+    `
+
+    const values = [
+      name, description ?? null, category_id, supplier_id,
+      price, cost, stock_quantity, reorder_level ?? 0, sku, barcode ?? null,
+      product_id
+    ];
+  
+    await db.query(sql, values)
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to add product" });
+  }
+}

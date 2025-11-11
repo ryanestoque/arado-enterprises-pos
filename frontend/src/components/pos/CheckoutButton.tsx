@@ -76,6 +76,7 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
     if(isSuccess) {
       toast({
         title: "Payment Successful",
+        description: "Printing receipt...",
         action: <ToastAction altText='OK' className='p-4'>OK</ToastAction>
       })
     } else {

@@ -19,12 +19,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().optional(),
-  category_id: z.number().optional(),
-  supplier_id: z.number().optional(),
-  price: z.number().min(1, "Price is required"),
-  cost: z.number().min(1, "Cost is required"),
-  stock_quantity: z.number().min(1, "Stock quantity is required"),
-  reorder_level: z.number().optional(),
+  category_id: z.coerce.number<number>().optional(),
+  supplier_id: z.coerce.number<number>().optional(),
+  price: z.coerce.number<number>().min(1, "Price is required"),
+  cost: z.coerce.number<number>().min(1, "Cost is required"),
+  stock_quantity: z.coerce.number<number>().min(1, "Stock quantity is required"),
+  reorder_level: z.coerce.number<number>().optional(),
   barcode: z.string().optional(),
   sku: z.string().min(1, "SKU is required"),
 });
@@ -38,6 +38,7 @@ interface ProductFormProps {
   onSubmit: (values: ProductFormValues) => void;
   submitLabel?: string;
   isMutating?: any
+  initialValues?: ProductFormValues,
 }
 
 export default function ProductForm({
@@ -47,15 +48,17 @@ export default function ProductForm({
   onSubmit,
   submitLabel = "Save",
   isMutating,
+  initialValues,
 }: ProductFormProps) {
+
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues,
   });
 
   useEffect(() => {
-    if (defaultValues) form.reset(defaultValues);
-  }, [defaultValues]);
+    form.reset(defaultValues);
+  }, [defaultValues, form]);
 
   return (
     <Form {...form}>
@@ -67,7 +70,7 @@ export default function ProductForm({
             <FormItem>
               <FormLabel>Product name</FormLabel>
               <FormControl>
-                <Input {...form.register("name")} placeholder="e.g. Hammer" {...field} />
+                <Input placeholder="e.g. Hammer" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -80,7 +83,7 @@ export default function ProductForm({
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input {...form.register("description")} placeholder="Add a short description..." {...field} />
+                <Input placeholder="Add a short description..." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -94,8 +97,8 @@ export default function ProductForm({
               <FormLabel>Category</FormLabel>
               <FormControl>
                 <Select 
-                  onValueChange={(v) => form.setValue("category_id", Number(v))}
-                  defaultValue={defaultValues?.category_id?.toString()}
+                  onValueChange={field.onChange} 
+                  defaultValue={field.value?.toString()}
                   >
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
@@ -121,8 +124,8 @@ export default function ProductForm({
               <FormLabel>Supplier</FormLabel>
               <FormControl>
                 <Select 
-                  onValueChange={(v) => form.setValue("supplier_id", Number(v))}
-                  defaultValue={defaultValues?.category_id?.toString()}
+                  onValueChange={field.onChange} 
+                  defaultValue={field.value?.toString()}
                   >
                   <SelectTrigger>
                     <SelectValue placeholder="Select supplier" />
@@ -147,7 +150,7 @@ export default function ProductForm({
             <FormItem>
               <FormLabel>Price</FormLabel>
               <FormControl>
-                <Input type="number" step="0.01" {...form.register("price", { valueAsNumber: true })} />
+                <Input type="number" step="0.01" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -160,7 +163,7 @@ export default function ProductForm({
             <FormItem>
               <FormLabel>Cost</FormLabel>
               <FormControl>
-                <Input type="number" step="0.01" {...form.register("cost", { valueAsNumber: true })} />
+                <Input type="number" step="0.01" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -173,7 +176,7 @@ export default function ProductForm({
             <FormItem>
               <FormLabel>Stock Quantity</FormLabel>
               <FormControl>
-                <Input type="number" min={1} {...form.register("stock_quantity", { valueAsNumber: true })} />
+                <Input type="number" min={1} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -186,7 +189,7 @@ export default function ProductForm({
             <FormItem>
               <FormLabel>Reorder Level</FormLabel>
               <FormControl>
-                <Input type="number" min={1} {...form.register("reorder_level", { valueAsNumber: true })} />
+                <Input type="number" min={1} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -199,7 +202,7 @@ export default function ProductForm({
             <FormItem>
               <FormLabel>Barcode</FormLabel>
               <FormControl>
-                <Input {...form.register("barcode")} />
+                <Input {...field}/>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -212,7 +215,7 @@ export default function ProductForm({
             <FormItem>
               <FormLabel>SKU</FormLabel>
               <FormControl>
-                <Input {...form.register("sku")} />
+                <Input {...field}/>
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -7,12 +7,17 @@ import InventoryActions from "./InventoryActions"
 export type Product = {
   product_id: number
   name: string
-  category_name?: string
+  description: string
+  category_id: number
+  supplier_id: number
   price: number
   cost: number
   stock_quantity: number
   reorder_level: number
   sku: string
+  barcode: string
+  category_name?: string
+  supplier_name?: string
 }
 
 export const columns: ColumnDef<Product>[] = [
