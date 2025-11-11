@@ -1,14 +1,13 @@
-import { SiteHeader } from "@/components/common/SiteHeader";
 import AddProductBtn from "@/components/inventory/products/AddProductBtn";
 import ProductsTable from "@/components/inventory/products/ProductsTable";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useProduct } from "@/hooks/useAPI";
 import { useEffect, useState } from "react";
 
 export default function Products() {
-  const { data: products = [], error, isLoading } = useProduct()
+  const { data: products = [] } = useProduct()
   const [localProducts, setLocalProducts] = useState<any[]>([])
 
   useEffect(() => {

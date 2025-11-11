@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import type { Product } from "./Columns";
 import { mutate } from "swr";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 
 async function updateProduct(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
@@ -39,8 +40,11 @@ export default function InventoryActions({ product }: { product: Product }) {
 
   const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/product/${product.product_id}`, updateProduct)
   const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`http://localhost:5000/api/product/${product.product_id}`, deleteProduct)
+
   const [isSuccess, setSuccess] = useState<boolean>(true);
-  const [open, setOpen] = useState(false)
+  const [openSheet, setOpenSheet] = useState(false)
+  const [openDialog, setOpenDialog] = useState(false)
+
   const { toast } = useToast()
 
   const handleEditProduct = async (values: ProductFormValues) => {
@@ -48,7 +52,7 @@ export default function InventoryActions({ product }: { product: Product }) {
       await updateTrigger(values)
       setSuccess(true)
       mutate("http://localhost:5000/api/product")
-      setOpen(false)
+      setOpenSheet(false)
     } catch (error) {
       console.error(error)
       setSuccess(false)
@@ -60,12 +64,12 @@ export default function InventoryActions({ product }: { product: Product }) {
 
     if (isSuccess) {
       toast({
-        title: "Product edited successfully!",
+        title: `${product.name} edited successfully!`,
         action: <ToastAction altText="OK">OK</ToastAction>
       })
     } else {
       toast({
-        title: "Failed to add product",
+        title: `Failed to edit ${product.name}!`,
         variant: "destructive",
         action: <ToastAction altText="Try again">Try again</ToastAction>
       })
@@ -76,14 +80,22 @@ export default function InventoryActions({ product }: { product: Product }) {
     try {
       await deleteTrigger()
       mutate("http://localhost:5000/api/product")
+      toast({
+        title: `${product.name} is deleted!`,
+        action: <ToastAction altText="OK">OK</ToastAction>
+      })
     } catch (error) {
       console.error(error)
+      toast({
+        title: `Failed to delete ${product.name}!`,
+        action: <ToastAction altText="OK">OK</ToastAction>
+      })
     }
   }
 
   return (
     <div className="flex gap-2">
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet open={openSheet} onOpenChange={setOpenSheet}>
         <SheetTrigger>      
           <Button size="sm" variant="outline" onClick={() => console.log("Edit", product)}>
             <Pencil className="w-4 h-4" />
@@ -111,7 +123,18 @@ export default function InventoryActions({ product }: { product: Product }) {
         </SheetContent>
       </Sheet>
 
-      <Button size="sm" variant="destructive" onClick={handleDelete} disabled={isDeleting}>
+      <ConfirmDialog
+        open={openDialog}
+        onOpenChange={setOpenDialog}
+        title={`Delete ${product.name} from Inventory?`}
+        description="This cannot be undone"
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleDelete}
+        onCancel={() => setOpenDialog(false)}
+      />
+
+      <Button size="sm" variant="destructive" onClick={() => setOpenDialog(true)} disabled={isDeleting}>
         <Trash2 className="w-4 h-4" />
       </Button>
     </div>
