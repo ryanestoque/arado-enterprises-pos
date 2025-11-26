@@ -3,26 +3,19 @@
 import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import InventoryActions from "./InventoryActions"
 import { Button } from "@/components/ui/button"
+import SupplierActions from "./SupplierActions"
 
-export type Product = {
-  product_id: number
-  name: string
-  description: string
-  category_id: number
+export type Supplier = {
   supplier_id: number
-  price: number
-  cost: number
-  stock_quantity: number
-  reorder_level: number
-  sku: string
-  barcode: string
-  category_name?: string
-  supplier_name?: string
+  name: string
+  contact_person: string
+  phone_number: string
+  email?: string
+  address?: string
 }
 
-export const columns: ColumnDef<Product>[] = [
+export const columns: ColumnDef<Supplier>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => {
@@ -43,7 +36,7 @@ export const columns: ColumnDef<Product>[] = [
     </div>,
   },
   {
-    accessorKey: "sku",
+    accessorKey: "contact_person",
     header: ({ column }) => {
       return (
         <Button
@@ -51,18 +44,18 @@ export const columns: ColumnDef<Product>[] = [
           className="p-0"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          SKU
+          Contact Person
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => 
     <div className="max-w-[75px] overflow-hidden text-ellipsis whitespace-nowrap">
-      {row.getValue("sku")}
+      {row.getValue("contact_person")}
     </div>,
   },
   {
-    accessorKey: "category_name",
+    accessorKey: "phone_number",
     header: ({ column }) => {
       return (
         <Button
@@ -70,18 +63,18 @@ export const columns: ColumnDef<Product>[] = [
           className="p-0"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Category
+          Phone Number
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => 
     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-      {row.getValue("category_name")}
+      {row.getValue("phone_number")}
     </div>,
   },
   {
-    accessorKey: "price",
+    accessorKey: "email",
     header: ({ column }) => {
       return (
         <Button
@@ -89,18 +82,18 @@ export const columns: ColumnDef<Product>[] = [
           className="p-0"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Price
+          Email
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => 
     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-      ₱{row.getValue("price")}
+      {row.getValue("email")}
     </div>,
   },
   {
-    accessorKey: "cost",
+    accessorKey: "address",
     header: ({ column }) => {
       return (
         <Button
@@ -108,37 +101,15 @@ export const columns: ColumnDef<Product>[] = [
           className="p-0"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Cost
+          Address
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => 
     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-      ₱{row.getValue("cost")}
+      {row.getValue("address")}
     </div>,
-  },
-  {
-    accessorKey: "stock_quantity",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          className="p-0"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Stock
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const stock = row.getValue("stock_quantity") as number
-      const reorder = row.original.reorder_level
-      if (stock === 0) return <Badge variant="destructive">Out of Stock</Badge>
-      if (stock <= reorder) return <Badge variant="secondary">Low ({stock})</Badge>
-      return stock
-    }
   },
   {
     id: "actions",
@@ -146,11 +117,11 @@ export const columns: ColumnDef<Product>[] = [
       <div className="text-end">Actions</div>
     ),
     cell: ({ row }) => {
-      const product = row.original
+      const supplier = row.original
       
       return(
         <div className="flex justify-end"> 
-          <InventoryActions product={product}/>
+          <SupplierActions supplier={supplier}/>
         </div>
       )
     }

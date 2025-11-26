@@ -68,6 +68,7 @@ export default function ProductForm({
               <FormLabel>Product name</FormLabel>
               <FormControl>
                 <Input 
+                  autoFocus {...field}
                   autoComplete="off"
                   placeholder="e.g. Hammer" 
                   {...field}

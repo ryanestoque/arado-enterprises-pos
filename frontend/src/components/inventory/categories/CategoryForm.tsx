@@ -54,9 +54,10 @@ export default function CategoryForm({
             <FormItem>
               <FormLabel>Category name</FormLabel>
               <FormControl>
-                <Input 
+                <Input
+                  autoFocus {...field} 
                   autoComplete="off"
-                  placeholder="e.g. Hammer" 
+                  placeholder="e.g. Tools" 
                   {...field}
                   />
               </FormControl>

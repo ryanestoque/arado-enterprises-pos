@@ -32,7 +32,7 @@ export const columns: ColumnDef<Category>[] = [
   },
   {
     id: "actions",
-    header: ({ column }) => (
+    header: () => (
       <div className="text-end">Actions</div>
     ),
     cell: ({ row }) => {
