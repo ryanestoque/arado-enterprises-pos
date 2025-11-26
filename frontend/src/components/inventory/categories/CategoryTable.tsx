@@ -1,15 +1,15 @@
 "use client"
 
 import { DataTable } from "@/components/common/DataTable"
-import { columns, type Product } from "./Columns"
+import { columns, type Category } from "./Columns"
 
-export default function ProductsTable({ data }: { data: Product[] }) {
+export default function CategoryTable({ data }: { data: Category[] }) {
   return (
     <div className="p-4">
       <DataTable 
         columns={columns} 
         data={data} 
-        searchPlaceholder="Filter by product name..."
+        searchPlaceholder="Filter by category..."
         columnToFilter="name"/>
     </div>
   )

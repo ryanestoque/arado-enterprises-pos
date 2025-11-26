@@ -6,6 +6,10 @@ import POS from "@/pages/Sales/POS";
 import Returns from "./pages/Sales/Returns";
 import Products from "./pages/Inventory/Products";
 import Categories from "./pages/Inventory/Categories";
+import Suppliers from "./pages/Suppliers/Suppliers";
+import Reports from "./pages/Reports/Reports";
+import Settings from "./pages/Settings/Settings";
+import Users from "./pages/Users/Users";
 
 export default function App() {
   return(
@@ -19,6 +23,10 @@ export default function App() {
         <Route path="returns" element={<Returns />} /> 
         <Route path="categories" element={<Categories />} /> 
         <Route path="products" element={<Products />} /> 
+        <Route path="suppliers" element={<Suppliers />} /> 
+        <Route path="reports" element={<Reports />} /> 
+        <Route path="users" element={<Users />} /> 
+        <Route path="settings" element={<Settings />} /> 
       </Route>
     </Routes>
   )

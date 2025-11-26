@@ -60,7 +60,7 @@ const items = [
   },
   {
     title: "Suppliers",
-    url: "#",
+    url: "/app/suppliers",
     icon: BookUser,
     items: [
       
@@ -68,7 +68,7 @@ const items = [
   },
   {
     title: "Reports",
-    url: "#",
+    url: "/app/reports",
     icon: ChartNoAxesCombined,
     items: [
       
@@ -76,7 +76,7 @@ const items = [
   },
   {
     title: "Users",
-    url: "#",
+    url: "/app/users",
     icon: User,
     items: [
       
@@ -84,7 +84,7 @@ const items = [
   },
   {
     title: "Settings",
-    url: "#",
+    url: "/app/settings",
     icon: Settings,
     items: [
       
