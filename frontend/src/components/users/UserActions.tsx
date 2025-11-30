@@ -1,17 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import ProductForm, { type ProductFormValues } from "./ProductForm";
-import { useCategory, useSupplier } from "@/hooks/useAPI";
 import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import type { Product } from "./Columns";
+import type { User } from "./Columns";
 import { mutate } from "swr";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import UserForm, { type UserFormValues } from "./UserForm";
 
-async function updateProduct(url: string, { arg }: { arg: any }) {
+async function updateUser(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
     method: "PUT",
     headers: { 
@@ -21,11 +20,11 @@ async function updateProduct(url: string, { arg }: { arg: any }) {
     body: JSON.stringify(arg),
   })
 
-  if (!res.ok) throw new Error("Failed to update product")
+  if (!res.ok) throw new Error("Failed to update user")
   return res.json()
 }
 
-async function deleteProduct(url: string) {
+async function deleteUser(url: string) {
   const res = await fetch(url, {
     method: 'DELETE',
     headers: {
@@ -34,16 +33,13 @@ async function deleteProduct(url: string) {
     },
   });
 
-  if (!res.ok) throw new Error("Failed to delete product")
+  if (!res.ok) throw new Error("Failed to delete user")
 }
 
 
-export default function InventoryActions({ product }: { product: Product }) {
-  const { data: categories = [] } = useCategory()
-  const { data: suppliers = [] } = useSupplier()
-
-  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/product/${product.product_id}`, updateProduct)
-  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`http://localhost:5000/api/product/${product.product_id}`, deleteProduct)
+export default function UserActions({ user }: { user: User }) {
+  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/user/${user.user_id}`, updateUser)
+  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`http://localhost:5000/api/user/${user.user_id}`, deleteUser)
 
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [openSheet, setOpenSheet] = useState(false)
@@ -51,11 +47,11 @@ export default function InventoryActions({ product }: { product: Product }) {
 
   const { toast } = useToast()
 
-  const handleEditProduct = async (values: ProductFormValues) => {
+  const handleEditUser = async (values: UserFormValues) => {
     try {
       await updateTrigger(values)
       setSuccess(true)
-      mutate("http://localhost:5000/api/product")
+      mutate("http://localhost:5000/api/user")
       setOpenSheet(false)
     } catch (error) {
       console.error(error)
@@ -63,17 +59,17 @@ export default function InventoryActions({ product }: { product: Product }) {
     }
   }
 
-  const handleConfirm = async (values: ProductFormValues) => {
-    await handleEditProduct(values)
+  const handleConfirm = async (values: UserFormValues) => {
+    await handleEditUser(values)
 
     if (isSuccess) {
       toast({
-        title: `Product edited successfully!`,
+        title: `User edited successfully!`,
         action: <ToastAction altText="OK">OK</ToastAction>
       })
     } else {
       toast({
-        title: `Failed to edit ${product.name}!`,
+        title: `Failed to edit ${user.username}!`,
         variant: "destructive",
         action: <ToastAction altText="Try again">Try again</ToastAction>
       })
@@ -83,15 +79,15 @@ export default function InventoryActions({ product }: { product: Product }) {
   const handleDelete = async () => {
     try {
       await deleteTrigger()
-      mutate("http://localhost:5000/api/product")
+      mutate("http://localhost:5000/api/user")
       toast({
-        title: `${product.name} is deleted!`,
+        title: `${user.username} is deleted!`,
         action: <ToastAction altText="OK">OK</ToastAction>
       })
     } catch (error) {
       console.error(error)
       toast({
-        title: `Failed to delete ${product.name}!`,
+        title: `Failed to delete ${user.username}!`,
         action: <ToastAction altText="OK">OK</ToastAction>
       })
     }
@@ -101,22 +97,20 @@ export default function InventoryActions({ product }: { product: Product }) {
     <div className="flex gap-2">
       <Sheet open={openSheet} onOpenChange={setOpenSheet}>
         <SheetTrigger>      
-          <Button size="sm" variant="outline" onClick={() => console.log("Edit", product)}>
+          <Button size="sm" variant="outline" onClick={() => console.log("Edit", user)}>
             <Pencil className="w-4 h-4" />
           </Button>
         </SheetTrigger>
         <SheetContent className="flex flex-col gap-4 overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>Edit product</SheetTitle>
+            <SheetTitle>Edit user</SheetTitle>
             <SheetDescription>This action cannot be undone.</SheetDescription>
           </SheetHeader>
-          <ProductForm 
+          <UserForm 
             submitLabel="Save"
             onSubmit={handleConfirm}
             isMutating={isUpdating}
-            categories={categories}
-            suppliers={suppliers}
-            defaultValues={product}
+            defaultValues={user}
             />
           <SheetFooter>
             {/* <Button>Submit</Button>
@@ -130,7 +124,7 @@ export default function InventoryActions({ product }: { product: Product }) {
       <ConfirmDialog
         open={openDialog}
         onOpenChange={setOpenDialog}
-        title={`Delete ${product.name} from Inventory?`}
+        title={`Delete ${user.username} from Inventory?`}
         description="This cannot be undone"
         confirmText="Delete"
         cancelText="Cancel"

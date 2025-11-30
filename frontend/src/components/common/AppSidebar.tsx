@@ -15,6 +15,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible"
+import { useAuth } from "@/context/AuthContext"
 
 
 const items = [
@@ -22,6 +23,7 @@ const items = [
     title: "Dashboard",
     url: "/app/dashboard",
     icon: Home,
+    roles: ["Admin", "Cashier"],
     items: [
 
     ]
@@ -31,14 +33,17 @@ const items = [
     url: "/app/pos",
     icon: Calculator,
     isActive: true,
+    roles: ["Admin", "Cashier"],
     items: [
       {
         title: "POS",
         url: "/app/pos",
+        roles: ["Admin", "Cashier"],
       },
       {
         title: "Returns",
-        url: "/app/returns"
+        url: "/app/returns",
+        roles: ["Admin", "Cashier"],
       },
     ]
   },
@@ -46,21 +51,25 @@ const items = [
     title: "Inventory",
     url: "/app/inventory",
     icon: PackageSearch,
+    roles: ["Admin"],
     isActive: true,
     items: [
       {
         title: "Categories",
         url: "/app/categories",
+        roles: ["Admin"],
       },
       {
         title: "Products",
-        url: "/app/products"
+        url: "/app/products",
+        roles: ["Admin"],
       },
     ]
   },
   {
     title: "Suppliers",
     url: "/app/suppliers",
+    roles: ["Admin"],
     icon: BookUser,
     items: [
       
@@ -70,6 +79,7 @@ const items = [
     title: "Reports",
     url: "/app/reports",
     icon: ChartNoAxesCombined,
+    roles: ["Admin"],
     items: [
       
     ]
@@ -77,6 +87,7 @@ const items = [
   {
     title: "Users",
     url: "/app/users",
+    roles: ["Admin"],
     icon: User,
     items: [
       
@@ -86,6 +97,7 @@ const items = [
     title: "Settings",
     url: "/app/settings",
     icon: Settings,
+    roles: ["Admin", "Cashier"],
     items: [
       
     ]
@@ -93,6 +105,16 @@ const items = [
 ]
 
 export default function AppSidebar() {
+   const { user } = useAuth();
+   if (!user) return null;
+
+   const filteredItems = items
+    .filter(item => item.roles.includes(user.role))
+    .map(item => ({
+      ...item,
+      items: item.items?.filter(sub => sub.roles.includes(user.role)),
+    }));
+
   return (
     <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader>
@@ -113,7 +135,7 @@ export default function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent className="flex flex-col gap-2">
             <SidebarMenu>
-              {items.map((item) =>
+              {filteredItems.map((item) =>
                 item.items.length > 0 ? (
                   <Collapsible
                     key={item.title}

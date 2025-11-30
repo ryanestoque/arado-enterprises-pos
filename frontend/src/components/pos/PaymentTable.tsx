@@ -22,7 +22,6 @@ export default function PaymentTable({ cart, onQuantityChange, onRemove }: CartT
       setIsOpen(!isOpen);
     }
 
-
   return(
     <Table >
       <TableHeader>

@@ -14,7 +14,11 @@ import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 async function updateCategory(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+     },
+    
     body: JSON.stringify(arg),
   })
 
@@ -27,6 +31,7 @@ async function deleteCategory(url: string) {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
   });
 

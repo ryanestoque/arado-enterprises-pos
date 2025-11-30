@@ -55,3 +55,45 @@ export const makePayment = async (req: Request, res: Response) => {
     connection.release()
   }
 }
+
+export const getPaymentById = async (req: Request, res: Response) => {
+  const connection = await db.getConnection();
+  const paymentId = Number(req.params.payment_id);
+
+  try {
+    // Get payment details
+    const [paymentRows] = await connection.query(
+      `SELECT p.payment_id, p.date, p.user_id, p.original_total, p.discount_amount, p.total_amount, 
+              p.payment_method, p.discount_reason, p.amount_given, p.change_amount,
+              u.username
+       FROM payment p
+       JOIN users u ON p.user_id = u.user_id
+       WHERE p.payment_id = ?`,
+      [paymentId]
+    );
+
+    if (!paymentRows || (paymentRows as any[]).length === 0) {
+      return res.status(404).json({ message: "Payment not found" });
+    }
+
+    const payment = (paymentRows as any[])[0];
+
+    // Get payment items with product info
+    const [itemsRows] = await connection.query(
+      `SELECT pi.paymentitem_id, pi.product_id, pi.quantity, pi.price, pr.name AS product_name
+       FROM paymentitem pi
+       JOIN product pr ON pi.product_id = pr.product_id
+       WHERE pi.payment_id = ?`,
+      [paymentId]
+    );
+
+    payment.items = itemsRows;
+
+    res.json(payment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch payment" });
+  } finally {
+    connection.release();
+  }
+};

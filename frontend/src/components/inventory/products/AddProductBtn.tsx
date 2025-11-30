@@ -11,7 +11,7 @@ import { useCategory, useSupplier } from "@/hooks/useAPI";
 async function postProduct(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${localStorage.getItem("token")}`, },
     body: JSON.stringify(arg),
   })
   if (!res.ok) throw new Error('Failed to add product')

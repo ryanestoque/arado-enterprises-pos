@@ -42,16 +42,33 @@ interface Supplier {
   address: string
 }
 
+interface User {
+  username:  string
+  password: string
+  role: string
+  first_name: string
+  last_name: string
+}
+
 const fetcher = async <T>(url: string): Promise<T> => {
-  const res = await fetch(url)
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
   if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`)
   return res.json()
-}
+};
 
 const CATEGORY_URL = "http://localhost:5000/api/category"
 const PRODUCT_URL = "http://localhost:5000/api/product"
 const PAYMENT_URL = "http://localhost:5000/api/payment"
 const SUPPLIER_URL = "http://localhost:5000/api/supplier"
+const USER_URL = "http://localhost:5000/api/user"
 
 export function useProduct() {
   return useSWR<Product[]>(PRODUCT_URL, fetcher)
@@ -67,4 +84,8 @@ export function usePayment() {
 
 export function useSupplier() {
   return useSWR<Supplier[]>(SUPPLIER_URL, fetcher)
+}
+
+export function useUser() {
+  return useSWR<User[]>(USER_URL, fetcher)
 }

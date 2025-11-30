@@ -19,7 +19,11 @@ import { Input } from '../ui/input'
 async function postPayment(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    
+    },
     body: JSON.stringify(arg),
   })
   if (!res.ok) throw new Error('Failed to post payment')
@@ -38,6 +42,9 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
     
   const [cash, setCash] = useState<number | "">("")
   const change = cash ? cash - dueAmount : 0
+
+  const [showReceipt, setShowReceipt] = useState(false);
+  const [receiptData, setReceiptData] = useState<any>(null);
 
   const { trigger, isMutating, data, error } = useSWRMutation("http://localhost:5000/api/payment", postPayment)
   const [isSuccess, setSuccess] = useState<boolean>(true);
@@ -63,6 +70,7 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
       await trigger(payload)
       setSuccess(true)
       onCheckoutSuccess?.()
+      setShowReceipt(true);
     } catch (error) {
       console.error(error)
       setSuccess(false)
@@ -144,7 +152,33 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
             </DialogClose>
           </DialogFooter>
         </DialogContent>
-    </Dialog>
+      </Dialog>
+
+      <Dialog open={showReceipt} onOpenChange={setShowReceipt}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Receipt</DialogTitle>
+            <DialogDescription>Payment successful!</DialogDescription>
+          </DialogHeader>
+          <div className="py-2">
+            <p>Receipt ID: {receiptData?.payment_id}</p>
+            <p>Total: ₱{receiptData?.total_amount}</p>
+            <p>Cash: ₱{cash}</p>
+            <p>Change: ₱{change.toFixed(2)}</p>
+            <p>Items:</p>
+            <ul className="list-disc ml-6">
+              {cart.map(item => (
+                <li key={item.product_id}>
+                  {item.name} x {item.quantity} - ₱{item.price}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setShowReceipt(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

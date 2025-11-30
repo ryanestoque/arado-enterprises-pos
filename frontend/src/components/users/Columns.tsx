@@ -3,20 +3,19 @@
 import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import SupplierActions from "./SupplierActions"
+import UserActions from "./UserActions"
 
-export type Supplier = {
-  supplier_id: number
-  name: string
-  contact_person: string
-  phone_number: string
-  email?: string
-  address?: string
+export type User = {
+  user_id: number
+  username: string
+  role: string
+  first_name: string
+  last_name: string
 }
 
-export const columns: ColumnDef<Supplier>[] = [
+export const columns: ColumnDef<User>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "username",
     header: ({ column }) => {
       return (
         <Button
@@ -24,18 +23,18 @@ export const columns: ColumnDef<Supplier>[] = [
           className="p-0"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Name
+          Username
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => 
     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-      {row.getValue("name")}
+      {row.getValue("username")}
     </div>,
   },
   {
-    accessorKey: "contact_person",
+    accessorKey: "role",
     header: ({ column }) => {
       return (
         <Button
@@ -43,37 +42,18 @@ export const columns: ColumnDef<Supplier>[] = [
           className="p-0"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Contact Person
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => 
-    <div className="max-w-[75px] overflow-hidden text-ellipsis whitespace-nowrap">
-      {row.getValue("contact_person")}
-    </div>,
-  },
-  {
-    accessorKey: "phone_number",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          className="p-0"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Phone Number
+          Role
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => 
     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-      {row.getValue("phone_number")}
+      {row.getValue("role")}
     </div>,
   },
   {
-    accessorKey: "email",
+    accessorKey: "first_name",
     header: ({ column }) => {
       return (
         <Button
@@ -88,11 +68,11 @@ export const columns: ColumnDef<Supplier>[] = [
     },
     cell: ({ row }) => 
     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-      {row.getValue("email")}
+      {row.getValue("first_name")}
     </div>,
   },
   {
-    accessorKey: "address",
+    accessorKey: "last_name",
     header: ({ column }) => {
       return (
         <Button
@@ -100,14 +80,14 @@ export const columns: ColumnDef<Supplier>[] = [
           className="p-0"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Address
+          Last name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => 
     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-      {row.getValue("address")}
+      {row.getValue("last_name")}
     </div>,
   },
   {
@@ -116,11 +96,11 @@ export const columns: ColumnDef<Supplier>[] = [
       <div className="text-end">Actions</div>
     ),
     cell: ({ row }) => {
-      const supplier = row.original
+      const user = row.original
       
       return(
         <div className="flex justify-end"> 
-          <SupplierActions supplier={supplier}/>
+          <UserActions user={user}/>
         </div>
       )
     }

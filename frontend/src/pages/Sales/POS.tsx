@@ -8,15 +8,20 @@ import { useEffect, useState } from "react";
 import { useProduct } from "@/hooks/useAPI";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import { useAuth } from "@/context/AuthContext";
 
 export default function POS() {
-  const { data: products = [], error, isLoading } = useProduct()
+  const { user } = useAuth();
+
+  const { data: products = [] } = useProduct()
   const [localProducts, setLocalProducts] = useState<any[]>([])
 
   const [sortBy, setSortBy] = useState<"A-Z" | "Z-A" | "price-asc" | "price-desc" | "stock-asc" | "stock-desc">("A-Z")
   const [searchQuery, setSearchQuery] = useState("")
   const [cart, setCart] = useState<any[]>([])
   const { toast } = useToast();
+
+  const [scannedBarcode, setScannedBarcode] = useState("");
 
   useEffect(() => {
     if (products.length > 0) {
@@ -119,6 +124,60 @@ export default function POS() {
     )
   }
 
+  useEffect(() => {
+    if (scannedBarcode.length > 0 && scannedBarcode.length >= 4) {
+      const product = localProducts.find((p) => p.barcode === scannedBarcode);
+
+      if (product) {
+        handleAddToCart(product.product_id);
+        toast({
+          title: "Product added",
+          description: `${product.name} added to cart.`,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Barcode not found",
+          description: `No product found for barcode: ${scannedBarcode}`,
+        });
+      }
+
+      setScannedBarcode("");
+    }
+  }, [scannedBarcode, localProducts, handleAddToCart, toast]);
+
+  useEffect(() => {
+    let scanTimeout: number | undefined;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+      if (event.key === "Enter") {
+        clearTimeout(scanTimeout);
+        return;
+      }
+
+      if (event.key.length === 1) {
+        setScannedBarcode((prev) => prev + event.key);
+        clearTimeout(scanTimeout);
+        scanTimeout = window.setTimeout(() => {
+          setScannedBarcode("");
+        }, 100);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      clearTimeout(scanTimeout);
+    };
+  }, []);
+
   return(
     <>
       <header className="overflow-hidden">
@@ -155,11 +214,14 @@ export default function POS() {
               />
           </CardContent>
           <CardFooter className="mt-4 md:mt-6 flex flex-col gap-4">
-            <POSRightFooter 
-              cart={cart} 
-              userId={1} 
-              onCheckoutSuccess={() => setCart([])} 
-              removeItems={handleClearItems}/>
+            {user && (
+              <POSRightFooter 
+                cart={cart}
+                userId={user.user_id} 
+                onCheckoutSuccess={() => setCart([])}
+                removeItems={handleClearItems}
+              />
+            )}
           </CardFooter>
         </Card>
       </main>
