@@ -78,6 +78,17 @@ interface Stockin {
   username: string
 }
 
+interface ExchangeItem {
+  exchange_id: number
+  product_id: number
+  product_name: string
+  exchanged_quantity: number
+  exchange_date: string
+  exchange_reason: string
+  user_id: number
+  username: string
+}
+
 const fetcher = async <T>(url: string): Promise<T> => {
   const token = localStorage.getItem("token");
 
@@ -98,6 +109,7 @@ const PAYMENT_URL = "http://localhost:5000/api/payment"
 const SUPPLIER_URL = "http://localhost:5000/api/supplier"
 const USER_URL = "http://localhost:5000/api/user"
 const STOCKIN_URL = "http://localhost:5000/api/stockin"
+const EXCHANGEITEM_URL = "http://localhost:5000/api/exchange"
 
 export function useProduct() {
   return useSWR<Product[]>(PRODUCT_URL, fetcher)
@@ -127,4 +139,8 @@ export function useUser() {
 
 export function useStockin() {
   return useSWR<Stockin[]>(STOCKIN_URL, fetcher)
+}
+
+export function useExchange() {
+  return useSWR<ExchangeItem[]>(EXCHANGEITEM_URL, fetcher)
 }

@@ -41,8 +41,8 @@ const items = [
         roles: ["Admin", "Cashier"],
       },
       {
-        title: "Returns",
-        url: "/app/returns",
+        title: "Exchange",
+        url: "/app/exchange",
         roles: ["Admin", "Cashier"],
       },
     ]

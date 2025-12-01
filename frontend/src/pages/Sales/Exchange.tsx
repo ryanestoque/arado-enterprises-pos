@@ -1,25 +1,19 @@
-import AddProductBtn from "@/components/inventory/products/AddProductBtn";
-import ProductsTable from "@/components/inventory/products/ProductsTable";
-import StockinBtn from "@/components/inventory/stock_in/StockinBtn";
+import { SiteHeader } from "@/components/common/SiteHeader";
+import ExchangeBtn from "@/components/exchange/ExchangeBtn";
+import ExchangeTable from "@/components/exchange/ExchangeTable";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useProduct } from "@/hooks/useAPI";
+import { useExchange } from "@/hooks/useAPI";
 import { useEffect, useState } from "react";
 
-export default function Products() {
-  const { data: products = [] } = useProduct()
-  const [localProducts, setLocalProducts] = useState<any[]>([])
-
-  useEffect(() => {
-    if (products.length > 0) {
-      const withOriginalStock = products.map(p => ({
-      ...p,
-      original_stock: p.stock_quantity,
-    }))
-    setLocalProducts(withOriginalStock)
-    }
-  }, [products])
+export default function Exchange() {
+    const { data: exchange = [] } = useExchange()
+    const [localExchanges, setLocalExchanges] = useState<any[]>([])
+  
+    useEffect(() => {
+      setLocalExchanges(exchange)
+    }, [exchange])
 
   return(
     <>
@@ -30,18 +24,16 @@ export default function Products() {
             orientation="vertical"
             className="mx-2 data-[orientation=vertical]:h-4"
           />
-          <h1 className="text-base font-medium">Products</h1>
+          <h1 className="text-base font-medium">Exchange</h1>
         </div>
         <div className="flex flex-row mx-4 lg:mx-6 gap-2">
-          <StockinBtn />
-          <AddProductBtn />
+          <ExchangeBtn />
         </div>
       </header>
       <main className="h-[80vh] flex-1 p-4 md:p-6">
         <Card className="h-full">
           <CardContent className="px-2 overflow-x-auto">
-            <ProductsTable 
-              data={localProducts} />
+            <ExchangeTable data={localExchanges}/>
           </CardContent>
         </Card>
       </main>
