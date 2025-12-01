@@ -2,8 +2,6 @@
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-
 import { Button } from "@/components/ui/button"
 import ExchangeActions from "./ExchangeActions"
 

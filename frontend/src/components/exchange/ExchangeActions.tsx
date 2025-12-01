@@ -43,8 +43,8 @@ export default function ExchangeActions({ exchange }: { exchange: Exchange }) {
   const { data: products = [] } = useProduct()
   const { data: users = [] } = useUser()
 
-  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/product/${exchange.exchange_id}`, updateExchange)
-  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`http://localhost:5000/api/product/${exchange.exchange_id}`, deleteExchange)
+  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/exchange/${exchange.exchange_id}`, updateExchange)
+  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`http://localhost:5000/api/exchange/${exchange.exchange_id}`, deleteExchange)
 
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [openSheet, setOpenSheet] = useState(false)
@@ -84,7 +84,7 @@ export default function ExchangeActions({ exchange }: { exchange: Exchange }) {
   const handleDelete = async () => {
     try {
       await deleteTrigger()
-      mutate("http://localhost:5000/api/product")
+      mutate("http://localhost:5000/api/exchange")
       toast({
         title: `Exchange ID: ${exchange.exchange_id} is deleted!`,
         action: <ToastAction altText="OK">OK</ToastAction>

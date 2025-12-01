@@ -73,3 +73,47 @@ export const makeExchange = async (req: Request, res: Response) => {
     connection.release();
   }
 };
+
+export const updateExchange = async (req: Request, res: Response) => {
+  try {
+    const { exchange_id } = req.params;
+    const {
+      exchanged_quantity,
+      exchange_reason,
+      user_id,
+      product_id
+    } = req.body;
+  
+    const sql = `
+      UPDATE ExchangeItem SET 
+        exchanged_quantity=?, exchange_date=NOW(), exchange_reason=?, user_id=?, product_id=?
+      WHERE exchange_id=?
+    `
+
+    const values = [
+      exchanged_quantity, exchange_reason, user_id, product_id, exchange_id,
+    ];
+  
+    await db.query(sql, values)
+    res.json({ success: true })
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to update exchanged_item" });
+  }
+}
+
+export const deleteExchange = async (req: Request, res: Response) => {
+  try{
+    const { exchange_id } = req.params;
+  
+    const sql = `
+      DELETE FROM ExchangeItem WHERE exchange_id=?
+    `
+
+    await db.query(sql, exchange_id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to delete exchange" });
+  }
+}

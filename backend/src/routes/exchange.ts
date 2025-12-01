@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { getAllExchanges, makeExchange } from "../controllers/exchangeController";
+import { deleteExchange, getAllExchanges, makeExchange, updateExchange } from "../controllers/exchangeController";
 
 const router = Router();
 
 router.get("/", getAllExchanges);
 router.post("/", makeExchange);
+router.put("/:exchange_id", updateExchange);
+router.delete("/:exchange_id", deleteExchange);
 
 export default router;
