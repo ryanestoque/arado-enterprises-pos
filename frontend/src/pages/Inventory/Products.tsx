@@ -1,5 +1,6 @@
 import AddProductBtn from "@/components/inventory/products/AddProductBtn";
 import ProductsTable from "@/components/inventory/products/ProductsTable";
+import StockinBtn from "@/components/inventory/stock_in/StockInBtn";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -31,8 +32,10 @@ export default function Products() {
           />
           <h1 className="text-base font-medium">Products</h1>
         </div>
-          <AddProductBtn 
-            />
+        <div className="flex flex-row mx-4 lg:mx-6 gap-2">
+          <StockinBtn />
+          <AddProductBtn />
+        </div>
       </header>
       <main className="h-[80vh] flex-1 p-4 md:p-6">
         <Card className="h-full">

@@ -1,36 +1,40 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Plus } from "lucide-react";
-import ProductForm, { type ProductFormValues } from "./ProductForm";
 import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
-import { useCategory, useSupplier } from "@/hooks/useAPI";
+import { useProduct, useSupplier, useUser } from "@/hooks/useAPI";
+import type { StockinFormValues } from "./StockinForm";
+import StockinForm from "./StockinForm";
+import { mutate } from "swr";
 
-async function postProduct(url: string, { arg }: { arg: any }) {
+async function postStockin(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${localStorage.getItem("token")}`, },
     body: JSON.stringify(arg),
   })
-  if (!res.ok) throw new Error('Failed to add product')
+  if (!res.ok) throw new Error('Failed to stockin')
   return res.json()
 }
 
-export default function AddProductBtn() {
-  const { data: categories = [] } = useCategory()
+export default function StockinBtn() {
+  const { data: users = [] } = useUser()
   const { data: suppliers = [] } = useSupplier()
+  const { data: products = [] } = useProduct()
 
-  const { trigger, isMutating } = useSWRMutation("http://localhost:5000/api/product", postProduct)
+  const { trigger, isMutating } = useSWRMutation("http://localhost:5000/api/stockin", postStockin)
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [open, setOpen] = useState(false)
 
-  const handleAddProduct = async (values: ProductFormValues) => {
+  const handleStockin = async (values: StockinFormValues) => {
     try {
       await trigger(values)
       setSuccess(true)
       setOpen(false)
+      mutate("http://localhost:5000/api/product")
     } catch (error) {
       console.error(error)
       setSuccess(false)
@@ -39,17 +43,17 @@ export default function AddProductBtn() {
 
   const { toast } = useToast()
   
-  const handleConfirm = async (values: ProductFormValues) => {
-    await handleAddProduct(values)
+  const handleConfirm = async (values: StockinFormValues) => {
+    await handleStockin(values)
 
     if (isSuccess) {
       toast({
-        title: "Product added successfully!",
+        title: "Stock in successfully!",
         action: <ToastAction altText="OK">OK</ToastAction>
       })
     } else {
       toast({
-        title: "Failed to add product",
+        title: "Failed to stockin",
         variant: "destructive",
         action: <ToastAction altText="Try again">Try again</ToastAction>
       })
@@ -60,9 +64,11 @@ export default function AddProductBtn() {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger>      
         <Button
-          size={"sm"}>
+          size={"sm"}
+          variant={"secondary"}
+          >
           <Plus />
-          Add product
+          Stock in
         </Button>
       </SheetTrigger>
       <SheetContent className="flex flex-col gap-4 overflow-y-auto">
@@ -70,11 +76,12 @@ export default function AddProductBtn() {
           <SheetTitle>Add product</SheetTitle>
           <SheetDescription>This action cannot be undone.</SheetDescription>
         </SheetHeader>
-        <ProductForm 
+        <StockinForm 
           submitLabel="Add"
           onSubmit={handleConfirm}
           isMutating={isMutating}
-          categories={categories}
+          products={products}
+          users={users}
           suppliers={suppliers}
           />
         <SheetFooter>

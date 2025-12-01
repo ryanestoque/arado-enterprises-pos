@@ -58,11 +58,24 @@ interface Supplier {
 }
 
 interface User {
+  user_id: number
   username:  string
   password: string
   role: string
   first_name: string
   last_name: string
+}
+
+interface Stockin {
+  stockin_id: number
+  date: string
+  product_id: number
+  quantity: number
+  supplier_id: number
+  user_id: number
+  product_name: string
+  supplier_name: string
+  username: string
 }
 
 const fetcher = async <T>(url: string): Promise<T> => {
@@ -84,6 +97,7 @@ const PRODUCT_URL = "http://localhost:5000/api/product"
 const PAYMENT_URL = "http://localhost:5000/api/payment"
 const SUPPLIER_URL = "http://localhost:5000/api/supplier"
 const USER_URL = "http://localhost:5000/api/user"
+const STOCKIN_URL = "http://localhost:5000/api/stockin"
 
 export function useProduct() {
   return useSWR<Product[]>(PRODUCT_URL, fetcher)
@@ -109,4 +123,8 @@ export function useSupplier() {
 
 export function useUser() {
   return useSWR<User[]>(USER_URL, fetcher)
+}
+
+export function useStockin() {
+  return useSWR<Stockin[]>(STOCKIN_URL, fetcher)
 }

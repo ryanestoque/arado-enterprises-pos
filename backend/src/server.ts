@@ -7,6 +7,7 @@ import paymentRoutes from "./routes/payment"
 import supplierRoutes from "./routes/supplier"
 import userRoutes from "./routes/user"
 import authRoutes from "./routes/auth";
+import stockinRoutes from "./routes/stockin";
 import { verifyToken } from "./middlewares/authMiddleware"
 
 dotenv.config()
@@ -31,6 +32,7 @@ app.use("/api/category", verifyToken, categoryRoutes)
 app.use("/api/payment", verifyToken, paymentRoutes)
 app.use("/api/supplier", verifyToken, supplierRoutes)
 app.use("/api/user", verifyToken, userRoutes)
+app.use("/api/stockin", verifyToken, stockinRoutes)
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
