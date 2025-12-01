@@ -21,16 +21,31 @@ interface Category {
 }
 
 interface Payment {
-  payment_id: string
-  date: string,
-  original_total: number,
-  discount_amount: number,
-  total_amount: number,
-  status: string,
-  cashier_name: string,
+  payment_id: number
+  date: string
+  original_total: number
+  discount_amount: number
+  discount_reason: string
+  total_amount: number
+  username: string
   user_id: number
   amount_given: number
   change_amount: number
+  payment_method: string
+}
+
+interface PaymentItem {
+  product_id: number;
+  product_name: string;
+  item_quantity: number;
+  item_price: number;
+}
+
+interface JoinedPayment extends Payment {
+  username: string;
+  first_name: string;
+  last_name: string;
+  items: PaymentItem[]; // To hold the items for this payment
 }
 
 interface Supplier {
@@ -80,6 +95,12 @@ export function useCategory() {
 
 export function usePayment() {
   return useSWR<Payment[]>(PAYMENT_URL, fetcher)
+}
+
+export function usePaymentById(paymentId: number | null) {
+  const url = paymentId ? `${PAYMENT_URL}/${paymentId}` : null;
+  
+  return useSWR<JoinedPayment>(url, fetcher); 
 }
 
 export function useSupplier() {

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import db from "../config/db";
-import { ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 export const makePayment = async (req: Request, res: Response) => {
   const connection = await db.getConnection();
@@ -56,43 +56,114 @@ export const makePayment = async (req: Request, res: Response) => {
   }
 }
 
-export const getPaymentById = async (req: Request, res: Response) => {
-  const connection = await db.getConnection();
-  const paymentId = Number(req.params.payment_id);
+const groupPaymentItems = (rows: any[]): any[] => {
+  const paymentsMap: Map<number, any> = new Map();
 
-  try {
-    // Get payment details
-    const [paymentRows] = await connection.query(
-      `SELECT p.payment_id, p.date, p.user_id, p.original_total, p.discount_amount, p.total_amount, 
-              p.payment_method, p.discount_reason, p.amount_given, p.change_amount,
-              u.username
-       FROM payment p
-       JOIN users u ON p.user_id = u.user_id
-       WHERE p.payment_id = ?`,
-      [paymentId]
-    );
+  for (const row of rows) {
+    const { 
+      payment_id, 
+      product_id, 
+      item_quantity, 
+      item_price, 
+      product_name,
+      original_total,
+      discount_amount,
+      total_amount,
+      amount_given,
+      change_amount,
+      ...paymentDetails // Keep others
+    } = row;
 
-    if (!paymentRows || (paymentRows as any[]).length === 0) {
-      return res.status(404).json({ message: "Payment not found" });
+    if (!paymentsMap.has(payment_id)) {
+      paymentsMap.set(payment_id, {
+        ...paymentDetails,
+        payment_id: payment_id,
+        // ⭐ CONVERT THE NUMERIC FIELDS HERE
+        original_total: parseFloat(original_total),
+        discount_amount: parseFloat(discount_amount),
+        total_amount: parseFloat(total_amount),
+        amount_given: parseFloat(amount_given),
+        change_amount: parseFloat(change_amount),
+        items: []
+      });
     }
 
-    const payment = (paymentRows as any[])[0];
+    // Add the item details to the corresponding payment
+    if (product_id) {
+      paymentsMap.get(payment_id).items.push({
+        product_id,
+        product_name: product_name,
+        item_quantity,
+        item_price
+      });
+    }
+  }
 
-    // Get payment items with product info
-    const [itemsRows] = await connection.query(
-      `SELECT pi.paymentitem_id, pi.product_id, pi.quantity, pi.price, pr.name AS product_name
-       FROM paymentitem pi
-       JOIN product pr ON pi.product_id = pr.product_id
-       WHERE pi.payment_id = ?`,
-      [paymentId]
+  return Array.from(paymentsMap.values());
+};
+
+export const getPaymentById = async (req: Request, res: Response) => {
+  // 1. Get the ID from the URL parameters
+  const payment_id = req.params.id; // Assuming route is '/api/payments/:id'
+  
+  // Basic validation
+  if (!payment_id) {
+    return res.status(400).json({ error: 'Payment ID is required' });
+  }
+
+  const connection = await db.getConnection();
+  try {
+    const [rows] = await connection.query(
+      `
+      SELECT
+        p.payment_id,
+        p.date,
+        p.original_total,
+        p.discount_amount,
+        p.total_amount,
+        p.amount_given,
+        p.change_amount,
+        p.payment_method,
+        p.discount_reason,
+        u.username,
+        u.first_name,
+        u.last_name,
+        pi.product_id,
+        pi.quantity AS item_quantity,
+        pi.price AS item_price,
+        pr.name AS product_name
+      FROM
+        payment p
+      INNER JOIN
+        users u ON p.user_id = u.user_id
+      LEFT JOIN
+        paymentitem pi ON p.payment_id = pi.payment_id
+      LEFT JOIN
+        product pr ON pi.product_id = pr.product_id
+      WHERE
+        p.payment_id = ?
+      ORDER BY
+        pi.product_id
+      `,
+      [payment_id] // ⭐ Pass the ID as a safe parameter
     );
 
-    payment.items = itemsRows;
+    const rowsArray = rows as any[];
 
-    res.json(payment);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to fetch payment" });
+    if (rowsArray.length === 0) {
+        // If the query returns nothing, the ID wasn't found
+        return res.status(404).json({ error: 'Payment not found' });
+    }
+
+    // 2. Group the results. Since there's only one payment ID, the result will be an array with one element.
+    const groupedPayments = groupPaymentItems(rowsArray); 
+    
+    // 3. Return the single payment object
+    res.json(groupedPayments[0]); 
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to retrieve payment details' });
   } finally {
     connection.release();
   }

@@ -15,6 +15,9 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
+import { usePaymentById } from '@/hooks/useAPI'
+import { ScrollArea } from '../ui/scroll-area'
+import { Separator } from '../ui/separator'
 
 async function postPayment(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
@@ -43,11 +46,13 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
   const [cash, setCash] = useState<number | "">("")
   const change = cash ? cash - dueAmount : 0
 
-  const [showReceipt, setShowReceipt] = useState(false);
-  const [receiptData, setReceiptData] = useState<any>(null);
-
   const { trigger, isMutating, data, error } = useSWRMutation("http://localhost:5000/api/payment", postPayment)
   const [isSuccess, setSuccess] = useState<boolean>(true);
+
+  const [paymentId, setPaymentId] = useState<number | null>(null);
+  const [isReceiptOpen, setIsReceiptOpen] = useState(false);
+
+  const { data: payment,  } = usePaymentById(paymentId);
 
   const handleCheckout = async () => {
     const payload = {
@@ -67,10 +72,15 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
     }
 
     try {
-      await trigger(payload)
+      const result = await trigger(payload)
+      if (result && result.payment_id) {
+        setPaymentId(result.payment_id) 
+      }
+
       setSuccess(true)
       onCheckoutSuccess?.()
-      setShowReceipt(true);
+
+      setIsReceiptOpen(true);
     } catch (error) {
       console.error(error)
       setSuccess(false)
@@ -81,13 +91,14 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
   
   const handleConfirm = () => {
     handleCheckout();
-    if(isSuccess) {
-      toast({
-        title: "Payment Successful",
-        description: "Printing receipt...",
-        action: <ToastAction altText='OK' className='p-4'>OK</ToastAction>
-      })
-    } else {
+    // if(isSuccess) {
+    //   toast({
+    //     title: "Payment Successful",
+    //     description: "Printing receipt...",
+    //     action: <ToastAction altText='OK' className='p-4'>OK</ToastAction>
+    //   })
+    // } else {
+    if(!isSuccess) {
       toast({
         title: "Payment Failed",
         variant: "destructive",
@@ -154,28 +165,95 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showReceipt} onOpenChange={setShowReceipt}>
-        <DialogContent>
+      <Dialog open={isReceiptOpen} onOpenChange={setIsReceiptOpen}>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Receipt</DialogTitle>
-            <DialogDescription>Payment successful!</DialogDescription>
+            <DialogTitle className="text-xl">Payment Receipt</DialogTitle>
+            <DialogDescription>
+              Thank you choosing Arado Enterprises!
+            </DialogDescription>
           </DialogHeader>
-          <div className="py-2">
-            <p>Receipt ID: {receiptData?.payment_id}</p>
-            <p>Total: ₱{receiptData?.total_amount}</p>
-            <p>Cash: ₱{cash}</p>
-            <p>Change: ₱{change.toFixed(2)}</p>
-            <p>Items:</p>
-            <ul className="list-disc ml-6">
-              {cart.map(item => (
-                <li key={item.product_id}>
-                  {item.name} x {item.quantity} - ₱{item.price}
-                </li>
-              ))}
-            </ul>
+          
+          {/* Receipt Body */}
+          <div className="py-4 space-y-4">
+            
+            {payment && (
+              <ScrollArea className="h-72 w-full p-4 border rounded-md">
+                {/* Header Info */}
+                <div className="text-xs mb-3 space-y-1">
+                    <div className="flex justify-between">
+                        <span>Receipt ID:</span>
+                        <span className="font-medium">{payment.payment_id}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Date:</span>
+                        <span>{new Date(payment.date).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Cashier:</span>
+                        <span>{payment.first_name} {payment.last_name}</span>
+                    </div>
+                </div>
+
+                <Separator className="my-3" />
+
+                {/* Items List */}
+                <h3 className="font-semibold text-sm mb-2">ITEMS</h3>
+                <div className="space-y-1">
+                  {payment.items.map((item: any, index: number) => (
+                    <div key={index} className="flex justify-between text-sm">
+                      <span className="flex-1">{item.item_quantity}x Product {item.product_name}</span>
+                      <span className="font-medium">₱{(item.item_quantity * item.item_price).toFixed(2)}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <Separator className="my-3" />
+                
+                {/* Summary */}
+                <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                        <span>Subtotal:</span>
+                        <span>₱{payment.original_total.toFixed(2)}</span>
+                    </div>
+                    {payment.discount_amount > 0 && (
+                        <div className="flex justify-between text-red-600">
+                            <span>Discount ({payment.discount_reason}):</span>
+                            <span>- ₱{payment.discount_amount.toFixed(2)}</span>
+                        </div>
+                    )}
+                    <div className="flex justify-between font-bold text-lg pt-1">
+                        <span>TOTAL:</span>
+                        <span>₱{payment.total_amount.toFixed(2)}</span>
+                    </div>
+                </div>
+
+                <Separator className="my-3" />
+                
+                {/* Cash/Change */}
+                <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                        <span>Cash Given:</span>
+                        <span>₱{payment.amount_given.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Change:</span>
+                        <span>₱{payment.change_amount.toFixed(2)}</span>
+                    </div>
+                </div>
+              </ScrollArea>
+            )}
           </div>
+          
           <DialogFooter>
-            <Button onClick={() => setShowReceipt(false)}>Close</Button>
+            {/* The Print Button */}
+            <Button variant="secondary" onClick={() => window.print()}>
+              Print Receipt
+            </Button>
+            {/* The Close Button */}
+            <Button onClick={() => setIsReceiptOpen(false)}>
+              Done
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
