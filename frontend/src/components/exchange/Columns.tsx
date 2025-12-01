@@ -55,7 +55,7 @@ export const columns: ColumnDef<Exchange>[] = [
     },
     cell: ({ row }) => 
     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-      {row.getValue("exchange_date")}
+      {new Date(row.getValue("exchange_date")).toLocaleString()}
     </div>,
   },
   {
