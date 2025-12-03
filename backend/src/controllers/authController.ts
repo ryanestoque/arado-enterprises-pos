@@ -3,6 +3,7 @@ import db from "../config/db";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken";
+import { auditLog } from "../utils/auditLogger";
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
@@ -24,6 +25,22 @@ export const registerUser = async (req: Request, res: Response) => {
     const values = [username, hashed, role, first_name,  last_name];
 
     const [result] = await db.query<ResultSetHeader>(sql, values);
+
+    await auditLog({
+      user_id: (req as any).user.user_id,   // Admin who registered
+      module: "User",
+      action: "REGISTRATION",
+      description: `User "${username}" registered`,
+      before: null,
+      after: {
+        user_id: result.insertId,
+        username,
+        role,
+        first_name,
+        last_name
+      },
+      ip: req.ip
+    });
     
     const token = jwt.sign(
       { user_id: result.insertId, username },
@@ -72,6 +89,16 @@ export const loginUser = async (req: Request, res: Response) => {
       process.env.JWT_SECRET!,
       { expiresIn: "1d" }
     );
+
+    await auditLog({
+      user_id: user.user_id,
+      module: "Auth",
+      action: "LOGIN",
+      description: `User "${user.username}" logged in`,
+      before: null,
+      after: { user_id: user.user_id, username: user.username },
+      ip: req.ip
+    });
 
     res.json({
       message: "Login successful",

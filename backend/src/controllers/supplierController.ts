@@ -1,6 +1,7 @@
 import { Response, Request } from "express";
 import db from "../config/db"
-import { ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { auditLog, detectAction } from "../utils/auditLogger";
 
 export const getAllSuppliers = async (req: Request, res: Response) => {
   try {
@@ -14,6 +15,9 @@ export const getAllSuppliers = async (req: Request, res: Response) => {
 
 export const addSupplier = async (req: Request, res: Response) => {
   try {
+    const user = (req as any).user;
+    const user_id = user.user_id;
+
     const {
       name,
       contact_person,
@@ -30,6 +34,28 @@ export const addSupplier = async (req: Request, res: Response) => {
     const values = [name, contact_person, phone_number, email, address];
 
     const [result] = await db.query<ResultSetHeader>(sql, values);
+
+    const supplier_id = result.insertId;
+
+    const [afterRows] = await db.query<RowDataPacket[]>(
+      `SELECT * FROM Supplier WHERE supplier_id = ?`,
+      [supplier_id]
+    );
+
+    const after = afterRows[0];
+
+    const action = detectAction(null, after);
+
+    await auditLog({
+      user_id,
+      module: "Supplier",
+      action,
+      description: `Supplier "${after.name}" added`,
+      before: null,
+      after,
+      ip: req.ip
+    });
+
     res.json({ success: true, supplier_id: result.insertId})
 
   } catch (err) {
@@ -41,6 +67,10 @@ export const addSupplier = async (req: Request, res: Response) => {
 export const updateSupplier = async (req: Request, res: Response) => {
   try {
     const { supplier_id } = req.params;
+
+    const user = (req as any).user;
+    const user_id = user.user_id;
+
     const {
       name,
       contact_person,
@@ -48,6 +78,13 @@ export const updateSupplier = async (req: Request, res: Response) => {
       email,
       address,
     } = req.body
+
+    const [beforeRows] = await db.query<RowDataPacket[]>(
+      `SELECT * FROM supplier WHERE supplier_id = ?`,
+      [supplier_id]
+    );
+
+    const before = beforeRows[0];
   
     const sql = `
       UPDATE Supplier SET 
@@ -61,6 +98,26 @@ export const updateSupplier = async (req: Request, res: Response) => {
     ];
   
     await db.query(sql, values)
+
+    const [afterRows] = await db.query<RowDataPacket[]>(
+      `SELECT * FROM supplier WHERE supplier_id = ?`,
+      [supplier_id]
+    );
+
+    const after = Array.isArray(afterRows) ? afterRows[0] : null;
+
+    const action = detectAction(before, after)
+
+    await auditLog({
+      user_id,
+      module: "Supplier",
+      action,
+      description: `Supplier "${before.name}" added`,
+      before: null,
+      after,
+      ip: req.ip
+    });
+
     res.json({ success: true })
   } catch (err) {
     console.error(err);
@@ -71,12 +128,38 @@ export const updateSupplier = async (req: Request, res: Response) => {
 export const deleteSupplier = async (req: Request, res: Response) => {
   try{
     const { supplier_id } = req.params;
+
+    const user = (req as any).user;
+    const user_id = user.user_id;
+
+    const [beforeRows] = await db.query<RowDataPacket[]>(
+      `SELECT * FROM supplier WHERE supplier_id = ?`,
+      [supplier_id]
+    );
+
+    const before = beforeRows[0];
+    if (!before) {
+      return res.status(404).json({ message: "Supplier not found" });
+    }
   
     const sql = `
       DELETE FROM Supplier WHERE supplier_id=?
     `
 
     await db.query(sql, supplier_id);
+
+    const action = detectAction(before, null);
+
+    await auditLog({
+      user_id,
+      module: "Supplier",
+      action,
+      description: `Supplier "${before.name}" deleted`,
+      before,
+      after: null,
+      ip: req.ip
+    });
+
     res.json({ success: true });
   } catch (err) {
     console.error(err);

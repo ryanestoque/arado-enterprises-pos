@@ -5,14 +5,13 @@ import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
-import { useCategory, useSupplier } from "@/hooks/useAPI";
 import type { SupplierFormValues } from "./SupplierForm";
 import SupplierForm from "./SupplierForm";
 
 async function postSupplier(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${localStorage.getItem("token")}`, },
     body: JSON.stringify(arg),
   })
   if (!res.ok) throw new Error('Failed to add supplier')
@@ -20,9 +19,6 @@ async function postSupplier(url: string, { arg }: { arg: any }) {
 }
 
 export default function AddSupplierBtn() {
-  const { data: categories = [] } = useCategory()
-  const { data: suppliers = [] } = useSupplier()
-
   const { trigger, isMutating } = useSWRMutation("http://localhost:5000/api/supplier", postSupplier)
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [open, setOpen] = useState(false)

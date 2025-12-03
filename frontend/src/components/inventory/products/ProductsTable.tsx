@@ -5,7 +5,7 @@ import { columns, type Product } from "./Columns"
 
 export default function ProductsTable({ data }: { data: Product[] }) {
   return (
-    <div className="p-4">
+    <div className="p-4 overflow-y-auto">
       <DataTable 
         columns={columns} 
         data={data} 

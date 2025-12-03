@@ -176,7 +176,7 @@ export default function UserForm({
         />
      
         <Button 
-          disabled={isMutating}
+          disabled={!form.formState.isDirty || isMutating}
           type="submit">{submitLabel}</Button>
       </form>
     </Form>

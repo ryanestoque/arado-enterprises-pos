@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAuth } from "@/context/AuthContext";
 
 const stockinSchema = z.object({
   product_id: z.coerce.number<number>(),
@@ -43,10 +44,15 @@ export default function StockinForm({
   submitLabel = "Save",
   isMutating
 }: StockinFormProps) {
+  const { user } = useAuth();
+  if (!user) return null;
 
   const form = useForm<StockinFormValues>({
     resolver: zodResolver(stockinSchema),
-    defaultValues,
+      defaultValues: {
+      ...defaultValues,
+      user_id: user.user_id,
+    },
   });
 
   useEffect(() => {
@@ -117,19 +123,20 @@ export default function StockinForm({
             <FormItem>
               <FormLabel>User</FormLabel>
               <FormControl>
-                <Select 
-                  onValueChange={field.onChange} 
-                  defaultValue={field.value?.toString()}
+                <Select
+                  disabled 
+                  onValueChange={(val) => field.onChange(Number(val))}
+                  defaultValue={user.user_id.toString()}
                   >
                   <SelectTrigger>
                     <SelectValue placeholder="Select user" />
                   </SelectTrigger>
                   <SelectContent>
-                    {users.map((u) => (
-                    <SelectItem key={u.user_id} value={String(u.user_id)}>
-                    {u.username}
+                    <SelectItem
+                      key={user.user_id} 
+                      value={String(user.user_id)}>
+                      {user.username}
                     </SelectItem>
-                    ))}
                   </SelectContent>
                 </Select>
               </FormControl>

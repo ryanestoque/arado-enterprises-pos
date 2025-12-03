@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "../ui/textarea";
+import { useAuth } from "@/context/AuthContext";
 
 const exchangeSchema = z.object({
   product_id: z.coerce.number<number>(),
@@ -43,14 +44,22 @@ export default function ExchangeForm({
   isMutating
 }: ExchangeFormProps) {
 
+  const { user } = useAuth();
+  if (!user) return null;
+
   const form = useForm<ExchangeFormValues>({
     resolver: zodResolver(exchangeSchema),
-    defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      user_id: user.user_id,
+    },
   });
 
+  
   useEffect(() => {
     form.reset(defaultValues);
   }, [defaultValues, form]);
+
 
   return (
     <Form {...form}>
@@ -89,19 +98,20 @@ export default function ExchangeForm({
             <FormItem>
               <FormLabel>User</FormLabel>
               <FormControl>
-                <Select 
-                  onValueChange={field.onChange} 
-                  defaultValue={field.value?.toString()}
+                <Select
+                  disabled 
+                  onValueChange={(val) => field.onChange(Number(val))}
+                  defaultValue={user.user_id.toString()}
                   >
                   <SelectTrigger>
                     <SelectValue placeholder="Select user" />
                   </SelectTrigger>
                   <SelectContent>
-                    {users.map((u) => (
-                    <SelectItem key={u.user_id} value={String(u.user_id)}>
-                    {u.username}
+                    <SelectItem
+                      key={user.user_id} 
+                      value={String(user.user_id)}>
+                      {user.username}
                     </SelectItem>
-                    ))}
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -136,7 +146,7 @@ export default function ExchangeForm({
           )}
         />
         <Button 
-          disabled={isMutating}
+          disabled={!form.formState.isDirty || isMutating}
           type="submit">{submitLabel}</Button>
       </form>
     </Form>

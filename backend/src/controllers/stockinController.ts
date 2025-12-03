@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import db from "../config/db";
-import { ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { auditLog, detectAction } from "../utils/auditLogger";
 
 export const getAllStockin = async (req: Request, res: Response) => {
   try {
@@ -10,7 +11,7 @@ export const getAllStockin = async (req: Request, res: Response) => {
         p.name AS product_name,
         s.name AS supplier_name,
         u.username AS username
-      FROM Stockin s
+      FROM Stockin st
       LEFT JOIN Product p
         ON st.product_id = p.product_id
       LEFT JOIN Users u
@@ -38,7 +39,6 @@ export const makeStockin = async (req: Request, res: Response) => {
       user_id,
     } = req.body;
 
-    // 1. Insert stock-in record
     const insertSql = `
       INSERT INTO Stockin
       (date, product_id, quantity, supplier_id, user_id)
@@ -51,7 +51,6 @@ export const makeStockin = async (req: Request, res: Response) => {
       insertValues
     );
 
-    // 2. Update product quantity
     const updateSql = `
       UPDATE product
       SET stock_quantity = stock_quantity + ?
@@ -59,8 +58,42 @@ export const makeStockin = async (req: Request, res: Response) => {
     `;
     await connection.query(updateSql, [quantity, product_id]);
 
-    // If both succeed → commit
     await connection.commit();
+
+    const stockin_id = insertResult.insertId;
+
+    const [afterRows] = await db.query<RowDataPacket[]>(
+      `
+      SELECT 
+        st.*,
+        p.name AS product_name,
+        s.name AS supplier_name,
+        u.username AS username
+      FROM Stockin st
+      LEFT JOIN Product p
+        ON st.product_id = p.product_id
+      LEFT JOIN Users u
+        ON st.user_id = u.user_id
+      LEFT JOIN Supplier s
+        ON st.supplier_id = s.supplier_id
+      WHERE stockin_id = ?
+      `,
+      [stockin_id]
+    );
+
+    const after = afterRows[0];
+
+    const action = detectAction(null, after);
+
+    await auditLog({
+      user_id,
+      module: "StockIn",
+      action,
+      description: `Stock in for "${after.product_name}" recorded`,
+      before: null,
+      after,
+      ip: req.ip
+    });
 
     res.json({
       success: true,

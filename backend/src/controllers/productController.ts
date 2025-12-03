@@ -130,7 +130,6 @@ export const updateProduct = async (req: Request, res: Response) => {
 
     const action = detectAction(before, after)
 
-    // 5. Audit log it
     await auditLog({
       user_id,
       module: "Product",
@@ -171,7 +170,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
 
     await db.query(sql, product_id);
 
-    const action = detectAction(before, null); // after is null since it's deleted
+    const action = detectAction(before, null);
 
     await auditLog({
       user_id,

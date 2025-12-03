@@ -19,25 +19,6 @@ export type Exchange = {
 
 export const columns: ColumnDef<Exchange>[] = [
   {
-    accessorKey: "exchange_id",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          className="p-0"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Exchange ID
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => 
-    <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-      {row.getValue("exchange_id")}
-    </div>,
-  },
-  {
     accessorKey: "exchange_date",
     header: ({ column }) => {
       return (

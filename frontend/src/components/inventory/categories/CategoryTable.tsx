@@ -5,7 +5,7 @@ import { columns, type Category } from "./Columns"
 
 export default function CategoryTable({ data }: { data: Category[] }) {
   return (
-    <div className="p-4">
+    <div className="p-4 overflow-y-auto">
       <DataTable 
         columns={columns} 
         data={data} 

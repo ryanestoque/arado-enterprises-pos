@@ -39,7 +39,7 @@ export default function Products() {
       </header>
       <main className="h-[80vh] flex-1 p-4 md:p-6">
         <Card className="h-full">
-          <CardContent className="px-2 overflow-x-auto">
+          <CardContent className="px-2 overflow-x-auto max-h-[85vh]">
             <ProductsTable 
               data={localProducts} />
           </CardContent>

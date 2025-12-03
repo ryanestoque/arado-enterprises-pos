@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import db from "../config/db";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { auditLog, detectAction } from "../utils/auditLogger";
 
 export const makePayment = async (req: Request, res: Response) => {
   const connection = await db.getConnection();
@@ -20,7 +21,6 @@ export const makePayment = async (req: Request, res: Response) => {
       change_amount
     } = req.body
 
-    // Insert payment record
     const [paymentResult] = await connection.query<ResultSetHeader>(
       `INSERT INTO payment (date, user_id, original_total, discount_amount, total_amount, payment_method, discount_reason, amount_given, change_amount)
        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -29,7 +29,6 @@ export const makePayment = async (req: Request, res: Response) => {
 
     const payment_id = paymentResult.insertId
     
-    // Insert each item
     for (const item of items) {
       await connection.query(
         `INSERT INTO paymentitem (payment_id, product_id, quantity, price)
@@ -37,7 +36,6 @@ export const makePayment = async (req: Request, res: Response) => {
         [payment_id, item.product_id, item.quantity, item.price]
       )
 
-      // Optionally deduct stock
       await connection.query(
         `UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?`,
         [item.quantity, item.product_id]
@@ -45,6 +43,40 @@ export const makePayment = async (req: Request, res: Response) => {
     }
 
     await connection.commit()
+
+    const [[paymentInfo]] = await db.query<RowDataPacket[]>(
+      `SELECT p.*, u.username 
+       FROM payment p
+       LEFT JOIN users u ON p.user_id = u.user_id
+       WHERE payment_id = ?`,
+      [payment_id]
+    );
+
+    const [paymentItems] = await db.query<RowDataPacket[]>(
+      `SELECT pi.*, pr.name AS product_name 
+       FROM paymentitem pi
+       LEFT JOIN product pr ON pi.product_id = pr.product_id
+       WHERE pi.payment_id = ?`,
+      [payment_id]
+    );
+
+    const after = {
+      ...paymentInfo,
+      items: paymentItems
+    };
+
+    const action = detectAction(null, after);
+
+    await auditLog({
+      user_id,
+      module: "Payment",
+      action: "TRANSACTION",
+      description: `Payment #${payment_id} created`,
+      before: null,
+      after,
+      ip: req.ip
+    });
+
     res.json({ success: true, payment_id })
 
   } catch (error) {

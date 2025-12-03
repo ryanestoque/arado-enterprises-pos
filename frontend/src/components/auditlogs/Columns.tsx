@@ -47,7 +47,7 @@ export const columns: ColumnDef<AuditLogs>[] = [
           className="p-0"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Username
+          Handled by
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )

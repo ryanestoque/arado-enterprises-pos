@@ -5,7 +5,7 @@ import { columns, type Supplier } from "./Columns"
 
 export default function SupplierTable({ data }: { data: Supplier[] }) {
   return (
-    <div className="p-4">
+    <div className="p-4 overflow-y-auto">
       <DataTable 
         columns={columns} 
         data={data} 
