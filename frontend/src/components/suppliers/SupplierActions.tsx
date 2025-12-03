@@ -54,6 +54,7 @@ export default function SupplierActions({ supplier }: { supplier: Supplier }) {
       await updateTrigger(values)
       setSuccess(true)
       mutate("http://localhost:5000/api/supplier")
+      mutate("http://localhost:5000/api/auditlog")
       setOpenSheet(false)
     } catch (error) {
       console.error(error)
@@ -82,6 +83,7 @@ export default function SupplierActions({ supplier }: { supplier: Supplier }) {
     try {
       await deleteTrigger()
       mutate("http://localhost:5000/api/supplier")
+      mutate("http://localhost:5000/api/auditlog")
       toast({
         title: `${supplier.name} is deleted!`,
         action: <ToastAction altText="OK">OK</ToastAction>

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import db from "../config/db";
-import { ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { auditLog, detectAction } from "../utils/auditLogger";
 
 export const getAllProducts = async (req: Request, res: Response) => {
   try {
@@ -24,6 +25,9 @@ export const getAllProducts = async (req: Request, res: Response) => {
 
 export const addProducts = async (req: Request, res: Response) => {
   try {
+    const user = (req as any).user;
+    const user_id = user.user_id;
+
     const {
       name,
       description,
@@ -45,6 +49,28 @@ export const addProducts = async (req: Request, res: Response) => {
     const values = [name, description, category_id, supplier_id, price, cost, stock_quantity, reorder_level, sku, barcode];
 
     const [result] = await db.query<ResultSetHeader>(sql, values);
+
+    const product_id = result.insertId;
+
+    const [afterRows] = await db.query<RowDataPacket[]>(
+      `SELECT * FROM product WHERE product_id = ?`,
+      [product_id]
+    );
+
+    const after = afterRows[0];
+
+    const action = detectAction(null, after);
+
+    await auditLog({
+      user_id,
+      module: "Product",
+      action,
+      description: `Product "${after.name}" added`,
+      before: null,
+      after,
+      ip: req.ip
+    });
+
     res.json({ success: true, product_id: result.insertId})
 
   } catch (err) {
@@ -56,6 +82,10 @@ export const addProducts = async (req: Request, res: Response) => {
 export const updateProduct = async (req: Request, res: Response) => {
   try {
     const { product_id } = req.params;
+
+    const user = (req as any).user;
+    const user_id = user.user_id;
+
     const {
       name,
       description,
@@ -68,6 +98,13 @@ export const updateProduct = async (req: Request, res: Response) => {
       sku,
       barcode,
     } = req.body
+
+    const [beforeRows] = await db.query<RowDataPacket[]>(
+      `SELECT * FROM product WHERE product_id = ?`,
+      [product_id]
+    );
+
+    const before = beforeRows[0];
   
     const sql = `
       UPDATE Product SET 
@@ -83,6 +120,27 @@ export const updateProduct = async (req: Request, res: Response) => {
     ];
   
     await db.query(sql, values)
+
+    const [afterRows] = await db.query<RowDataPacket[]>(
+      `SELECT * FROM product WHERE product_id = ?`,
+      [product_id]
+    );
+
+    const after = Array.isArray(afterRows) ? afterRows[0] : null;
+
+    const action = detectAction(before, after)
+
+    // 5. Audit log it
+    await auditLog({
+      user_id,
+      module: "Product",
+      action,
+      description: `Product "${before.name}" updated`,
+      before,
+      after,
+      ip: req.ip  
+    });
+
     res.json({ success: true })
   } catch (err) {
     console.error(err);
@@ -93,12 +151,38 @@ export const updateProduct = async (req: Request, res: Response) => {
 export const deleteProduct = async (req: Request, res: Response) => {
   try{
     const { product_id } = req.params;
+
+    const user = (req as any).user;
+    const user_id = user.user_id;
+
+    const [beforeRows] = await db.query<RowDataPacket[]>(
+      `SELECT * FROM product WHERE product_id = ?`,
+      [product_id]
+    );
+
+    const before = beforeRows[0];
+    if (!before) {
+      return res.status(404).json({ message: "Product not found" });
+    }
   
     const sql = `
       DELETE FROM Product WHERE product_id=?
     `
 
     await db.query(sql, product_id);
+
+    const action = detectAction(before, null); // after is null since it's deleted
+
+    await auditLog({
+      user_id,
+      module: "Product",
+      action,
+      description: `Product "${before.name}" deleted`,
+      before,
+      after: null,
+      ip: req.ip
+    });
+
     res.json({ success: true });
   } catch (err) {
     console.error(err);

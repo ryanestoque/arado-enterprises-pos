@@ -56,6 +56,7 @@ export default function InventoryActions({ product }: { product: Product }) {
       await updateTrigger(values)
       setSuccess(true)
       mutate("http://localhost:5000/api/product")
+      mutate("http://localhost:5000/api/auditlog")
       setOpenSheet(false)
     } catch (error) {
       console.error(error)
@@ -84,6 +85,7 @@ export default function InventoryActions({ product }: { product: Product }) {
     try {
       await deleteTrigger()
       mutate("http://localhost:5000/api/product")
+      mutate("http://localhost:5000/api/auditlog")
       toast({
         title: `${product.name} is deleted!`,
         action: <ToastAction altText="OK">OK</ToastAction>

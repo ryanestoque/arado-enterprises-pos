@@ -53,6 +53,7 @@ export default function InventoryActions({ category }: { category: Category }) {
     try {
       await updateTrigger(values)
       mutate("http://localhost:5000/api/category")
+      mutate("http://localhost:5000/api/auditlog")
       setSuccess(true)
       setOpenSheet(false)
     } catch (error) {
@@ -82,6 +83,7 @@ export default function InventoryActions({ category }: { category: Category }) {
     try {
       await deleteTrigger()
       mutate("http://localhost:5000/api/category")
+      mutate("http://localhost:5000/api/auditlog")
       toast({
         title: `${category.name} is deleted!`,
         action: <ToastAction altText="OK">OK</ToastAction>

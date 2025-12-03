@@ -89,6 +89,20 @@ interface ExchangeItem {
   username: string
 }
 
+interface AuditLogs {
+  audit_id: number
+  user_id: number
+  username?: string
+  product_name?: string
+  module: string
+  action: string
+  description?: string
+  before_data: JSON
+  after_data: JSON
+  ip_address: string
+  created_at: string
+}
+
 const fetcher = async <T>(url: string): Promise<T> => {
   const token = localStorage.getItem("token");
 
@@ -110,6 +124,7 @@ const SUPPLIER_URL = "http://localhost:5000/api/supplier"
 const USER_URL = "http://localhost:5000/api/user"
 const STOCKIN_URL = "http://localhost:5000/api/stockin"
 const EXCHANGEITEM_URL = "http://localhost:5000/api/exchange"
+const AUDITLOGS_URL = "http://localhost:5000/api/auditlog"
 
 export function useProduct() {
   return useSWR<Product[]>(PRODUCT_URL, fetcher)
@@ -143,4 +158,8 @@ export function useStockin() {
 
 export function useExchange() {
   return useSWR<ExchangeItem[]>(EXCHANGEITEM_URL, fetcher)
+}
+
+export function useAuditLogs() {
+  return useSWR<AuditLogs[]>(AUDITLOGS_URL, fetcher)
 }

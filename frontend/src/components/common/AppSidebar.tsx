@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { BookUser, Calculator, ChartNoAxesCombined, Home, PackageSearch, Settings, Hammer, User, ChevronRight } from "lucide-react"
+import { BookUser, Calculator, ChartNoAxesCombined, Home, PackageSearch, Settings, Hammer, User, ChevronRight, NotebookPen } from "lucide-react"
 
 import {
   Sidebar,
@@ -76,9 +76,9 @@ const items = [
     ]
   },
   {
-    title: "Reports",
-    url: "/app/reports",
-    icon: ChartNoAxesCombined,
+    title: "Audit Logs",
+    url: "/app/auditlog",
+    icon: NotebookPen,
     roles: ["Admin"],
     items: [
       
