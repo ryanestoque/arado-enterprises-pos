@@ -108,8 +108,8 @@ export default function ExchangeActions({ exchange }: { exchange: Exchange }) {
         </SheetTrigger>
         <SheetContent className="flex flex-col gap-4 overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>Edit product</SheetTitle>
-            <SheetDescription>This action cannot be undone.</SheetDescription>
+            <SheetTitle>Edit Exchange</SheetTitle>
+            {/* <SheetDescription>This action cannot be undone.</SheetDescription> */}
           </SheetHeader>
           <ExchangeForm 
             submitLabel="Save"

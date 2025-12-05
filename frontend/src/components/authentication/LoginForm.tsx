@@ -61,6 +61,10 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
       // localStorage.setItem("token", res.token);
       // localStorage.setItem("role", res.role);
 
+    if (res.user.role !== role) {
+      throw new Error("Role mismatch");
+    }
+
       login(res.user, res.token);
       return true;
     } catch (err) {
@@ -156,7 +160,7 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
               >
               Log in
             </Button>
-            <Button 
+            {/* <Button 
               type="button"
               onClick={() => {
                 form.reset();
@@ -165,7 +169,7 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
               variant="link" 
               className="p-0 w-full">
               Create account
-            </Button>
+            </Button> */}
           </CardFooter>
         </Card>
       </form>

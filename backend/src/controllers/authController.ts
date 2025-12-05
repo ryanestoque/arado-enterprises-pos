@@ -27,7 +27,7 @@ export const registerUser = async (req: Request, res: Response) => {
     const [result] = await db.query<ResultSetHeader>(sql, values);
 
     await auditLog({
-      user_id: (req as any).user.user_id,   // Admin who registered
+      user_id: (req as any).user.user_id,
       module: "User",
       action: "REGISTRATION",
       description: `User "${username}" registered`,
@@ -67,7 +67,7 @@ export const registerUser = async (req: Request, res: Response) => {
 }
 
 export const loginUser = async (req: Request, res: Response) => {
-  const { username, password } = req.body;
+  const { username, password, role } = req.body;
 
   try {
     const sql = "SELECT * FROM Users WHERE username = ?";
@@ -82,6 +82,10 @@ export const loginUser = async (req: Request, res: Response) => {
 
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid username or password" });
+    }
+
+    if (user.role !== role) {
+      return res.status(403).json({ message: "Unauthorized role" });
     }
 
     const token = jwt.sign(
@@ -115,3 +119,25 @@ export const loginUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Login failed" });
   }
 }
+
+export const logoutUser = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user; // extracted by auth middleware
+
+    await auditLog({
+      user_id: user.user_id,
+      module: "Auth",
+      action: "LOGOUT",
+      description: `User "${user.username}" logged out`,
+      before: null,
+      after: null,
+      ip: req.ip
+    });
+
+    res.json({ message: "Logout successful" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Logout failed" });
+  }
+};

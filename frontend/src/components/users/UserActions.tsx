@@ -104,13 +104,16 @@ export default function UserActions({ user }: { user: User }) {
         <SheetContent className="flex flex-col gap-4 overflow-y-auto">
           <SheetHeader>
             <SheetTitle>Edit user</SheetTitle>
-            <SheetDescription>This action cannot be undone.</SheetDescription>
+            {/* <SheetDescription>This action cannot be undone.</SheetDescription> */}
           </SheetHeader>
           <UserForm 
             submitLabel="Save"
             onSubmit={handleConfirm}
             isMutating={isUpdating}
-            defaultValues={user}
+            defaultValues={{
+              ...user,
+              password: ""
+            }}
             />
           <SheetFooter>
             {/* <Button>Submit</Button>
@@ -124,7 +127,7 @@ export default function UserActions({ user }: { user: User }) {
       <ConfirmDialog
         open={openDialog}
         onOpenChange={setOpenDialog}
-        title={`Delete ${user.username} from Inventory?`}
+        title={`Delete ${user.username} from Users?`}
         description="This cannot be undone"
         confirmText="Delete"
         cancelText="Cancel"

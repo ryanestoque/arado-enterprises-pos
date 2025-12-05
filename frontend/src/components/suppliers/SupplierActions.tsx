@@ -108,7 +108,7 @@ export default function SupplierActions({ supplier }: { supplier: Supplier }) {
         <SheetContent className="flex flex-col gap-4 overflow-y-auto">
           <SheetHeader>
             <SheetTitle>Edit supplier</SheetTitle>
-            <SheetDescription>This action cannot be undone.</SheetDescription>
+            {/* <SheetDescription>This action cannot be undone.</SheetDescription> */}
           </SheetHeader>
           <SupplierForm 
             submitLabel="Save"
@@ -128,7 +128,7 @@ export default function SupplierActions({ supplier }: { supplier: Supplier }) {
       <ConfirmDialog
         open={openDialog}
         onOpenChange={setOpenDialog}
-        title={`Delete ${supplier.name} from Inventory?`}
+        title={`Delete ${supplier.name} from Suppliers?`}
         description="This cannot be undone"
         confirmText="Delete"
         cancelText="Cancel"

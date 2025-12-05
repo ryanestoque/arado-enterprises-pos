@@ -107,8 +107,8 @@ export default function InventoryActions({ category }: { category: Category }) {
         </SheetTrigger>
         <SheetContent className="flex flex-col gap-4 overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>Edit product</SheetTitle>
-            <SheetDescription>This action cannot be undone.</SheetDescription>
+            <SheetTitle>Edit category</SheetTitle>
+            {/* <SheetDescription>This action cannot be undone.</SheetDescription> */}
           </SheetHeader>
           <CategoryForm 
             submitLabel="Save"

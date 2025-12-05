@@ -66,7 +66,7 @@ export default function AddSupplierBtn() {
       <SheetContent className="flex flex-col gap-4 overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Add supplier</SheetTitle>
-          <SheetDescription>This action cannot be undone.</SheetDescription>
+          {/* <SheetDescription>This action cannot be undone.</SheetDescription> */}
         </SheetHeader>
         <SupplierForm 
           submitLabel="Add"

@@ -68,7 +68,7 @@ export default function AddProductBtn() {
       <SheetContent className="flex flex-col gap-4 overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Add product</SheetTitle>
-          <SheetDescription>This action cannot be undone.</SheetDescription>
+          {/* <SheetDescription>This action cannot be undone.</SheetDescription> */}
         </SheetHeader>
         <ProductForm 
           submitLabel="Add"

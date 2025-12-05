@@ -3,6 +3,7 @@
 import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import AuditLogsActions from "./AuditLogsActions"
 
 export type AuditLogs = {
   audit_id: number
@@ -133,5 +134,19 @@ export const columns: ColumnDef<AuditLogs>[] = [
       {row.getValue("ip_address")}
     </div>,
   },
-
+  {
+    id: "actions",
+    header: () => (
+      <div className="text-end">Actions</div>
+    ),
+    cell: ({ row }) => {
+      const auditlog = row.original
+      
+      return(
+        <div className="flex justify-end"> 
+          <AuditLogsActions auditlog={auditlog}/>
+        </div>
+      )
+    }
+  }
 ]

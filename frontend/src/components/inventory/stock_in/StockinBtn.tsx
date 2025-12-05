@@ -73,8 +73,8 @@ export default function StockinBtn() {
       </SheetTrigger>
       <SheetContent className="flex flex-col gap-4 overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Add product</SheetTitle>
-          <SheetDescription>This action cannot be undone.</SheetDescription>
+          <SheetTitle>Stock in</SheetTitle>
+          {/* <SheetDescription>This action cannot be undone.</SheetDescription> */}
         </SheetHeader>
         <StockinForm 
           submitLabel="Restock"

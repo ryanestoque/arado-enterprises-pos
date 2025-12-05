@@ -181,7 +181,7 @@ export default function RegisterForm({ setMode, role }: RegisterFormProps) {
               >
               Register
             </Button>
-            <Button 
+            {/* <Button 
               type="button"
               onClick={() => {
                 form.reset();
@@ -190,7 +190,7 @@ export default function RegisterForm({ setMode, role }: RegisterFormProps) {
               variant="link" 
               className="p-0 w-full">
               Back to login
-            </Button>
+            </Button> */}
           </CardFooter>
         </Card>
       </form>

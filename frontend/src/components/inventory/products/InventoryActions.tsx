@@ -110,7 +110,7 @@ export default function InventoryActions({ product }: { product: Product }) {
         <SheetContent className="flex flex-col gap-4 overflow-y-auto">
           <SheetHeader>
             <SheetTitle>Edit product</SheetTitle>
-            <SheetDescription>This action cannot be undone.</SheetDescription>
+            {/* <SheetDescription>This action cannot be undone.</SheetDescription> */}
           </SheetHeader>
           <ProductForm 
             submitLabel="Save"

@@ -15,10 +15,10 @@ export default function Authentication() {
             <TabsTrigger className="w-full" value="admin">Admin</TabsTrigger>
           </TabsList>
           <TabsContent value="cashier">
-            <CashierAuthCard />
+            <CashierAuthCard role="Cashier"/>
           </TabsContent>
           <TabsContent value="admin">
-            <AdminAuthCard />
+            <AdminAuthCard role="Admin"/>
           </TabsContent>
         </Tabs>
       </div>
