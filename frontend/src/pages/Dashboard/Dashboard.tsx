@@ -36,7 +36,7 @@ export default function Dashboard() {
                   <h2 className="font-semibold">Recent Transactions</h2>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="h-[60vh]">
+              <CardContent className="h-[80vh]">
                 <DataTable 
                   columns={columns} 
                   data={localPayments} 

@@ -251,6 +251,52 @@ export const getPaymentById = async (req: Request, res: Response) => {
   }
 };
 
+export const deletePayment = async (req: Request, res: Response) => {
+  try {
+    const { paymentId } = req.params;
+
+    const user = (req as any).user;
+    const user_id = user.user_id;
+
+    const connection = await db.getConnection();
+    await connection.beginTransaction();
+
+    const [beforeRows] = await db.query<RowDataPacket[]>(
+      `SELECT * FROM payment WHERE payment_id = ?`,
+      [paymentId]
+    );
+
+    const before = beforeRows[0];
+    if (!before) {
+      return res.status(404).json({ message: "Payment not found" });
+    }
+
+    // Delete the payment
+    await connection.query("DELETE FROM payment WHERE payment_id = ?", [paymentId]);
+
+    await connection.commit();
+    connection.release();
+
+    const action = detectAction(before, null);
+
+    await auditLog({
+      user_id,
+      module: "Payment",
+      action,
+      description: `Payment "${paymentId}" deleted`,
+      before,
+      after: null,
+      ip: req.ip
+    });
+
+    res.json({ message: "Payment deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to delete payment" });
+  }
+};
+
+
 export const getTotalRevenue = async (req: Request, res: Response) => {
   const connection = await db.getConnection();
   try {

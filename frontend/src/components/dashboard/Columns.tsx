@@ -4,8 +4,10 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "../ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import PaymentActions from "./PaymentActions"
 
 export type Payment = {
+  payment_id: number
   date: string
   total_amount: number
   amount_given: number
@@ -13,34 +15,34 @@ export type Payment = {
 }
 
 export const columns: ColumnDef<Payment>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <div className="w-12 lg:w-8 xl:w-4 flex items-center gap-4">
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-        <div className="text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length}
-        </div>
-      </div>
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <div className="w-12 lg:w-8 xl:w-4 flex items-center gap-4">
+  //       <Checkbox
+  //         checked={
+  //           table.getIsAllPageRowsSelected() ||
+  //           (table.getIsSomePageRowsSelected() && "indeterminate")
+  //         }
+  //         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //         aria-label="Select all"
+  //       />
+  //       <div className="text-sm text-muted-foreground">
+  //         {table.getFilteredSelectedRowModel().rows.length}
+  //       </div>
+  //     </div>
 
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: "date",
     header: ({ column }) => (
@@ -123,5 +125,20 @@ export const columns: ColumnDef<Payment>[] = [
       const username = row.getValue<string>("username")
       return `${username}`
     },
+  },
+  {
+    id: "actions",
+    // header: () => (
+    //   <div className="text-end">Actions</div>
+    // ),
+    cell: ({ row }) => {
+      const payment = row.original
+      
+      return(
+        <div className="flex justify-end"> 
+          <PaymentActions payment={payment}/>
+        </div>
+      )
+    }
   }
 ]

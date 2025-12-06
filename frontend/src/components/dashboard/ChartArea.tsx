@@ -30,7 +30,7 @@ import {
 
 
 interface ChartAreaProps {
-  payments: any[]; // replace 'any' with your Payment type if you have one
+  payments: any[];
 }
 
 export function ChartArea({ payments }: ChartAreaProps) {

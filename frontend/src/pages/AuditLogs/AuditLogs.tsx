@@ -17,7 +17,7 @@ export default function AuditLogs() {
       <header className="overflow-hidden">
         <SiteHeader title="Audit Logs"/>
       </header>
-      <main className="h-[80vh] flex-1 p-4 md:p-6">
+      <main className="@container/main w-full h-[80vh] flex-1 p-4 md:p-6">
         <Card className="h-full">
           <CardContent className="px-2 overflow-x-auto">
             <AuditLogsTable data={localAuditlogs}/>

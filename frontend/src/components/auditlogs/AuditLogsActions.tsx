@@ -2,7 +2,6 @@ import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import type { AuditLogs } from "./Columns";
 
-
 export default function AuditLogsActions({ auditlog }: { auditlog: AuditLogs }) {
   return(
     <>
