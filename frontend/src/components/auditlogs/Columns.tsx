@@ -21,41 +21,41 @@ export type AuditLogs = {
 }
 
 export const columns: ColumnDef<AuditLogs>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <div className="w-12 lg:w-8 xl:w-4 flex items-center gap-4">
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-        <div className="text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length}
-        </div>
-      </div>
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <div className="w-12 lg:w-8 xl:w-4 flex items-center gap-4">
+  //       <Checkbox
+  //         checked={
+  //           table.getIsAllPageRowsSelected() ||
+  //           (table.getIsSomePageRowsSelected() && "indeterminate")
+  //         }
+  //         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //         aria-label="Select all"
+  //       />
+  //       <div className="text-sm text-muted-foreground">
+  //         {table.getFilteredSelectedRowModel().rows.length}
+  //       </div>
+  //     </div>
 
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: "created_at",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
-          className="pl-5"
+          className="p-0"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Created at
@@ -64,7 +64,7 @@ export const columns: ColumnDef<AuditLogs>[] = [
       )
     },
     cell: ({ row }) => 
-    <div className="overflow-hidden text-ellipsis whitespace-nowrap pl-5">
+    <div className="overflow-hidden text-ellipsis whitespace-nowrap">
       {new Date(row.getValue("created_at")).toLocaleString()}
     </div>,
   },

@@ -1,6 +1,6 @@
 import useSWRMutation from 'swr/mutation'
 import { Button } from '../ui/button'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
 import { ToastAction } from '../ui/toast'
 import {
@@ -18,6 +18,8 @@ import { Input } from '../ui/input'
 import { usePaymentById } from '@/hooks/useAPI'
 import { ScrollArea } from '../ui/scroll-area'
 import { Separator } from '../ui/separator'
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 async function postPayment(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
@@ -53,6 +55,8 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
 
   const { data: payment,  } = usePaymentById(paymentId);
+
+  const receiptRef = useRef<HTMLDivElement>(null);
 
   const handleCheckout = async () => {
     const payload = {
@@ -106,6 +110,26 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
       })
     }
   }
+
+  const handleDownloadPDF = async () => {
+    if (!receiptRef.current) return;
+
+    const canvas = await html2canvas(receiptRef.current, {
+      scale: 2, // higher quality
+      useCORS: true,
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "px",
+      format: [canvas.width, canvas.height],
+    });
+
+    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+    pdf.save("receipt.pdf");
+  };
 
   return (
     <>
@@ -166,7 +190,7 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
       </Dialog>
 
       <Dialog open={isReceiptOpen} onOpenChange={setIsReceiptOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent ref={receiptRef} id="receipt" className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle className="text-xl">Payment Receipt</DialogTitle>
             <DialogDescription>
@@ -247,8 +271,11 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
           
           <DialogFooter>
             {/* The Print Button */}
-            <Button variant="secondary" onClick={() => window.print()}>
+            {/* <Button variant="secondary" onClick={() => window.print()}>
               Print Receipt
+            </Button> */}
+            <Button variant="secondary" onClick={handleDownloadPDF}>
+              Download PDF
             </Button>
             {/* The Close Button */}
             <Button onClick={() => setIsReceiptOpen(false)}>

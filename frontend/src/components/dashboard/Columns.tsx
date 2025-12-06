@@ -88,7 +88,7 @@ export const columns: ColumnDef<Payment>[] = [
     ),
     cell: ({ row }) => {
       const amount = row.getValue<number>("total_amount")
-      return `₱${amount.toLocaleString()}`
+      return `₱${amount.toFixed(2).toLocaleString()}`
     },
   },
   {
@@ -105,7 +105,7 @@ export const columns: ColumnDef<Payment>[] = [
     ),
     cell: ({ row }) => {
       const amount = row.getValue<number>("amount_given")
-      return `₱${amount.toLocaleString()}`
+      return `₱${amount.toFixed(2).toLocaleString()}`
     },
   },
   

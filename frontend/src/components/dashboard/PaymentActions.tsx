@@ -29,6 +29,9 @@ import { ToastAction } from "../ui/toast";
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { usePaymentById } from "@/hooks/useAPI";
+import { useRef } from "react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 async function deletePayment(url: string) {
   const res = await fetch(url, {
@@ -47,6 +50,8 @@ export default function PaymentActions({ payment }: { payment: Payment }) {
   const { trigger: deleteTrigger} = useSWRMutation(`http://localhost:5000/api/payment/${payment.payment_id}`, deletePayment)
 
   const { data: paymentById  } = usePaymentById(payment.payment_id);
+
+  const receiptRef = useRef<HTMLDivElement>(null);
 
   const handleDelete = async () => {
     try {
@@ -71,13 +76,35 @@ export default function PaymentActions({ payment }: { payment: Payment }) {
     }
   }
 
+    const handleDownloadPDF = async () => {
+    if (!receiptRef.current) return;
+
+    const canvas = await html2canvas(receiptRef.current, {
+      scale: 2,
+      useCORS: true,
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+
+    // Create PDF
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "px",
+      format: [canvas.width, canvas.height],
+    });
+
+    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+    pdf.save("receipt.pdf");
+  };
+
+
   return(
     <div className="flex flex-row gap-1">
       <Dialog>
         <DialogTrigger>
           <Button variant={"outline"} size={"icon"}><ReceiptText /></Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent ref={receiptRef} id="receipt" className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle className="text-xl">Payment Receipt</DialogTitle>
             <DialogDescription>
@@ -157,8 +184,11 @@ export default function PaymentActions({ payment }: { payment: Payment }) {
           
           <DialogFooter>
             {/* The Print Button */}
-            <Button variant="secondary" onClick={() => window.print()}>
+            {/* <Button variant="secondary" onClick={() => window.print()}>
               Print Receipt
+            </Button> */}
+            <Button variant="secondary" onClick={handleDownloadPDF}>
+              Download PDF
             </Button>
             <DialogClose>
               <Button>
