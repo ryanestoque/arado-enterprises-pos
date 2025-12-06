@@ -26,7 +26,7 @@ export type StockinFormValues = z.infer<typeof stockinSchema>;
 
 interface StockinFormProps {
   defaultValues?: Partial<StockinFormValues>;
-  products?: { product_id: number; name: string }[];
+  products?: { product_id: number; name: string, supplier_id: number, supplier_name: string }[];
   suppliers?: { supplier_id: number; name: string }[];
   users?: { user_id: number; username: string }[];
   onSubmit: (values: StockinFormValues) => void;
@@ -54,6 +54,20 @@ export default function StockinForm({
       user_id: user.user_id,
     },
   });
+
+  const selectedProductId = form.watch("product_id");
+
+  useEffect(() => {
+    if (!selectedProductId) return;
+
+    const selectedProduct = products.find(
+      (p) => p.product_id === Number(selectedProductId)
+    );
+
+    if (selectedProduct) {
+      form.setValue("supplier_id", selectedProduct.supplier_id);
+    }
+  }, [selectedProductId, products, form]);
 
   useEffect(() => {
     form.reset(defaultValues);
@@ -92,30 +106,25 @@ export default function StockinForm({
         <FormField
           control={form.control}
           name="supplier_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Supplier</FormLabel>
-              <FormControl>
-                <Select 
-                  onValueChange={field.onChange} 
-                  defaultValue={field.value?.toString()}
-                  >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select supplier" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {suppliers.map((s) => (
-                    <SelectItem key={s.supplier_id} value={String(s.supplier_id)}>
-                    {s.name}
-                    </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            const selectedProduct = products.find(
+              (p) => p.product_id === Number(form.watch("product_id"))
+            );
+
+            return (
+              <FormItem>
+                <FormLabel>Supplier</FormLabel>
+                <FormControl>
+                  <Input
+                    disabled
+                    value={selectedProduct?.supplier_name || ""}
+                  />
+                </FormControl>
+              </FormItem>
+            );
+          }}
         />
+
         <FormField
           control={form.control}
           name="user_id"
