@@ -40,6 +40,7 @@ export default function AddProductBtn() {
   const { toast } = useToast()
   
   const handleConfirm = async (values: ProductFormValues) => {
+    console.log(values.image_url); // <-- Cloudinary URL
     await handleAddProduct(values)
 
     if (isSuccess) {

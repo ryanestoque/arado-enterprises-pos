@@ -25,6 +25,9 @@ const productSchema = z.object({
   reorder_level: z.coerce.number<number>().optional(),
   barcode: z.string().default("").optional(),
   sku: z.string().min(1, "SKU is required"),
+  image_url: z
+    .any()
+    .optional(), // this will hold the File object from input
 });
 
 export type ProductFormValues = z.infer<typeof productSchema>;
@@ -60,6 +63,52 @@ export default function ProductForm({
   return (
     <Form {...form}>
       <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)}>
+        <FormField
+          control={form.control}
+          name="image_url"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Product Image</FormLabel>
+              {field.value && (
+                <img
+                  src={
+                    field.value instanceof File
+                      ? URL.createObjectURL(field.value) // local file preview
+                      : field.value                        // existing URL from server
+                  }
+                  alt="Preview"
+                  className="aspect-square object-cover rounded-md"
+                />
+              )}
+              <FormControl>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    formData.append("upload_preset", "products_preset"); // unsigned preset
+                    formData.append("folder", "products"); // optional folder
+
+                    const res = await fetch(
+                      `https://api.cloudinary.com/v1_1/da1ewqsie/image/upload`,
+                      {
+                        method: "POST",
+                        body: formData,
+                      }
+                    );
+                    const data = await res.json();
+                    field.onChange(data.secure_url);
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="name"

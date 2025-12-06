@@ -21,7 +21,7 @@ export default function AuditLogsActions({ auditlog }: { auditlog: AuditLogs }) 
           <div className="space-y-4">
             <div>
               <h3>Before</h3>
-              <pre className="bg-muted p-4 rounded border text-sm overflow-auto font-mono whitespace-pre-wrap">
+              <pre className="max-w-lg bg-muted p-4 rounded border text-sm overflow-auto font-mono whitespace-pre-wrap">
                 {JSON.stringify(
                     typeof auditlog.before_data === "string" ? JSON.parse(auditlog.before_data) : auditlog.before_data,
                     null,
@@ -32,7 +32,7 @@ export default function AuditLogsActions({ auditlog }: { auditlog: AuditLogs }) 
 
             <div>
               <h3>After</h3>
-              <pre className="bg-muted p-4 rounded border text-sm overflow-auto font-mono whitespace-pre-wrap">
+              <pre className="max-w-lg bg-muted p-4 rounded border text-sm overflow-auto font-mono whitespace-pre-wrap ">
                 {JSON.stringify(
                     typeof auditlog.after_data === "string" ? JSON.parse(auditlog.after_data) : auditlog.after_data,
                     null,

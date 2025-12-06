@@ -134,11 +134,61 @@ const groupPaymentItems = (rows: any[]): any[] => {
   return Array.from(paymentsMap.values());
 };
 
+export const getAllPayments = async (req: Request, res: Response) => {
+  const connection = await db.getConnection();
+
+  try {
+    const [rows] = await connection.query(
+      `
+      SELECT
+        p.payment_id,
+        p.date,
+        p.original_total,
+        p.discount_amount,
+        p.total_amount,
+        p.amount_given,
+        p.change_amount,
+        p.payment_method,
+        p.discount_reason,
+        u.username,
+        u.first_name,
+        u.last_name,
+        pi.product_id,
+        pi.quantity AS item_quantity,
+        pi.price AS item_price,
+        pr.name AS product_name
+      FROM payment p
+      INNER JOIN users u ON p.user_id = u.user_id
+      LEFT JOIN paymentitem pi ON p.payment_id = pi.payment_id
+      LEFT JOIN product pr ON pi.product_id = pr.product_id
+      ORDER BY p.payment_id DESC, pi.product_id ASC
+      `
+    );
+
+    const rowsArray = rows as any[];
+
+    // Return empty array if no payments (correct behavior)
+    if (rowsArray.length === 0) {
+      return res.json([]);
+    }
+
+    // Group items by payment_id
+    const payments = groupPaymentItems(rowsArray);
+
+    res.json(payments);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to retrieve payments' });
+  } finally {
+    connection.release();
+  }
+};
+
+
 export const getPaymentById = async (req: Request, res: Response) => {
-  // 1. Get the ID from the URL parameters
-  const payment_id = req.params.id; // Assuming route is '/api/payments/:id'
+  const payment_id = req.params.id;
   
-  // Basic validation
   if (!payment_id) {
     return res.status(400).json({ error: 'Payment ID is required' });
   }
@@ -198,5 +248,65 @@ export const getPaymentById = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to retrieve payment details' });
   } finally {
     connection.release();
+  }
+};
+
+export const getTotalRevenue = async (req: Request, res: Response) => {
+  const connection = await db.getConnection();
+  try {
+    const [rows] = await connection.query(
+      `
+        SELECT SUM(pi.quantity * pi.price - p.discount_amount) AS total_revenue
+        FROM payment p
+        LEFT JOIN paymentitem pi ON p.payment_id = pi.payment_id
+      `
+    );
+
+    const totalRevenue = (rows as any[])[0].total_revenue || 0;
+    
+    res.json({ totalRevenue });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to get total revenue" });
+  } finally { 
+    connection.release();
+  }
+};
+
+
+export const getBestSellingProduct = async (req: Request, res: Response) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+          p.product_id,
+          p.name,
+          SUM(pi.quantity) AS total_sold
+      FROM PaymentItem pi
+      JOIN Product p ON pi.product_id = p.product_id
+      GROUP BY p.product_id, p.name
+      ORDER BY total_sold DESC
+      LIMIT 1;
+    `);
+
+    res.json((rows as any[])[0]);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch best-selling product" });
+  }
+};
+
+export const getGrossProfit = async (req: Request, res: Response) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT
+          SUM(pi.quantity * pi.price) AS total_revenue,
+          SUM(pi.quantity * pr.cost) AS total_cogs,
+          SUM(pi.quantity * pi.price) - SUM(pi.quantity * pr.cost) AS gross_profit
+      FROM paymentitem pi
+      JOIN product pr ON pi.product_id = pr.product_id
+    `);
+
+    res.json((rows as any[])[0]);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to compute gross profit" });
   }
 };

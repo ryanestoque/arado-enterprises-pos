@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import db from "../config/db";
 import bcrypt from "bcrypt"
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { auditLog } from "../utils/auditLogger";
+import { auditLog, detectAction } from "../utils/auditLogger";
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -12,6 +12,25 @@ export const getAllUsers = async (req: Request, res: Response) => {
     console.error(err);
     res.status(500).json({ message: "Failed to fetch users" });
   }
+}
+
+export const getUser = async (req: Request, res: Response) => {
+  const { user_id } = req.params;
+
+  try {
+    const [rows] = await db.query(`SELECT * FROM Users WHERE user_id = ?`, [user_id]);
+
+    const user = (rows as any[])[0]; 
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+      res.json(user); 
+    } catch(err) {
+      console.error(err);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
 }
 
 export const addUser = async (req: Request, res: Response) => {
@@ -103,7 +122,6 @@ export const updateUser = async (req: Request, res: Response) => {
     // Execute update
     await db.query(sql, values);
 
-    // Prepare "after" for audit logs
     const after = {
       user_id,
       username,
@@ -112,7 +130,6 @@ export const updateUser = async (req: Request, res: Response) => {
       last_name
     };
 
-    // 🔥 Optional: Write audit log
     await auditLog({
       user_id: (req as any).user.user_id,
       module: "User",
@@ -135,11 +152,34 @@ export const updateUser = async (req: Request, res: Response) => {
 export const deleteUser = async (req: Request, res: Response) => {
   try{
     const { user_id } = req.params;
+
+    const [beforeRows] = await db.query<RowDataPacket[]>(
+      `SELECT user_id, username, role, first_name, last_name FROM Users WHERE user_id = ?`,
+      [user_id]
+    );
+
+    const before = beforeRows[0];
+    if (!before) {
+      return res.status(404).json({ message: "Exchange not found" });
+    }
   
     const sql = `
       DELETE FROM Users WHERE user_id=?
     `
     await db.query(sql, user_id);
+
+    const action = detectAction(before, null);
+    
+    await auditLog({
+      user_id: (req as any).user.user_id,
+      module: "User",
+      action,
+      description: `User "${before.username}" deleted`,
+      before,
+      after: null,
+      ip: req.ip
+    });
+
     res.json({ success: true });
   } catch (err) {
     console.error(err);
@@ -149,13 +189,32 @@ export const deleteUser = async (req: Request, res: Response) => {
 
 export const changeUsername = async (req: Request, res: Response) => {
   const userId = (req as any).user.user_id;
-  const { newUsername } = req.body;
+  const { username: newUsername } = req.body;
 
   try {
+    // Get old username
+    const [rows] = await db.query<RowDataPacket[]>(
+      "SELECT username FROM Users WHERE user_id = ?",
+      [userId]
+    );
+    const oldUsername = rows[0]?.username;
+
+    // Update username
     await db.query(
       "UPDATE Users SET username = ? WHERE user_id = ?",
       [newUsername, userId]
     );
+
+    // AUDIT LOG ✨
+    await auditLog({
+      user_id: userId,
+      module: "User",
+      action: "UPDATE",
+      description: `${oldUsername} changed username to "${newUsername}"`,
+      before: { username: oldUsername },
+      after: { username: newUsername },
+      ip: req.ip
+    });
 
     res.json({ message: "Username updated successfully" });
   } catch (err) {
@@ -168,11 +227,13 @@ export const changePassword = async (req: Request, res: Response) => {
   const { oldPassword, newPassword } = req.body;
 
   try {
-    const [rows] = await db.query<RowDataPacket[]>("SELECT password FROM Users WHERE user_id = ?", [userId]);
+    const [rows] = await db.query<RowDataPacket[]>(
+      "SELECT password FROM Users WHERE user_id = ?",
+      [userId]
+    );
     const user = rows[0];
 
     const isMatch = await bcrypt.compare(oldPassword, user.password);
-    
     if (!isMatch) {
       return res.status(400).json({ message: "Old password is incorrect" });
     }
@@ -184,8 +245,20 @@ export const changePassword = async (req: Request, res: Response) => {
       [hashedPassword, userId]
     );
 
+    // AUDIT LOG ✨
+    await auditLog({
+      user_id: userId,
+      module: "User",
+      action: "UPDATE",
+      description: `A user changed password`,
+      before: null,  // NEVER store passwords!
+      after: null,
+      ip: req.ip
+    });
+
     res.json({ message: "Password updated successfully" });
   } catch (err) {
     res.status(500).json({ message: "Failed to update password" });
   }
 };
+

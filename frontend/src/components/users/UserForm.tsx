@@ -35,19 +35,6 @@ const userSchema = z.object({
   last_name: z.string().trim().min(1, "Last name is required"),
 });
 
-const editUserSchema = z.object({
-  username: z
-  .string()
-  .min(3, { message: "Username must be at least 3 characters long." })
-  .max(20, { message: "Username cannot exceed 20 characters." })
-  .regex(/^[a-zA-Z0-9_]+$/, {
-    message: "Username can only contain letters, numbers, and underscores.",
-  }),
-  password: z.string().optional().or(z.literal("")),
-  role: z.string().min(1, "Role is required"),
-  first_name: z.string().trim().min(1, "First name is required"),
-  last_name: z.string().trim().min(1, "Last name is required"),
-});
 
 export type UserFormValues = z.infer<typeof userSchema>;
 

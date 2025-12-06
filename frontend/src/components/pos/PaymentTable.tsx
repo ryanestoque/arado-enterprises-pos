@@ -49,7 +49,7 @@ export default function PaymentTable({ cart, onQuantityChange, onRemove }: CartT
                   </TableCell>
                   <TableCell className="flex items-center gap-4">
                     <div className="flex justify-center items-center">
-                      <img src="/hammer.webp" 
+                      <img src={item.image_url}
                       alt="Hammer" 
                       className="p-1 max-w-[50px] max-h-[50px] object-contain" />
                     </div>

@@ -66,7 +66,7 @@ export default function ProductCards({ categoryId, sortBy, searchQuery, onAddToC
                 </Badge>
                 <div className="flex justify-center items-center aspect-square pt-2">
                   <img 
-                    src="/hammer.webp" 
+                    src={p.image_url}
                     alt="Hammer" 
                     className="p-1 w-full h-full object-contain" />
                 </div>

@@ -6,11 +6,10 @@ import { Button } from "../ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 
 export type Payment = {
-  payment_id: string
   date: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  cashier_name: string
+  total_amount: number
+  amount_given: number
+  username: string
 }
 
 export const columns: ColumnDef<Payment>[] = [
@@ -50,7 +49,7 @@ export const columns: ColumnDef<Payment>[] = [
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Date
+        Date and Time
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
@@ -74,37 +73,42 @@ export const columns: ColumnDef<Payment>[] = [
     },
   },  
   {
-    accessorKey: "amount",
+    accessorKey: "total_amount",
     header: ({ column }) => (
       <Button
         className="p-0"
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Amount
+        Total Amount
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
     cell: ({ row }) => {
-      const amount = row.getValue<number>("amount")
+      const amount = row.getValue<number>("total_amount")
       return `₱${amount.toLocaleString()}`
     },
   },
   {
-    accessorKey: "status",
+    accessorKey: "amount_given",
     header: ({ column }) => (
       <Button
         className="p-0"
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Status
+        Amount Given
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
+    cell: ({ row }) => {
+      const amount = row.getValue<number>("amount_given")
+      return `₱${amount.toLocaleString()}`
+    },
   },
+  
   {
-    accessorKey: "cashier_name",
+    accessorKey: "username",
     header: ({ column }) => (
       <Button
         className="p-0"
@@ -115,5 +119,9 @@ export const columns: ColumnDef<Payment>[] = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
+    cell: ({ row }) => {
+      const username = row.getValue<string>("username")
+      return `${username}`
+    },
   }
 ]

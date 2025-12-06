@@ -13,6 +13,7 @@ interface Product {
   barcode: string
   category_name: string
   supplier_name: string
+  image_url: string
 }
 
 interface Category {
@@ -103,6 +104,26 @@ interface AuditLogs {
   created_at: string
 }
 
+interface TotalRevenueResponse {
+  totalRevenue: number;
+}
+
+interface TotalQuantityResponse {
+  totalQuantity: number;
+}
+
+interface BestSellingProduct {
+  product_id: number;
+  name: string;
+  total_sold: number;
+}
+
+interface GrossProfitResponse {
+  total_revenue: number;
+  total_cogs: number;
+  gross_profit: number;
+}
+
 const fetcher = async <T>(url: string): Promise<T> => {
   const token = localStorage.getItem("token");
 
@@ -144,12 +165,40 @@ export function usePaymentById(paymentId: number | null) {
   return useSWR<JoinedPayment>(url, fetcher); 
 }
 
+export function useTotalRevenue() {
+  const url = `${PAYMENT_URL}/total_revenue`;
+  
+  return useSWR<TotalRevenueResponse>(url, fetcher); 
+}
+
+export function useTotalQuantity() {
+  const url = `${PRODUCT_URL}/total_quantity`;
+  
+  return useSWR<TotalQuantityResponse>(url, fetcher); 
+}
+
+export function useBestSeller() {
+  const url = `${PAYMENT_URL}/best_selling`;
+  
+  return useSWR<BestSellingProduct>(url, fetcher); 
+}
+
+export function useGrossProfit() {
+  const url = `${PAYMENT_URL}/gross_profit`;
+  
+  return useSWR<GrossProfitResponse>(url, fetcher); 
+}
+
 export function useSupplier() {
   return useSWR<Supplier[]>(SUPPLIER_URL, fetcher)
 }
 
 export function useUser() {
   return useSWR<User[]>(USER_URL, fetcher)
+}
+
+export function useUserById(userId: number | null) {
+  return useSWR<User>(userId ? `${USER_URL}/${userId}` : null, fetcher)
 }
 
 export function useStockin() {

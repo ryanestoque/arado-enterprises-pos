@@ -24,8 +24,6 @@ app.get("/", async (req : Request, res : Response) => {
   res.send("POS Server is running...")
 })
 
-app.use(cors());
-app.use(express.json());   // <-- MUST BE BEFORE ROUTES
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoutes)

@@ -4,6 +4,7 @@ import * as React from "react"
 import {
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
   getSortedRowModel,
   type ColumnFiltersState,
@@ -22,12 +23,13 @@ import {
 } from "@/components/ui/table"
 import { Input } from "../ui/input"
 import { Search } from "lucide-react"
+import { Button } from "../ui/button"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  searchPlaceholder?: string // ← add this
-  columnToFilter?: string // ← add this
+  searchPlaceholder?: string
+  columnToFilter?: string
 }
 
 export function DataTable<TData, TValue>({
@@ -51,6 +53,7 @@ export function DataTable<TData, TValue>({
     onRowSelectionChange: setRowSelection,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     state: {
       sorting,
       rowSelection,
@@ -59,7 +62,7 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <>
+    <div>
       <div className="relative flex-1 min-w-36 py-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
         <Input 
@@ -115,6 +118,25 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-    </>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
+      </div>
+
+    </div>
   )
 }

@@ -15,6 +15,12 @@ import {
 import useSWRMutation from "swr/mutation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
+import ChangeUsername from "@/components/settings/ChangeUsernameBtn";
+import ChangeUsernameBtn from "@/components/settings/ChangeUsernameBtn";
+import { useEffect, useState } from "react";
+import { useUserById } from "@/hooks/useAPI";
+import type { User } from "@/components/users/Columns";
+import ChangePasswordBtn from "@/components/settings/ChangePasswordBtn";
 
 async function authPost(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
@@ -33,7 +39,15 @@ export default function Settings() {
   const navigate = useNavigate();
   
   const { user } = useAuth();
-  
+
+  const { data: currentUser } = useUserById(user?.user_id ?? null) 
+
+  const [localUser, setLocalUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (currentUser) setLocalUser(currentUser);
+  }, [currentUser]);
+
   const { trigger: logoutTrigger } = useSWRMutation("http://localhost:5000/api/auth/logout", authPost)  
 
   const logout = async () => {
@@ -56,27 +70,19 @@ export default function Settings() {
         <Card>
           <CardHeader>
             <CardTitle>Username</CardTitle>
-            <CardDescription>{user?.username}</CardDescription>
+            <CardDescription>{localUser?.username}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button
-              variant={"outline"}
-            >
-              Change
-            </Button>
+            {localUser && <ChangeUsernameBtn user={localUser} />}
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle>Password</CardTitle>
-            <CardDescription>Card Description</CardDescription>
+            <CardDescription>Change your current password</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button
-              variant={"outline"}
-            >
-              Change
-            </Button>
+            {localUser && <ChangePasswordBtn user={localUser} />}
           </CardContent>
         </Card>
 

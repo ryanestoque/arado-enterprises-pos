@@ -39,14 +39,15 @@ export const addProducts = async (req: Request, res: Response) => {
       reorder_level,
       sku,
       barcode,
+      image_url
     } = req.body
 
     const sql = `
       INSERT INTO Product 
-      (name, description, category_id, supplier_id, price, cost, stock_quantity, reorder_level, sku, barcode)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (name, description, category_id, supplier_id, price, cost, stock_quantity, reorder_level, sku, barcode, image_url)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    const values = [name, description, category_id, supplier_id, price, cost, stock_quantity, reorder_level, sku, barcode];
+    const values = [name, description, category_id, supplier_id, price, cost, stock_quantity, reorder_level, sku, barcode, image_url];
 
     const [result] = await db.query<ResultSetHeader>(sql, values);
 
@@ -97,6 +98,7 @@ export const updateProduct = async (req: Request, res: Response) => {
       reorder_level,
       sku,
       barcode,
+      image_url
     } = req.body
 
     const [beforeRows] = await db.query<RowDataPacket[]>(
@@ -109,13 +111,13 @@ export const updateProduct = async (req: Request, res: Response) => {
     const sql = `
       UPDATE Product SET 
         name=?, description=?, category_id=?, supplier_id=?, price=?, cost=?, 
-        stock_quantity=?, reorder_level=?, sku=?, barcode=?
+        stock_quantity=?, reorder_level=?, sku=?, barcode=?, image_url=?
       WHERE product_id=?
     `
 
     const values = [
       name, description ?? "", category_id, supplier_id,
-      price, cost, stock_quantity, reorder_level ?? 0, sku, barcode ?? "",
+      price, cost, stock_quantity, reorder_level ?? 0, sku, barcode ?? "", image_url ?? "",
       product_id
     ];
   
@@ -188,3 +190,25 @@ export const deleteProduct = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to delete product" });
   }
 }
+
+export const getTotalQuantity = async (req: Request, res: Response) => {
+  const connection = await db.getConnection();
+
+  try {
+    const [rows] = await connection.query(
+      `SELECT SUM(stock_quantity) AS total_quantity FROM product`
+    );
+
+    const result = rows as any[];
+
+    return res.json({
+      totalQuantity: result[0].total_quantity ?? 0
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to get total quantity" });
+  } finally {
+    connection.release();
+  }
+};
