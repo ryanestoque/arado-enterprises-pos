@@ -69,6 +69,7 @@ export const makePayment = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id,
+      username: (req as any).user.username,
       module: "Payment",
       action: "TRANSACTION",
       description: `Payment #${payment_id} created`,
@@ -281,6 +282,7 @@ export const deletePayment = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id,
+      username: (req as any).user.username,
       module: "Payment",
       action,
       description: `Payment "${paymentId}" deleted`,

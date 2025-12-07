@@ -17,6 +17,7 @@ export const addCategory = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
     const user_id = user.user_id;
+    const username = user.username;
 
     const {
       name,
@@ -44,6 +45,7 @@ export const addCategory = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id,
+      username: (req as any).user.username,
       module: "Category",
       action,
       description: `Category "${after.name}" added`,
@@ -100,6 +102,7 @@ export const updateCategory = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id,
+      username: (req as any).user.username,
       module: "Category",
       action,
       description: `Category "${before.name}" updated`,
@@ -142,6 +145,7 @@ export const deleteCategory = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id,
+      username: (req as any).user.username,
       module: "Category",
       action,
       description: `Category "${before.name}" deleted`,

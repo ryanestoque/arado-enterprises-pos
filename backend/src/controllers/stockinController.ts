@@ -87,6 +87,7 @@ export const makeStockin = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id,
+      username: (req as any).user.username,
       module: "StockIn",
       action,
       description: `Stock in for "${after.product_name}" recorded`,

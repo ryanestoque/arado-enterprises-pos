@@ -8,7 +8,7 @@ export default function Authentication() {
     <>
       <Toaster />
       <div 
-        className="flex flex-col justify-center items-center h-screen ">
+        className="flex flex-col justify-center items-center h-screen auth-bg">
         <Tabs defaultValue="cashier">
           <TabsList className="w-full bg-neutral-100">
             <TabsTrigger className="w-full" value="cashier">Cashier</TabsTrigger>

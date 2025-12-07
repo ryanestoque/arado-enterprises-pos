@@ -7,7 +7,7 @@ export const getAuditLogs = async (req: Request, res: Response) => {
       `SELECT 
           a.audit_id,
           a.user_id,
-          u.username,
+          a.username,
           a.module,
           a.action,
           a.description,

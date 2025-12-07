@@ -56,6 +56,7 @@ export const addUser = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id: (req as any).user.user_id,
+      username: (req as any).user.username,
       module: "User",
       action: "REGISTRATION",
       description: `User "${username}" registered`,
@@ -132,6 +133,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id: (req as any).user.user_id,
+      username: (req as any).user.username,
       module: "User",
       action: "UPDATE",
       description: `Updated user "${username}"`,
@@ -172,6 +174,7 @@ export const deleteUser = async (req: Request, res: Response) => {
     
     await auditLog({
       user_id: (req as any).user.user_id,
+      username: (req as any).user.username,
       module: "User",
       action,
       description: `User "${before.username}" deleted`,
@@ -208,6 +211,7 @@ export const changeUsername = async (req: Request, res: Response) => {
     // AUDIT LOG ✨
     await auditLog({
       user_id: userId,
+      username: (req as any).user.username,
       module: "User",
       action: "UPDATE",
       description: `${oldUsername} changed username to "${newUsername}"`,
@@ -248,6 +252,7 @@ export const changePassword = async (req: Request, res: Response) => {
     // AUDIT LOG ✨
     await auditLog({
       user_id: userId,
+      username: (req as any).user.username,
       module: "User",
       action: "UPDATE",
       description: `A user changed password`,

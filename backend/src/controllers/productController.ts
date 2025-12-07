@@ -64,6 +64,7 @@ export const addProducts = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id,
+      username: (req as any).user.username,
       module: "Product",
       action,
       description: `Product "${after.name}" added`,
@@ -134,6 +135,7 @@ export const updateProduct = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id,
+      username: (req as any).user.username,
       module: "Product",
       action,
       description: `Product "${before.name}" updated`,
@@ -176,6 +178,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id,
+      username: (req as any).user.username,
       module: "Product",
       action,
       description: `Product "${before.name}" deleted`,

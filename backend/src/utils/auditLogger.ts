@@ -2,6 +2,7 @@ import db from "../config/db";
 
 export const auditLog = async ({
   user_id,
+  username,
   module,
   action,
   description,
@@ -10,6 +11,7 @@ export const auditLog = async ({
   ip
 }: {
   user_id: number,
+  username: string,
   module: string,
   action: string,
   description: string,
@@ -19,10 +21,11 @@ export const auditLog = async ({
 }) => {
   await db.query(
     `INSERT INTO auditlog
-      (user_id, module, action, description, before_data, after_data, ip_address) 
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      (user_id, username, module, action, description, before_data, after_data, ip_address) 
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       user_id,
+      username,
       module,
       action,
       description,

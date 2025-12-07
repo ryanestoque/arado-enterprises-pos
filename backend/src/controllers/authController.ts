@@ -28,6 +28,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id: (req as any).user.user_id,
+      username: (req as any).user.username,
       module: "User",
       action: "REGISTRATION",
       description: `User "${username}" registered`,
@@ -96,6 +97,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id: user.user_id,
+      username: user.username,
       module: "Auth",
       action: "LOGIN",
       description: `User "${user.username}" logged in`,
@@ -126,6 +128,7 @@ export const logoutUser = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id: user.user_id,
+      username: (req as any).user.username,
       module: "Auth",
       action: "LOGOUT",
       description: `User "${user.username}" logged out`,

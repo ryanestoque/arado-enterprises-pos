@@ -48,6 +48,7 @@ export const addSupplier = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id,
+      username: (req as any).user.username,
       module: "Supplier",
       action,
       description: `Supplier "${after.name}" added`,
@@ -110,6 +111,7 @@ export const updateSupplier = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id,
+      username: (req as any).user.username,
       module: "Supplier",
       action,
       description: `Supplier "${before.name}" added`,
@@ -152,6 +154,7 @@ export const deleteSupplier = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id,
+      username: (req as any).user.username,
       module: "Supplier",
       action,
       description: `Supplier "${before.name}" deleted`,
