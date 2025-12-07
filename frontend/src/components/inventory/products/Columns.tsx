@@ -5,6 +5,7 @@ import { ArrowUpDown } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import InventoryActions from "./InventoryActions"
 import { Button } from "@/components/ui/button"
+import { formatMoney } from "@/components/dashboard/SectionCards"
 
 export type Product = {
   product_id: number
@@ -96,7 +97,7 @@ export const columns: ColumnDef<Product>[] = [
     },
     cell: ({ row }) => 
     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-      ₱{row.getValue("price")}
+      ₱{formatMoney(row.getValue("price"))}
     </div>,
   },
   {
@@ -115,7 +116,7 @@ export const columns: ColumnDef<Product>[] = [
     },
     cell: ({ row }) => 
     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-      ₱{row.getValue("cost")}
+      ₱{formatMoney(row.getValue("cost"))}
     </div>,
   },
   {

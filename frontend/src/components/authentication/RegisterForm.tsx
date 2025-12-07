@@ -161,7 +161,7 @@ export default function RegisterForm({ setMode, role }: RegisterFormProps) {
                     />
                   </FormControl>
                   <FormMessage />
-                  <div className="flex items-center gap-2 pt-2">
+                  {/* <div className="flex items-center gap-2 pt-2">
                     <Checkbox id="remember"/>
                     <label
                       htmlFor="remember"
@@ -169,7 +169,7 @@ export default function RegisterForm({ setMode, role }: RegisterFormProps) {
                     >
                       Stay logged in
                     </label>
-                  </div>
+                  </div> */}
                 </FormItem>
               )}
             />         

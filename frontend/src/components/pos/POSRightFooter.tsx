@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import CheckoutButton from "./CheckoutButton";
 import { ConfirmDialog } from "../common/ConfirmDialog";
 import { DiscountPopover } from "./DiscountPopover";
+import { formatMoney } from "../dashboard/SectionCards";
 
 interface POSRightFooterProps {
   cart: any[];
@@ -43,10 +44,10 @@ export default function POSRightFooter( { cart, userId, onCheckoutSuccess, remov
           <p className="mt-2 text-lg font-medium">Due amount</p>
         </div>
         <div className="flex flex-col text-end gap-2">
-          <p className="text-sm font-medium">₱{ subtotal.toFixed(2) }</p>
+          <p className="text-sm font-medium">₱{ formatMoney(subtotal) }</p>
           <p className="text-sm font-medium">{ discount }%</p>
-          <p className="text-sm font-medium">₱{ vat.toFixed(2) }</p>
-          <p className="mt-2 text-lg font-semibold">₱{ dueAmount.toFixed(2) }</p>
+          <p className="text-sm font-medium">₱{ formatMoney(vat) }</p>
+          <p className="mt-2 text-lg font-semibold">₱{ formatMoney(dueAmount) }</p>
         </div>
       </div>
       <div className="flex gap-2 flex-wrap w-full justify-center items-center mt-2">

@@ -7,6 +7,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "../ui/toast";
+import { formatMoney } from "../dashboard/SectionCards";
 
 interface CartTableProps {
   cart: any[];
@@ -65,8 +66,8 @@ export default function PaymentTable({ cart, onQuantityChange, onRemove }: CartT
                   <TableCell className="text-center">
                     {item.quantity} 
                   </TableCell>
-                  <TableCell className="text-center">₱{(item.price)}</TableCell>
-                  <TableCell className="text-right font-semibold">₱{(item.price * item.quantity).toFixed(2)}</TableCell>
+                  <TableCell className="text-center">₱{(formatMoney(item.price))}</TableCell>
+                  <TableCell className="text-right font-semibold">₱{formatMoney((item.price * item.quantity))}</TableCell>
                 </TableRow>
               </CollapsibleTrigger>
               <TableRow>

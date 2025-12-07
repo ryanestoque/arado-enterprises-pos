@@ -46,7 +46,7 @@ interface JoinedPayment extends Payment {
   username: string;
   first_name: string;
   last_name: string;
-  items: PaymentItem[]; // To hold the items for this payment
+  items: PaymentItem[];
 }
 
 interface Supplier {

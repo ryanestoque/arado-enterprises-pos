@@ -5,6 +5,7 @@ import { ArrowUpDown } from "lucide-react"
 import { Button } from "../ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import PaymentActions from "./PaymentActions"
+import { formatMoney } from "./SectionCards"
 
 export type Payment = {
   payment_id: number
@@ -88,7 +89,7 @@ export const columns: ColumnDef<Payment>[] = [
     ),
     cell: ({ row }) => {
       const amount = row.getValue<number>("total_amount")
-      return `₱${amount.toFixed(2).toLocaleString()}`
+      return `₱${formatMoney(amount)}`
     },
   },
   {
@@ -105,7 +106,7 @@ export const columns: ColumnDef<Payment>[] = [
     ),
     cell: ({ row }) => {
       const amount = row.getValue<number>("amount_given")
-      return `₱${amount.toFixed(2).toLocaleString()}`
+      return `₱${formatMoney(amount)}`
     },
   },
   

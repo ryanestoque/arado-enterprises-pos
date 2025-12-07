@@ -140,7 +140,7 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
                     />
                   </FormControl>
                   <FormMessage />
-                  <div className="flex items-center gap-2 pt-2">
+                  {/* <div className="flex items-center gap-2 pt-2">
                     <Checkbox id="remember"/>
                     <label
                       htmlFor="remember"
@@ -148,7 +148,7 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
                     >
                       Stay logged in
                     </label>
-                  </div>
+                  </div> */}
                 </FormItem>
               )}
             />         

@@ -2,6 +2,7 @@ import { PackageX } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { formatMoney } from "../dashboard/SectionCards";
 
 interface ProductCardsProps {
   localProducts: any[]
@@ -73,7 +74,7 @@ export default function ProductCards({ categoryId, sortBy, searchQuery, onAddToC
               </CardHeader>
               <CardContent>
                 <p className="font-regular text-sm xl:text-base truncate">{p.name}</p>
-                <p className="font-bold text-lg xl:text-xl truncate mt-[1px] xl:mt-0.5">₱{p.price}</p>
+                <p className="font-bold text-lg xl:text-xl truncate mt-[1px] xl:mt-0.5">₱{formatMoney(p.price)}</p>
                 <p className="text-xs xl:text-sm text-muted-foreground mt-2 truncate">{p.stock_quantity} items left</p>
               </CardContent>
             </Card>

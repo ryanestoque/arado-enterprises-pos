@@ -9,7 +9,11 @@ import {
 } from "@/components/ui/card"
 import { useBestSeller, useGrossProfit, useTotalQuantity, useTotalRevenue } from "@/hooks/useAPI";
 
-
+export const formatMoney = (value: any) =>
+  (Number(value) || 0).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+});
 
 export function SectionCards() {
   const { data: totalRevenue } = useTotalRevenue();
@@ -26,7 +30,7 @@ export function SectionCards() {
         <CardHeader className="relative">
           <CardDescription>Total Revenue</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            ₱ {revenue.toLocaleString()}
+            ₱ {formatMoney(revenue)}
           </CardTitle>
           {/* <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
@@ -48,7 +52,7 @@ export function SectionCards() {
         <CardHeader className="relative">
           <CardDescription>Gross Profit</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            ₱ {grossProfit?.gross_profit}
+            ₱ {formatMoney(grossProfit?.gross_profit)}
           </CardTitle>
           {/* <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">

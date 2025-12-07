@@ -153,7 +153,7 @@ export default function PaymentActions({ payment }: { payment: Payment }) {
                         <span>Subtotal:</span>
                         <span>₱{paymentById?.original_total.toFixed(2)}</span>
                     </div>
-                    {paymentById?.discount_amount || 0 > 0 && (
+                    {(paymentById?.discount_amount ?? 0) > 0 && (
                         <div className="flex justify-between text-red-600">
                             <span>Discount ({paymentById?.discount_reason}):</span>
                             <span>- ₱{paymentById?.discount_amount.toFixed(2)}</span>
