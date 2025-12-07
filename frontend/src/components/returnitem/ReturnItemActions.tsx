@@ -1,18 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { useCategory, useProduct, useSupplier, useUser } from "@/hooks/useAPI";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useProduct, useUser } from "@/hooks/useAPI";
 import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import type { Exchange } from "./Columns";
+import type { ReturnItem } from "./Columns";
 import { mutate } from "swr";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import type { ExchangeFormValues } from "./ExchangeForm";
-import ExchangeForm from "./ExchangeForm";
+import type { ReturnItemFormValues } from "./ReturnItemForm";
+import ReturnForm from "./ReturnItemForm";
 
-async function updateExchange(url: string, { arg }: { arg: any }) {
+async function updateReturnItem(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
     method: "PUT",
     headers: { 
@@ -22,11 +22,11 @@ async function updateExchange(url: string, { arg }: { arg: any }) {
     body: JSON.stringify(arg),
   })
 
-  if (!res.ok) throw new Error("Failed to update exchanged item")
+  if (!res.ok) throw new Error("Failed to update returned item")
   return res.json()
 }
 
-async function deleteExchange(url: string) {
+async function deleteReturnItem(url: string) {
   const res = await fetch(url, {
     method: 'DELETE',
     headers: {
@@ -35,16 +35,16 @@ async function deleteExchange(url: string) {
     },
   });
 
-  if (!res.ok) throw new Error("Failed to delete exchanged item")
+  if (!res.ok) throw new Error("Failed to delete returned item")
 }
 
 
-export default function ExchangeActions({ exchange }: { exchange: Exchange }) {
+export default function ReturnItemActions({ returnItem }: { returnItem: ReturnItem }) {
   const { data: products = [] } = useProduct()
   const { data: users = [] } = useUser()
 
-  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/exchange/${exchange.exchange_id}`, updateExchange)
-  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`http://localhost:5000/api/exchange/${exchange.exchange_id}`, deleteExchange)
+  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/return/${returnItem.return_id}`, updateReturnItem)
+  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`http://localhost:5000/api/return/${returnItem.return_id}`, deleteReturnItem)
 
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [openSheet, setOpenSheet] = useState(false)
@@ -52,11 +52,11 @@ export default function ExchangeActions({ exchange }: { exchange: Exchange }) {
 
   const { toast } = useToast()
 
-  const handleEditExchange = async (values: ExchangeFormValues) => {
+  const handleEditReturn = async (values: ReturnItemFormValues) => {
     try {
       await updateTrigger(values)
       setSuccess(true)
-      mutate("http://localhost:5000/api/exchange")
+      mutate("http://localhost:5000/api/return")
       setOpenSheet(false)
     } catch (error) {
       console.error(error)
@@ -64,17 +64,17 @@ export default function ExchangeActions({ exchange }: { exchange: Exchange }) {
     }
   }
 
-  const handleConfirm = async (values: ExchangeFormValues) => {
-    await handleEditExchange(values)
+  const handleConfirm = async (values: ReturnItemFormValues) => {
+    await handleEditReturn(values)
 
     if (isSuccess) {
       toast({
-        title: `Exchange item edited successfully!`,
+        title: `Return item edited successfully!`,
         action: <ToastAction altText="OK">OK</ToastAction>
       })
     } else {
       toast({
-        title: `Failed to edit Exchange ID: ${exchange.exchange_id}!`,
+        title: `Failed to edit Return ID: ${returnItem.return_id}!`,
         variant: "destructive",
         action: <ToastAction altText="Try again">Try again</ToastAction>
       })
@@ -84,15 +84,15 @@ export default function ExchangeActions({ exchange }: { exchange: Exchange }) {
   const handleDelete = async () => {
     try {
       await deleteTrigger()
-      mutate("http://localhost:5000/api/exchange")
+      mutate("http://localhost:5000/api/return")
       toast({
-        title: `Exchange ID: ${exchange.exchange_id} is deleted!`,
+        title: `Return ID: ${returnItem.return_id} is deleted!`,
         action: <ToastAction altText="OK">OK</ToastAction>
       })
     } catch (error) {
       console.error(error)
       toast({
-        title: `Failed to delete Exchange ID: ${exchange.exchange_id}!`,
+        title: `Failed to delete Return ID: ${returnItem.return_id}!`,
         action: <ToastAction altText="OK">OK</ToastAction>
       })
     }
@@ -102,22 +102,22 @@ export default function ExchangeActions({ exchange }: { exchange: Exchange }) {
     <div className="flex gap-2">
       <Sheet open={openSheet} onOpenChange={setOpenSheet}>
         <SheetTrigger>      
-          <Button size="sm" variant="outline" onClick={() => console.log("Edit", exchange)}>
+          <Button size="sm" variant="outline" onClick={() => console.log("Edit", returnItem)}>
             <Pencil className="w-4 h-4" />
           </Button>
         </SheetTrigger>
         <SheetContent className="flex flex-col gap-4 overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>Edit Exchange</SheetTitle>
+            <SheetTitle>Edit Return</SheetTitle>
             {/* <SheetDescription>This action cannot be undone.</SheetDescription> */}
           </SheetHeader>
-          <ExchangeForm 
+          <ReturnForm 
             submitLabel="Save"
             onSubmit={handleConfirm}
             isMutating={isUpdating}
             users={users}
             products={products}
-            defaultValues={exchange}
+            defaultValues={returnItem}
             />
           <SheetFooter>
             {/* <Button>Submit</Button>
@@ -131,7 +131,7 @@ export default function ExchangeActions({ exchange }: { exchange: Exchange }) {
       <ConfirmDialog
         open={openDialog}
         onOpenChange={setOpenDialog}
-        title={`Delete Exchange ID: ${exchange.exchange_id} from Exchanges?`}
+        title={`Delete Return ID: ${returnItem.return_id} from ReturnItems?`}
         description="This cannot be undone"
         confirmText="Delete"
         cancelText="Cancel"

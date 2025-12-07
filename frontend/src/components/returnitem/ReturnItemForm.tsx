@@ -16,39 +16,39 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "../ui/textarea";
 import { useAuth } from "@/context/AuthContext";
 
-const exchangeSchema = z.object({
+const returnItemSchema = z.object({
   product_id: z.coerce.number<number>(),
-  exchanged_quantity: z.coerce.number<number>().min(1, "Quantity is required"),
-  exchange_reason: z.string().min(1, "Exchange reason cannot be blank"),
+  return_quantity: z.coerce.number<number>().min(1, "Quantity is required"),
+  return_reason: z.string().min(1, "Return reason cannot be blank"),
   user_id: z.coerce.number<number>(),
 });
 
-export type ExchangeFormValues = z.infer<typeof exchangeSchema>;
+export type ReturnItemFormValues = z.infer<typeof returnItemSchema>;
 
-interface ExchangeFormProps {
-  defaultValues?: Partial<ExchangeFormValues>;
+interface ReturnItemFormProps {
+  defaultValues?: Partial<ReturnItemFormValues>;
   products?: { product_id: number; name: string }[];
   users?: { user_id: number; username: string }[];
-  onSubmit: (values: ExchangeFormValues) => void;
+  onSubmit: (values: ReturnItemFormValues) => void;
   submitLabel?: string;
   isMutating?: any
-  initialValues?: ExchangeFormValues,
+  initialValues?: ReturnItemFormValues,
 }
 
-export default function ExchangeForm({
+export default function ReturnForm({
   defaultValues,
   products = [],
   users = [],
   onSubmit,
   submitLabel = "Save",
   isMutating
-}: ExchangeFormProps) {
+}: ReturnItemFormProps) {
 
   const { user } = useAuth();
   if (!user) return null;
 
-  const form = useForm<ExchangeFormValues>({
-    resolver: zodResolver(exchangeSchema),
+  const form = useForm<ReturnItemFormValues>({
+    resolver: zodResolver(returnItemSchema),
     defaultValues: {
       ...defaultValues,
       user_id: user.user_id,
@@ -121,7 +121,7 @@ export default function ExchangeForm({
         />
         <FormField
           control={form.control}
-          name="exchanged_quantity"
+          name="return_quantity"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Quantity</FormLabel>
@@ -134,10 +134,10 @@ export default function ExchangeForm({
         />
         <FormField
           control={form.control}
-          name="exchange_reason"
+          name="return_reason"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Reason for exchange</FormLabel>
+              <FormLabel>Reason for return</FormLabel>
               <FormControl>
                 <Textarea {...field} />
               </FormControl>

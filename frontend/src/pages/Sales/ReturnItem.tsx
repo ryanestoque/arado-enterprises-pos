@@ -1,19 +1,21 @@
 import { SiteHeader } from "@/components/common/SiteHeader";
-import ExchangeBtn from "@/components/exchange/ExchangeBtn";
-import ExchangeTable from "@/components/exchange/ExchangeTable";
+import ReturnItemBtn from "@/components/returnitem/ReturnItemBtn";
+import ExchangeBtn from "@/components/returnitem/ReturnItemBtn";
+import ReturnItemTable from "@/components/returnitem/ReturnItemTable";
+import ExchangeTable from "@/components/returnitem/ReturnItemTable";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useExchange } from "@/hooks/useAPI";
+import { useReturnItem } from "@/hooks/useAPI";
 import { useEffect, useState } from "react";
 
-export default function Exchange() {
-    const { data: exchange = [] } = useExchange()
-    const [localExchanges, setLocalExchanges] = useState<any[]>([])
+export default function ReturnItem() {
+    const { data: returnItems = [] } = useReturnItem()
+    const [localReturnItems, setLocalReturnItems] = useState<any[]>([])
   
     useEffect(() => {
-      setLocalExchanges(exchange)
-    }, [exchange])
+      setLocalReturnItems(returnItems)
+    }, [returnItems])
 
   return(
     <>
@@ -24,16 +26,16 @@ export default function Exchange() {
             orientation="vertical"
             className="mx-2 data-[orientation=vertical]:h-4"
           />
-          <h1 className="text-base font-medium">Exchange</h1>
+          <h1 className="text-base font-medium">Return</h1>
         </div>
         <div className="flex flex-row mx-4 lg:mx-6 gap-2">
-          <ExchangeBtn />
+          <ReturnItemBtn />
         </div>
       </header>
       <main className="@container/main w-full h-[80vh] flex-1 p-4 md:p-6">
         <Card className="h-full">
           <CardContent className="px-2 overflow-x-auto max-h-[85vh]">
-            <ExchangeTable data={localExchanges}/>
+            <ReturnItemTable data={localReturnItems}/>
           </CardContent>
         </Card>
       </main>

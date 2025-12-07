@@ -8,8 +8,8 @@ import Categories from "./pages/Inventory/Categories";
 import Suppliers from "./pages/Suppliers/Suppliers";
 import Settings from "./pages/Settings/Settings";
 import Users from "./pages/Users/Users";
-import Exchange from "./pages/Sales/Exchange";
 import AuditLogs from "./pages/AuditLogs/AuditLogs";
+import ReturnItem from "./pages/Sales/ReturnItem";
 
 export default function App() {
   return(
@@ -20,7 +20,7 @@ export default function App() {
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} /> 
         <Route path="pos" element={<POS />} /> 
-        <Route path="exchange" element={<Exchange />} /> 
+        <Route path="return" element={<ReturnItem />} /> 
         <Route path="categories" element={<Categories />} /> 
         <Route path="products" element={<Products />} /> 
         <Route path="suppliers" element={<Suppliers />} /> 

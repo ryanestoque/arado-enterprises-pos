@@ -3,26 +3,26 @@ import db from "../config/db";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { auditLog, detectAction } from "../utils/auditLogger";
 
-interface ExchangeItemWithNames extends RowDataPacket {
-  exchange_id: number;
+interface ReturnItemWithNames extends RowDataPacket {
+  return_id: number;
   payment_item_id: number;
-  exchanged_quantity: number;
-  exchange_date: string;
-  exchange_reason: string;
+  return_quantity: number;
+  return_date: string;
+  return_reason: string;
   user_id: number;
   product_id: number;
   product_name: string;
   username: string;
 }
 
-export const getAllExchanges = async (req: Request, res: Response) => {
+export const getAllReturns = async (req: Request, res: Response) => {
   try {
     const [rows] = await db.query(`
       SELECT 
         e.*,
         p.name AS product_name,
         u.username AS username
-      FROM ExchangeItem e
+      FROM ReturnItem e
       LEFT JOIN Product p 
         ON e.product_id = p.product_id
       LEFT JOIN Users u
@@ -31,29 +31,29 @@ export const getAllExchanges = async (req: Request, res: Response) => {
     res.json(rows);
   } catch(err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to fetch exchanged items" });
+    res.status(500).json({ message: "Failed to fetch returned items" });
   }
 }
 
-export const makeExchange = async (req: Request, res: Response) => {
+export const makeReturn = async (req: Request, res: Response) => {
   const connection = await db.getConnection();
 
   try {
     await connection.beginTransaction();
 
     const {
-      exchanged_quantity,
-      exchange_reason,
+      return_quantity,
+      return_reason,
       user_id,
       product_id
     } = req.body;
 
     const insertSql = `
-      INSERT INTO ExchangeItem
-      (exchanged_quantity, exchange_date, exchange_reason, user_id, product_id)
+      INSERT INTO ReturnItem
+      (return_quantity, return_date, return_reason, user_id, product_id)
       VALUES (?, NOW(), ?, ?, ?)
     `;
-    const insertValues = [exchanged_quantity, exchange_reason, user_id, product_id];
+    const insertValues = [return_quantity, return_reason, user_id, product_id];
 
     const [insertResult] = await connection.query<ResultSetHeader>(
       insertSql,
@@ -71,22 +71,22 @@ export const makeExchange = async (req: Request, res: Response) => {
     // If both succeed → commit
     await connection.commit();
 
-    const exchange_id = insertResult.insertId;
+    const return_id = insertResult.insertId;
 
-    const [afterRows] = await db.query<ExchangeItemWithNames[]>(
+    const [afterRows] = await db.query<ReturnItemWithNames[]>(
       `
       SELECT 
         e.*,
         p.name AS product_name,
         u.username AS username
-      FROM ExchangeItem e
+      FROM ReturnItem e
       LEFT JOIN Product p 
         ON e.product_id = p.product_id
       LEFT JOIN Users u
         ON e.user_id = u.user_id
-      WHERE exchange_id = ?
+      WHERE return_id = ?
       `,
-      [exchange_id]
+      [return_id]
     );
 
     const after = afterRows[0];
@@ -95,9 +95,9 @@ export const makeExchange = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id,
-      module: "Exchange",
+      module: "Return",
       action,
-      description: `Exchange for "${after.product_name}" recorded`,
+      description: `Return for "${after.product_name}" recorded`,
       before: null,
       after,
       ip: req.ip
@@ -105,71 +105,71 @@ export const makeExchange = async (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      exchange_id: insertResult.insertId,
-      message: "Exchange recorded",
+      return_id: insertResult.insertId,
+      message: "Return recorded",
     });
 
   } catch (err) {
     console.error(err);
     await connection.rollback();
-    res.status(500).json({ message: "Failed to exchange" });
+    res.status(500).json({ message: "Failed to return" });
   } finally {
     connection.release();
   }
 };
 
-export const updateExchange = async (req: Request, res: Response) => {
+export const updateReturn = async (req: Request, res: Response) => {
   try {
-    const { exchange_id } = req.params;
+    const { return_id } = req.params;
     
     const {
-      exchanged_quantity,
-      exchange_reason,
+      return_quantity,
+      return_reason,
       user_id,
       product_id
     } = req.body;
 
-    const [beforeRows] = await db.query<ExchangeItemWithNames[]>(
+    const [beforeRows] = await db.query<ReturnItemWithNames[]>(
       `SELECT 
         e.*,
         p.name AS product_name,
         u.username AS username
-      FROM ExchangeItem e
+      FROM ReturnItem e
       LEFT JOIN Product p 
         ON e.product_id = p.product_id
       LEFT JOIN Users u
         ON e.user_id = u.user_id
-      WHERE exchange_id = ?`,
-      [exchange_id]
+      WHERE return_id = ?`,
+      [return_id]
     );
 
     const before = beforeRows[0];
 
   
     const sql = `
-      UPDATE ExchangeItem SET 
-        exchanged_quantity=?, exchange_date=NOW(), exchange_reason=?, user_id=?, product_id=?
-      WHERE exchange_id=?
+      UPDATE ReturnItem SET 
+        return_quantity=?, return_date=NOW(), return_reason=?, user_id=?, product_id=?
+      WHERE return_id=?
     `
 
     const values = [
-      exchanged_quantity, exchange_reason, user_id, product_id, exchange_id,
+      return_quantity, return_reason, user_id, product_id, return_id,
     ];
   
     await db.query(sql, values)
 
-    const [afterRows] = await db.query<ExchangeItemWithNames[]>(
+    const [afterRows] = await db.query<ReturnItemWithNames[]>(
       `SELECT 
         e.*,
         p.name AS product_name,
         u.username AS username
-      FROM ExchangeItem e
+      FROM ReturnItem e
       LEFT JOIN Product p 
         ON e.product_id = p.product_id
       LEFT JOIN Users u
         ON e.user_id = u.user_id
-      WHERE exchange_id = ?`,
-      [exchange_id]
+      WHERE return_id = ?`,
+      [return_id]
     );
 
     const after = Array.isArray(afterRows) ? afterRows[0] : null;
@@ -178,9 +178,9 @@ export const updateExchange = async (req: Request, res: Response) => {
 
     await auditLog({
       user_id,
-      module: "ExchangeItem",
+      module: "ReturnItem",
       action,
-      description: `Exchange for "${before.product_name}" updated`,
+      description: `Return for "${before.product_name}" updated`,
       before,
       after,
       ip: req.ip  
@@ -189,49 +189,49 @@ export const updateExchange = async (req: Request, res: Response) => {
     res.json({ success: true })
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to update exchanged_item" });
+    res.status(500).json({ message: "Failed to update return_item" });
   }
 }
 
-export const deleteExchange = async (req: Request, res: Response) => {
+export const deleteReturn = async (req: Request, res: Response) => {
   try{
-    const { exchange_id } = req.params;
+    const { return_id } = req.params;
 
     const user = (req as any).user;
     const user_id = user.user_id;
 
-    const [beforeRows] = await db.query<ExchangeItemWithNames[]>(
+    const [beforeRows] = await db.query<ReturnItemWithNames[]>(
       `SELECT 
         e.*,
         p.name AS product_name,
         u.username AS username
-      FROM ExchangeItem e
+      FROM ReturnItem e
       LEFT JOIN Product p 
         ON e.product_id = p.product_id
       LEFT JOIN Users u
         ON e.user_id = u.user_id
-      WHERE exchange_id = ?`,
-      [exchange_id]
+      WHERE return_id = ?`,
+      [return_id]
     );
 
     const before = beforeRows[0];
     if (!before) {
-      return res.status(404).json({ message: "Exchange not found" });
+      return res.status(404).json({ message: "Return not found" });
     }
   
     const sql = `
-      DELETE FROM ExchangeItem WHERE exchange_id=?
+      DELETE FROM ReturnItem WHERE return_id=?
     `
 
-    await db.query(sql, exchange_id);
+    await db.query(sql, return_id);
 
     const action = detectAction(before, null);
 
     await auditLog({
       user_id,
-      module: "Exchange",
+      module: "Return",
       action,
-      description: `Exchange for "${before.product_name}" deleted`,
+      description: `Return for "${before.product_name}" deleted`,
       before,
       after: null,
       ip: req.ip
@@ -240,6 +240,6 @@ export const deleteExchange = async (req: Request, res: Response) => {
     res.json({ success: true });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to delete exchange" });
+    res.status(500).json({ message: "Failed to delete return" });
   }
 }

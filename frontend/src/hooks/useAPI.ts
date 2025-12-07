@@ -79,13 +79,13 @@ interface Stockin {
   username: string
 }
 
-interface ExchangeItem {
-  exchange_id: number
+interface ReturnItem {
+  return_id: number
   product_id: number
   product_name: string
-  exchanged_quantity: number
-  exchange_date: string
-  exchange_reason: string
+  ereturn_quantity: number
+  return_date: string
+  return_reason: string
   user_id: number
   username: string
 }
@@ -144,7 +144,7 @@ const PAYMENT_URL = "http://localhost:5000/api/payment"
 const SUPPLIER_URL = "http://localhost:5000/api/supplier"
 const USER_URL = "http://localhost:5000/api/user"
 const STOCKIN_URL = "http://localhost:5000/api/stockin"
-const EXCHANGEITEM_URL = "http://localhost:5000/api/exchange"
+const RETURNITEM_URL = "http://localhost:5000/api/return"
 const AUDITLOGS_URL = "http://localhost:5000/api/auditlog"
 
 export function useProduct() {
@@ -205,8 +205,8 @@ export function useStockin() {
   return useSWR<Stockin[]>(STOCKIN_URL, fetcher)
 }
 
-export function useExchange() {
-  return useSWR<ExchangeItem[]>(EXCHANGEITEM_URL, fetcher)
+export function useReturnItem() {
+  return useSWR<ReturnItem[]>(RETURNITEM_URL, fetcher)
 }
 
 export function useAuditLogs() {

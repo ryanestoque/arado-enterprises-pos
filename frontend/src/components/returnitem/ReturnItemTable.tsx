@@ -1,9 +1,9 @@
 "use client"
 
 import { DataTable } from "@/components/common/DataTable"
-import { columns, type Exchange } from "./Columns"
+import { columns, type ReturnItem } from "./Columns"
 
-export default function ExchangeTable({ data }: { data: Exchange[] }) {
+export default function ReturnItemTable({ data }: { data: ReturnItem[] }) {
   return (
     <div className="p-4 overflow-y-auto">
       <DataTable 

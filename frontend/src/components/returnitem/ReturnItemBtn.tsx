@@ -5,12 +5,11 @@ import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
-import { useProduct, useSupplier, useUser } from "@/hooks/useAPI";
-import { mutate } from "swr";
-import type { ExchangeFormValues } from "./ExchangeForm";
-import ExchangeForm from "./ExchangeForm";
+import { useProduct, useSupplier, useUser } from "@/hooks/useAPI";import type { ReturnItemFormValues } from "./ReturnItemForm";
+import ReturnForm from "./ReturnItemForm";
+;
 
-async function postExchange(url: string, { arg }: { arg: any }) {
+async function postReturnItem(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${localStorage.getItem("token")}`, },
@@ -20,15 +19,15 @@ async function postExchange(url: string, { arg }: { arg: any }) {
   return res.json()
 }
 
-export default function ExchangeBtn() {
+export default function ReturnItemBtn() {
   const { data: users = [] } = useUser()
   const { data: products = [] } = useProduct()
 
-  const { trigger, isMutating } = useSWRMutation("http://localhost:5000/api/exchange", postExchange)
+  const { trigger, isMutating } = useSWRMutation("http://localhost:5000/api/return", postReturnItem)
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [open, setOpen] = useState(false)
 
-  const handleExchange = async (values: ExchangeFormValues) => {
+  const handleReturnItem = async (values: ReturnItemFormValues) => {
     try {
       await trigger(values)
       setSuccess(true)
@@ -41,17 +40,17 @@ export default function ExchangeBtn() {
 
   const { toast } = useToast()
   
-  const handleConfirm = async (values: ExchangeFormValues) => {
-    await handleExchange(values)
+  const handleConfirm = async (values: ReturnItemFormValues) => {
+    await handleReturnItem(values)
 
     if (isSuccess) {
       toast({
-        title: "Exchange successfully!",
+        title: "Return successful!",
         action: <ToastAction altText="OK">OK</ToastAction>
       })
     } else {
       toast({
-        title: "Failed to exchange",
+        title: "Failed to return item",
         variant: "destructive",
         action: <ToastAction altText="Try again">Try again</ToastAction>
       })
@@ -65,16 +64,16 @@ export default function ExchangeBtn() {
           size={"sm"}
           >
           <Plus />
-          Exchange Item
+          Return Item
         </Button>
       </SheetTrigger>
       <SheetContent className="flex flex-col gap-4 overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Exchange Item</SheetTitle>
+          <SheetTitle>Return Item</SheetTitle>
           {/* <SheetDescription>This action cannot be undone.</SheetDescription> */}
         </SheetHeader>
-        <ExchangeForm
-          submitLabel="Exchange"
+        <ReturnForm
+          submitLabel="Return"
           onSubmit={handleConfirm}
           isMutating={isMutating}
           products={products}
