@@ -20,6 +20,7 @@ import { ScrollArea } from '../ui/scroll-area'
 import { Separator } from '../ui/separator'
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { formatMoney } from '../dashboard/SectionCards'
 
 async function postPayment(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
@@ -145,7 +146,7 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Due amount: ₱{dueAmount.toFixed(2)}</DialogTitle>
+            <DialogTitle>Due amount: ₱{formatMoney(dueAmount)}</DialogTitle>
             <DialogDescription>
               A receipt will be generated afterwards.
             </DialogDescription>
@@ -161,6 +162,7 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
                 type="number"
                 min={0}
                 value={undefined}
+                autoComplete="off"
                 onChange={(e) => setCash(Number(e.target.value))}
               />
             </div>
@@ -227,7 +229,7 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
                   {payment.items.map((item: any, index: number) => (
                     <div key={index} className="flex justify-between text-sm">
                       <span className="flex-1">{item.item_quantity}x Product {item.product_name}</span>
-                      <span className="font-medium">₱{(item.item_quantity * item.item_price).toFixed(2)}</span>
+                      <span className="font-medium">₱{formatMoney((item.item_quantity * item.item_price))}</span>
                     </div>
                   ))}
                 </div>
@@ -238,17 +240,17 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
                 <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                         <span>Subtotal:</span>
-                        <span>₱{payment.original_total.toFixed(2)}</span>
+                        <span>₱{formatMoney(payment.original_total)}</span>
                     </div>
                     {payment.discount_amount > 0 && (
                         <div className="flex justify-between text-red-600">
                             <span>Discount ({payment.discount_reason}):</span>
-                            <span>- ₱{payment.discount_amount.toFixed(2)}</span>
+                            <span>- ₱{formatMoney(payment.discount_amount)}</span>
                         </div>
                     )}
                     <div className="flex justify-between font-bold text-lg pt-1">
                         <span>TOTAL:</span>
-                        <span>₱{payment.total_amount.toFixed(2)}</span>
+                        <span>₱{formatMoney(payment.total_amount)}</span>
                     </div>
                 </div>
 
@@ -258,11 +260,11 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
                 <div className="space-y-1 text-xs">
                     <div className="flex justify-between">
                         <span>Cash Given:</span>
-                        <span>₱{payment.amount_given.toFixed(2)}</span>
+                        <span>₱{formatMoney(payment.amount_given)}</span>
                     </div>
                     <div className="flex justify-between">
                         <span>Change:</span>
-                        <span>₱{payment.change_amount.toFixed(2)}</span>
+                        <span>₱{formatMoney(payment.change_amount)}</span>
                     </div>
                 </div>
               </ScrollArea>
