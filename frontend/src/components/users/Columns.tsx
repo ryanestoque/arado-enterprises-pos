@@ -4,6 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import UserActions from "./UserActions"
+import { Badge } from "../ui/badge"
 
 export type User = {
   user_id: number
@@ -11,6 +12,7 @@ export type User = {
   role: string
   first_name: string
   last_name: string
+  status: string
 }
 
 export const columns: ColumnDef<User>[] = [
@@ -89,6 +91,27 @@ export const columns: ColumnDef<User>[] = [
     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
       {row.getValue("last_name")}
     </div>,
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="p-0"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const status = row.getValue("status")
+      if (status === "Inactive") return <Badge variant="destructive">Inactive</Badge>
+      if (status === "Active") return <Badge variant="inStock">Active</Badge>
+      return status
+    }
   },
   {
     id: "actions",

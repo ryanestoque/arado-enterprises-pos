@@ -49,7 +49,13 @@ export default function UserActions({ user }: { user: User }) {
 
   const handleEditUser = async (values: UserFormValues) => {
     try {
-      await updateTrigger(values)
+      const dataToSend = { ...values };
+
+      if (!values.password) {
+        delete dataToSend.password; // ⬅ SUPER IMPORTANT
+      }
+
+      await updateTrigger(dataToSend)
       setSuccess(true)
       mutate("http://localhost:5000/api/user")
       setOpenSheet(false)
@@ -107,12 +113,14 @@ export default function UserActions({ user }: { user: User }) {
             {/* <SheetDescription>This action cannot be undone.</SheetDescription> */}
           </SheetHeader>
           <UserForm 
+            schemaType="update"
             submitLabel="Save"
             onSubmit={handleConfirm}
             isMutating={isUpdating}
             defaultValues={{
               ...user,
               password: ""
+              
             }}
             />
           <SheetFooter>

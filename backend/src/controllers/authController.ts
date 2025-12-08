@@ -85,6 +85,10 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid username or password" });
     }
 
+    if(user.status !== "Active") {
+      return res.status(403).json({ message: "Account is currently suspended" });
+    }
+
     if (user.role !== role) {
       return res.status(403).json({ message: "Unauthorized role" });
     }

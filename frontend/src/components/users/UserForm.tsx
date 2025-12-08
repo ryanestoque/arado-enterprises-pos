@@ -35,8 +35,40 @@ const userSchema = z.object({
   last_name: z.string().trim().min(1, "Last name is required"),
 });
 
+export const createUserSchema = z.object({
+  username: z.string()
+    .min(3, "Username must be at least 3 characters long.")
+    .max(20, "Username cannot exceed 20 characters.")
+    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores."),
+  
+  password: z.string()
+    .min(6, "Password must be at least 6 characters")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
 
-export type UserFormValues = z.infer<typeof userSchema>;
+  role: z.string().min(1, "Role is required"),
+  first_name: z.string().min(1, "First name is required"),
+  last_name: z.string().min(1, "Last name is required"),
+  status: z.string().min(1, "Status is required"),
+});
+
+export const updateUserSchema = createUserSchema.extend({
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character")
+    .optional()
+    .or(z.literal("")),   // Allows empty string
+});
+
+
+
+export type UserFormValues = z.infer<typeof updateUserSchema>;
 
 interface UserFormProps {
   defaultValues?: Partial<UserFormValues>;
@@ -44,19 +76,21 @@ interface UserFormProps {
   submitLabel?: string;
   isMutating?: any
   initialValues?: UserFormValues,
+  schemaType: "create" | "update";
 }
 
 export default function UserForm({
   defaultValues,
   onSubmit,
   submitLabel = "Save",
-  isMutating
+  isMutating,
+  schemaType
 }: UserFormProps) {
 
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<UserFormValues>({
-    resolver: zodResolver(userSchema),
+    resolver: zodResolver(schemaType === "create" ? createUserSchema : updateUserSchema),
     defaultValues,
   });
 
@@ -177,7 +211,30 @@ export default function UserForm({
             </FormItem>
           )}
         />
-     
+        <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Status</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Active or Inactive" />
+                </SelectTrigger>
+              </FormControl>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Status</SelectLabel>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <Button 
           disabled={!form.formState.isDirty || isMutating}
           type="submit">{submitLabel}</Button>

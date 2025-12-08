@@ -65,6 +65,7 @@ interface User {
   role: string
   first_name: string
   last_name: string
+  status: string
 }
 
 interface Stockin {

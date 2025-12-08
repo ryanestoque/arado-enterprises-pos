@@ -41,16 +41,17 @@ export const addUser = async (req: Request, res: Response) => {
       role,
       first_name,
       last_name,
+      status
     } = req.body
 
     const hashed = await bcrypt.hash(password, 10);
 
     const sql = `
       INSERT INTO Users
-      (username, password, role, first_name,  last_name)
-      VALUES (?, ?, ?, ?, ?)
+      (username, password, role, first_name,  last_name, status)
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
-    const values = [username, hashed, role, first_name,  last_name];
+    const values = [username, hashed, role, first_name,  last_name, status];
 
     const [result] = await db.query<ResultSetHeader>(sql, values);
 
@@ -66,7 +67,8 @@ export const addUser = async (req: Request, res: Response) => {
         username,
         role,
         first_name,
-        last_name
+        last_name,
+        status
       },
       ip: req.ip
     });
@@ -88,11 +90,12 @@ export const updateUser = async (req: Request, res: Response) => {
       role,
       first_name,
       last_name,
+      status
     } = req.body;
 
     // Fetch "before" data for audit logs
     const [rows] = await db.query<RowDataPacket[]>(
-      `SELECT user_id, username, role, first_name, last_name FROM Users WHERE user_id = ?`,
+      `SELECT user_id, username, role, first_name, last_name, status FROM Users WHERE user_id = ?`,
       [user_id]
     );
 
@@ -105,10 +108,10 @@ export const updateUser = async (req: Request, res: Response) => {
     // Build dynamic query
     let sql = `
       UPDATE Users SET 
-        username=?, role=?, first_name=?, last_name=?
+        username=?, role=?, first_name=?, last_name=?, status=?
     `;
 
-    const values: any[] = [username, role, first_name, last_name];
+    const values: any[] = [username, role, first_name, last_name, status];
 
     // 🔥 Only include password if user actually typed something
     if (password && password.trim() !== "") {
@@ -128,7 +131,8 @@ export const updateUser = async (req: Request, res: Response) => {
       username,
       role,
       first_name,
-      last_name
+      last_name,
+      status
     };
 
     await auditLog({
@@ -195,20 +199,17 @@ export const changeUsername = async (req: Request, res: Response) => {
   const { username: newUsername } = req.body;
 
   try {
-    // Get old username
     const [rows] = await db.query<RowDataPacket[]>(
       "SELECT username FROM Users WHERE user_id = ?",
       [userId]
     );
     const oldUsername = rows[0]?.username;
 
-    // Update username
     await db.query(
       "UPDATE Users SET username = ? WHERE user_id = ?",
       [newUsername, userId]
     );
 
-    // AUDIT LOG ✨
     await auditLog({
       user_id: userId,
       username: (req as any).user.username,
@@ -249,14 +250,13 @@ export const changePassword = async (req: Request, res: Response) => {
       [hashedPassword, userId]
     );
 
-    // AUDIT LOG ✨
     await auditLog({
       user_id: userId,
       username: (req as any).user.username,
       module: "User",
       action: "UPDATE",
       description: `A user changed password`,
-      before: null,  // NEVER store passwords!
+      before: null,
       after: null,
       ip: req.ip
     });

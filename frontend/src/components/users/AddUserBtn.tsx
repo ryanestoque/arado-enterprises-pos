@@ -69,6 +69,7 @@ export default function AddUserBtn() {
           {/* <SheetDescription>This action cannot be undone.</SheetDescription> */}
         </SheetHeader>
         <UserForm 
+          schemaType="create"
           submitLabel="Add"
           onSubmit={handleConfirm}
           isMutating={isMutating}
