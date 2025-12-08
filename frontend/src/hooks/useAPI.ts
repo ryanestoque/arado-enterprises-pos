@@ -112,6 +112,10 @@ interface TotalQuantityResponse {
   totalQuantity: number;
 }
 
+interface TotalInventoryValueResponse {
+  totalInventoryValue: number;
+}
+
 interface BestSellingProduct {
   product_id: number;
   name: string;
@@ -175,6 +179,12 @@ export function useTotalQuantity() {
   const url = `${PRODUCT_URL}/total_quantity`;
   
   return useSWR<TotalQuantityResponse>(url, fetcher); 
+}
+
+export function useTotalInventoryValue() {
+  const url = `${PRODUCT_URL}/total_inventory_value`;
+  
+  return useSWR<TotalInventoryValueResponse>(url, fetcher); 
 }
 
 export function useBestSeller() {

@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { useBestSeller, useGrossProfit, useTotalQuantity, useTotalRevenue } from "@/hooks/useAPI";
+import { useBestSeller, useGrossProfit, useTotalInventoryValue, useTotalQuantity, useTotalRevenue } from "@/hooks/useAPI";
 
 export const formatMoney = (value: any) =>
   (Number(value) || 0).toLocaleString("en-US", {
@@ -18,6 +18,7 @@ export const formatMoney = (value: any) =>
 export function SectionCards() {
   const { data: totalRevenue } = useTotalRevenue();
   const { data: totalQuantity } = useTotalQuantity();
+  const { data: totalInventoryValue } = useTotalInventoryValue();
   const { data: bestSelling } = useBestSeller();
   const { data: grossProfit } = useGrossProfit();
 
@@ -30,7 +31,7 @@ export function SectionCards() {
         <CardHeader className="relative">
           <CardDescription>Total Revenue</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            ₱ {formatMoney(revenue)}
+            ₱{formatMoney(revenue)}
           </CardTitle>
           {/* <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
@@ -52,12 +53,12 @@ export function SectionCards() {
         <CardHeader className="relative">
           <CardDescription>Gross Profit</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            ₱ {formatMoney(grossProfit?.gross_profit)}
+            ₱{formatMoney(grossProfit?.gross_profit)}
           </CardTitle>
           {/* <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
               <TrendingUpIcon className="size-3" />
-              +4.5%
+              
             </Badge>
           </div> */}
         </CardHeader>
@@ -70,16 +71,16 @@ export function SectionCards() {
       </Card>
       <Card className="@container/card">
         <CardHeader className="relative">
-          <CardDescription>Total Stock Quantity</CardDescription>
+          <CardDescription>Total Inventory Value</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {quantity.toLocaleString()}
+            ₱{formatMoney(totalInventoryValue?.totalInventoryValue)}
           </CardTitle>
-          {/* <div className="absolute right-4 top-4">
+          <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingDownIcon className="size-3" />
-              -20%
+              Total Qty:&nbsp;
+              {quantity.toLocaleString()}
             </Badge>
-          </div> */}
+          </div>
         </CardHeader>
         {/* <CardFooter className="flex-col items-start gap-1 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
