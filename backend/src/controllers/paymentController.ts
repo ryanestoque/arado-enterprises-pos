@@ -104,14 +104,14 @@ const groupPaymentItems = (rows: any[]): any[] => {
       total_amount,
       amount_given,
       change_amount,
-      ...paymentDetails // Keep others
+      ...paymentDetails
     } = row;
 
     if (!paymentsMap.has(payment_id)) {
       paymentsMap.set(payment_id, {
         ...paymentDetails,
         payment_id: payment_id,
-        // ⭐ CONVERT THE NUMERIC FIELDS HERE
+
         original_total: parseFloat(original_total),
         discount_amount: parseFloat(discount_amount),
         total_amount: parseFloat(total_amount),
@@ -121,7 +121,6 @@ const groupPaymentItems = (rows: any[]): any[] => {
       });
     }
 
-    // Add the item details to the corresponding payment
     if (product_id) {
       paymentsMap.get(payment_id).items.push({
         product_id,
@@ -168,12 +167,10 @@ export const getAllPayments = async (req: Request, res: Response) => {
 
     const rowsArray = rows as any[];
 
-    // Return empty array if no payments (correct behavior)
     if (rowsArray.length === 0) {
       return res.json([]);
     }
 
-    // Group items by payment_id
     const payments = groupPaymentItems(rowsArray);
 
     res.json(payments);
@@ -228,20 +225,17 @@ export const getPaymentById = async (req: Request, res: Response) => {
       ORDER BY
         pi.product_id
       `,
-      [payment_id] // ⭐ Pass the ID as a safe parameter
+      [payment_id]
     );
 
     const rowsArray = rows as any[];
 
     if (rowsArray.length === 0) {
-        // If the query returns nothing, the ID wasn't found
         return res.status(404).json({ error: 'Payment not found' });
     }
 
-    // 2. Group the results. Since there's only one payment ID, the result will be an array with one element.
     const groupedPayments = groupPaymentItems(rowsArray); 
     
-    // 3. Return the single payment object
     res.json(groupedPayments[0]); 
 
   } catch (error) {
@@ -272,7 +266,6 @@ export const deletePayment = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Payment not found" });
     }
 
-    // Delete the payment
     await connection.query("DELETE FROM payment WHERE payment_id = ?", [paymentId]);
 
     await connection.commit();
@@ -299,43 +292,49 @@ export const deletePayment = async (req: Request, res: Response) => {
 };
 
 
-export const getTotalRevenue = async (req: Request, res: Response) => {
-  const connection = await db.getConnection();
-  try {
-    const [rows] = await connection.query(
-      `SELECT get_total_revenue() AS total_revenue`
-    );
+// export const getTotalRevenue = async (req: Request, res: Response) => {
+//   const connection = await db.getConnection();
+//   try {
+//     const [rows] = await connection.query(
+//       `SELECT get_total_revenue() AS total_revenue`
+//     );
 
-    const totalRevenue = (rows as any[])[0].total_revenue || 0;
+//     const totalRevenue = (rows as any[])[0].total_revenue || 0;
     
-    res.json({ totalRevenue });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to get total revenue" });
-  } finally { 
-    connection.release();
-  }
-};
+//     res.json({ totalRevenue });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Failed to get total revenue" });
+//   } finally { 
+//     connection.release();
+//   }
+// };
+
+export const getTotalRevenue = async (req: Request, res: Response) => { const connection = await db.getConnection(); try { const [rows] = await connection.query( `SELECT SUM(pi.quantity * pi.price - p.discount_amount) AS total_revenue FROM payment p LEFT JOIN paymentitem pi ON p.payment_id = pi.payment_id` ); const totalRevenue = (rows as any[])[0].total_revenue || 0; res.json({ totalRevenue }); } catch (err) { console.error(err); res.status(500).json({ error: "Failed to get total revenue" }); } finally { connection.release(); } };
 
 
-export const getBestSellingProduct = async (req: Request, res: Response) => {
-  try {
-    const [rows] = await db.query("CALL get_best_selling_product()");
+// export const getBestSellingProduct = async (req: Request, res: Response) => {
+//   try {
+//     const [rows] = await db.query("CALL get_best_selling_product()");
 
-    res.json((rows as any[])[0][0]);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to fetch best-selling product" });
-  }
-};
+//     res.json((rows as any[])[0][0]);
+//   } catch (err) {
+//     res.status(500).json({ message: "Failed to fetch best-selling product" });
+//   }
+// };
 
-export const getGrossProfit = async (req: Request, res: Response) => {
-  try {
-    const [rows] = await db.query(`
-      SELECT get_gross_profit() AS gross_profit
-    `);
+export const getBestSellingProduct = async (req: Request, res: Response) => { try { const [rows] = await db.query( `SELECT p.product_id, p.name, SUM(pi.quantity) AS total_sold FROM PaymentItem pi JOIN Product p ON pi.product_id = p.product_id GROUP BY p.product_id, p.name ORDER BY total_sold DESC LIMIT 1;` ); res.json((rows as any[])[0]); } catch (err) { res.status(500).json({ message: "Failed to fetch best-selling product" }); } };
 
-    res.json((rows as any[])[0]);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to compute gross profit" });
-  }
-};
+// export const getGrossProfit = async (req: Request, res: Response) => {
+//   try {
+//     const [rows] = await db.query(`
+//       SELECT get_gross_profit() AS gross_profit
+//     `);
+
+//     res.json((rows as any[])[0]);
+//   } catch (err) {
+//     res.status(500).json({ message: "Failed to compute gross profit" });
+//   }
+// };
+
+export const getGrossProfit = async (req: Request, res: Response) => { try { const [rows] = await db.query(`SELECT SUM(pi.quantity * pi.price) AS total_revenue, SUM(pi.quantity * pr.cost) AS total_cogs, SUM(pi.quantity * pi.price) - SUM(pi.quantity * pr.cost) AS gross_profit FROM paymentitem pi JOIN product pr ON pi.product_id = pr.product_id` ); res.json((rows as any[])[0]); } catch (err) { res.status(500).json({ message: "Failed to compute gross profit" }); } };
