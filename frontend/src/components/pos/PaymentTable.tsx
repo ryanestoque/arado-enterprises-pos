@@ -76,12 +76,11 @@ export default function PaymentTable({ cart, onQuantityChange, onRemove }: CartT
                     className="overflow-hidden 
                     data-[state=open]:animate-collapsible-down 
                     data-[state=closed]:animate-collapsible-up">
-                    <TableRow>
-                    <TableCell className="bg-muted p-4 ps-12">
-                      <div className="flex justify-evenly items-center gap-4 xl:gap-8">
-                        <div className="flex items-center gap-2 flex-1">
+                    <div className="bg-muted w-full p-4 flex justify-center items-center gap-8">
+                        <div className="flex items-center gap-2">
                           <Label htmlFor="quantity">Quantity</Label>
                           <Input 
+                            className="bg-background w-24" /* Added specific width for better look */
                             id="quantity"
                             type="number"
                             min={1}
@@ -104,23 +103,15 @@ export default function PaymentTable({ cart, onQuantityChange, onRemove }: CartT
                               onQuantityChange(item.product_id, value);
                             }}/>
                         </div>
-                        <div className="flex items-center gap-2 flex-1" >
-                          <Label htmlFor="discount">Disc.&nbsp;(%)</Label>
-                          <Input 
-                            id="discount" 
-                            type="number" 
-                            min={0} 
-                            defaultValue={0}/>
-                        </div>
+                        
                         <Button variant="destructive" size={"icon"} onClick={() => onRemove(item.product_id)}>
-                          <Trash2 />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                    
                   </CollapsibleContent>
                 </TableCell>
-              </TableRow>
+              </TableRow>   
             </>
           </Collapsible>
         ))}  

@@ -100,7 +100,7 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
               Arado Enterprises
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-3">
+          <CardContent className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="username"
@@ -124,13 +124,13 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
                 <FormItem>
                   <div className="flex items-center justify-between">
                     <FormLabel>Password</FormLabel>
-                    <Button 
+                    {/* <Button 
                       variant="link"
                       className="p-0 font-normal text-xs"
                       type="button"
                       >
                       Forgot password?
-                    </Button> 
+                    </Button>  */}
                   </div>
                   <FormControl>
                     <Input
