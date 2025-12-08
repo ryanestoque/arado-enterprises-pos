@@ -221,7 +221,7 @@ export const getTotalInventoryValue = async (req: Request, res: Response) => {
 
   try {
     const [rows] = await connection.query(
-      `SELECT SUM(stock_quantity * cost) AS total_value FROM product`
+      `SELECT SUM(get_product_value(product_id)) AS total_value FROM product`
     );
 
     const result = rows as any[];
