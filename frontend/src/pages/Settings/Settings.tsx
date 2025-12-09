@@ -18,7 +18,7 @@ import { useAuth } from "@/context/AuthContext";
 import ChangeUsername from "@/components/settings/ChangeUsernameBtn";
 import ChangeUsernameBtn from "@/components/settings/ChangeUsernameBtn";
 import { useEffect, useState } from "react";
-import { useUserById } from "@/hooks/useAPI";
+import { API_BASE, useUserById } from "@/hooks/useAPI";
 import type { User } from "@/components/users/Columns";
 import ChangePasswordBtn from "@/components/settings/ChangePasswordBtn";
 
@@ -48,7 +48,7 @@ export default function Settings() {
     if (currentUser) setLocalUser(currentUser);
   }, [currentUser]);
 
-  const { trigger: logoutTrigger } = useSWRMutation("http://localhost:5000/api/auth/logout", authPost)  
+  const { trigger: logoutTrigger } = useSWRMutation(`${API_BASE}/api/auth/logout`, authPost)  
 
   const logout = async () => {
     try {
