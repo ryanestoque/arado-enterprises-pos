@@ -216,6 +216,29 @@ export const getTotalQuantity = async (req: Request, res: Response) => {
   }
 };
 
+// export const getTotalInventoryValue = async (req: Request, res: Response) => {
+//   const connection = await db.getConnection();
+
+//   try {
+//     const [rows] = await connection.query(
+//       `SELECT SUM(stock_quantity * cost) AS total_value FROM product`
+//     );
+
+//     const result = rows as any[];
+
+//     return res.json({
+//       totalInventoryValue: result[0].total_value ?? 0
+//     });
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Failed to get total inventory value" });
+//   } finally {
+//     connection.release();
+//   }
+// };
+
+
 export const getTotalInventoryValue = async (req: Request, res: Response) => {
   const connection = await db.getConnection();
 
