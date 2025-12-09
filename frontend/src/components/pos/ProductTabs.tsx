@@ -58,7 +58,7 @@ export function ProductTabs({ sortBy, searchQuery, onAddToCart,localProducts }: 
             {categories.map((category) => (
               <TabsTrigger
                 key={category.category_id}
-                value={category.category_id}
+                value={category.category_id.toString()}
                 className="flex-1"
               >
                 {category.name}
