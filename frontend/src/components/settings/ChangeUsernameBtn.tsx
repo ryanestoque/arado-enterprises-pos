@@ -7,6 +7,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { mutate } from "swr";
 import UsernameForm, { type UsernameFormValues } from "./UsernameForm";
 import type { User } from "../users/Columns";
+import { API_BASE } from "@/hooks/useAPI";
 
 async function updateUsername(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
@@ -24,7 +25,7 @@ async function updateUsername(url: string, { arg }: { arg: any }) {
 
 
 export default function ChangeUsernameBtn({ user }: { user: User }) {
-  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/user/change-username/${user.user_id}`, updateUsername)
+  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`${API_BASE}/api/user/change-username/${user.user_id}`, updateUsername)
 
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [openSheet, setOpenSheet] = useState(false)
@@ -35,7 +36,7 @@ export default function ChangeUsernameBtn({ user }: { user: User }) {
     try {
       await updateTrigger(values)
       setSuccess(true)
-      mutate(`http://localhost:5000/api/user/${user.user_id}`)
+      mutate(`${API_BASE}/api/user/${user.user_id}`)
       setOpenSheet(false)
     } catch (error) {
       console.error(error)

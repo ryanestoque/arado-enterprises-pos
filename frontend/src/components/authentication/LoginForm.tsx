@@ -10,6 +10,7 @@ import useSWRMutation from "swr/mutation";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
+import { API_BASE } from "@/hooks/useAPI";
 
 interface LoginFormProps {
   setMode: (m: "login" | "register") => void;
@@ -50,7 +51,7 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
     defaultValues:  { username: "", password: "", role: role }
   });
 
-  const { trigger: loginTrigger, isMutating: isLoggingIn } = useSWRMutation("http://localhost:5000/api/auth/login", authPost)
+  const { trigger: loginTrigger, isMutating: isLoggingIn } = useSWRMutation(`${API_BASE}/api/auth/login`, authPost)
 
   const { login } = useAuth();
 

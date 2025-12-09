@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { useProduct, useUser } from "@/hooks/useAPI";
+import { API_BASE, useProduct, useUser } from "@/hooks/useAPI";
 import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -43,8 +43,8 @@ export default function ReturnItemActions({ returnItem }: { returnItem: ReturnIt
   const { data: products = [] } = useProduct()
   const { data: users = [] } = useUser()
 
-  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/return/${returnItem.return_id}`, updateReturnItem)
-  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`http://localhost:5000/api/return/${returnItem.return_id}`, deleteReturnItem)
+  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`${API_BASE}/api/return/${returnItem.return_id}`, updateReturnItem)
+  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`${API_BASE}/api/return/${returnItem.return_id}`, deleteReturnItem)
 
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [openSheet, setOpenSheet] = useState(false)
@@ -56,7 +56,7 @@ export default function ReturnItemActions({ returnItem }: { returnItem: ReturnIt
     try {
       await updateTrigger(values)
       setSuccess(true)
-      mutate("http://localhost:5000/api/return")
+      mutate(`${API_BASE}/api/return`)
       setOpenSheet(false)
     } catch (error) {
       console.error(error)
@@ -84,7 +84,7 @@ export default function ReturnItemActions({ returnItem }: { returnItem: ReturnIt
   const handleDelete = async () => {
     try {
       await deleteTrigger()
-      mutate("http://localhost:5000/api/return")
+      mutate(`${API_BASE}/api/return`)
       toast({
         title: `Return ID: ${returnItem.return_id} is deleted!`,
         action: <ToastAction altText="OK">OK</ToastAction>

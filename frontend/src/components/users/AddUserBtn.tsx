@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
 import UserForm, { type UserFormValues } from "./UserForm";
+import { API_BASE } from "@/hooks/useAPI";
 
 async function postUser(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
@@ -19,7 +20,7 @@ async function postUser(url: string, { arg }: { arg: any }) {
 
 export default function AddUserBtn() {
 
-  const { trigger, isMutating } = useSWRMutation("http://localhost:5000/api/user", postUser)
+  const { trigger, isMutating } = useSWRMutation(`${API_BASE}/api/user`, postUser)
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [open, setOpen] = useState(false)
 

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
-import { usePaymentById } from '@/hooks/useAPI'
+import { API_BASE, usePaymentById } from '@/hooks/useAPI'
 import { ScrollArea } from '../ui/scroll-area'
 import { Separator } from '../ui/separator'
 import html2canvas from "html2canvas";
@@ -49,7 +49,7 @@ export default function CheckoutButton({ cart, userId, onCheckoutSuccess, subtot
   const [cash, setCash] = useState<number | "">("")
   const change = cash ? cash - dueAmount : 0
 
-  const { trigger, isMutating, data, error } = useSWRMutation("http://localhost:5000/api/payment", postPayment)
+  const { trigger, isMutating, data, error } = useSWRMutation(`${API_BASE}/api/payment`, postPayment)
   const [isSuccess, setSuccess] = useState<boolean>(true);
 
   const [paymentId, setPaymentId] = useState<number | null>(null);

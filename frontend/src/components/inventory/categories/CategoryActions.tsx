@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import CategoryForm, { type CategoryFormValues } from "./CategoryForm";
-import { useCategory, useSupplier } from "@/hooks/useAPI";
+import { API_BASE, useCategory, useSupplier } from "@/hooks/useAPI";
 import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -40,8 +40,8 @@ async function deleteCategory(url: string) {
 
 
 export default function InventoryActions({ category }: { category: Category }) {
-  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/category/${category.category_id}`, updateCategory)
-  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`http://localhost:5000/api/category/${category.category_id}`, deleteCategory)
+  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`${API_BASE}/api/category/${category.category_id}`, updateCategory)
+  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`${API_BASE}/api/category/${category.category_id}`, deleteCategory)
 
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [openSheet, setOpenSheet] = useState(false)
@@ -52,8 +52,8 @@ export default function InventoryActions({ category }: { category: Category }) {
   const handleEditCategory = async (values: CategoryFormValues) => {
     try {
       await updateTrigger(values)
-      mutate("http://localhost:5000/api/category")
-      mutate("http://localhost:5000/api/auditlog")
+      mutate(`${API_BASE}/api/category`)
+      mutate(`${API_BASE}/api/auditlog`)
       setSuccess(true)
       setOpenSheet(false)
     } catch (error) {
@@ -82,8 +82,8 @@ export default function InventoryActions({ category }: { category: Category }) {
   const handleDelete = async () => {
     try {
       await deleteTrigger()
-      mutate("http://localhost:5000/api/category")
-      mutate("http://localhost:5000/api/auditlog")
+      mutate(`${API_BASE}/api/category`)
+      mutate(`${API_BASE}/api/auditlog`)
       toast({
         title: `${category.name} is deleted!`,
         action: <ToastAction altText="OK">OK</ToastAction>

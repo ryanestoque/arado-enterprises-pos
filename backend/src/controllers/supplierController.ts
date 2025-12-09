@@ -24,14 +24,15 @@ export const addSupplier = async (req: Request, res: Response) => {
       phone_number,
       email,
       address,
+      status
     } = req.body
 
     const sql = `
       INSERT INTO Supplier 
-      (name, contact_person, phone_number, email, address)
-      VALUES (?, ?, ?, ?, ?)
+      (name, contact_person, phone_number, email, address, status)
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
-    const values = [name, contact_person, phone_number, email, address];
+    const values = [name, contact_person, phone_number, email, address, status];
 
     const [result] = await db.query<ResultSetHeader>(sql, values);
 
@@ -78,6 +79,7 @@ export const updateSupplier = async (req: Request, res: Response) => {
       phone_number,
       email,
       address,
+      status
     } = req.body
 
     const [beforeRows] = await db.query<RowDataPacket[]>(
@@ -89,13 +91,13 @@ export const updateSupplier = async (req: Request, res: Response) => {
   
     const sql = `
       UPDATE Supplier SET 
-        name=?, contact_person=?, phone_number=?, email=?, address=?
+        name=?, contact_person=?, phone_number=?, email=?, address=?, status=?
       WHERE supplier_id=?
     `
 
     const values = [
       name, contact_person, phone_number, email,
-      address, supplier_id
+      address, status, supplier_id
     ];
   
     await db.query(sql, values)

@@ -7,6 +7,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
 import type { SupplierFormValues } from "./SupplierForm";
 import SupplierForm from "./SupplierForm";
+import { API_BASE } from "@/hooks/useAPI";
 
 async function postSupplier(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
@@ -19,7 +20,7 @@ async function postSupplier(url: string, { arg }: { arg: any }) {
 }
 
 export default function AddSupplierBtn() {
-  const { trigger, isMutating } = useSWRMutation("http://localhost:5000/api/supplier", postSupplier)
+  const { trigger, isMutating } = useSWRMutation(`${API_BASE}/api/supplier`, postSupplier)
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [open, setOpen] = useState(false)
 

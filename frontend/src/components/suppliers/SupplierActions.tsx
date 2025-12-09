@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { useCategory, useSupplier } from "@/hooks/useAPI";
+import { API_BASE, useCategory, useSupplier } from "@/hooks/useAPI";
 import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -40,8 +40,8 @@ async function deleteSupplier(url: string) {
 
 
 export default function SupplierActions({ supplier }: { supplier: Supplier }) {
-  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/supplier/${supplier.supplier_id}`, updateSupplier)
-  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`http://localhost:5000/api/supplier/${supplier.supplier_id}`, deleteSupplier)
+  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`${API_BASE}/api/supplier/${supplier.supplier_id}`, updateSupplier)
+  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`${API_BASE}/api/supplier/${supplier.supplier_id}`, deleteSupplier)
 
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [openSheet, setOpenSheet] = useState(false)
@@ -53,8 +53,8 @@ export default function SupplierActions({ supplier }: { supplier: Supplier }) {
     try {
       await updateTrigger(values)
       setSuccess(true)
-      mutate("http://localhost:5000/api/supplier")
-      mutate("http://localhost:5000/api/auditlog")
+      mutate(`${API_BASE}/api/supplier`)
+      mutate(`${API_BASE}/api/auditlog`)
       setOpenSheet(false)
     } catch (error) {
       console.error(error)
@@ -82,8 +82,8 @@ export default function SupplierActions({ supplier }: { supplier: Supplier }) {
   const handleDelete = async () => {
     try {
       await deleteTrigger()
-      mutate("http://localhost:5000/api/supplier")
-      mutate("http://localhost:5000/api/auditlog")
+      mutate(`${API_BASE}/api/supplier`)
+      mutate(`${API_BASE}/api/auditlog`)
       toast({
         title: `${supplier.name} is deleted!`,
         action: <ToastAction altText="OK">OK</ToastAction>

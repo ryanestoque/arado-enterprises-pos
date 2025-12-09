@@ -37,10 +37,10 @@ export const makePayment = async (req: Request, res: Response) => {
       )
 
       // Comment to use trigger
-      // await connection.query(
-      //   `UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?`,
-      //   [item.quantity, item.product_id]
-      // )
+      await connection.query(
+        `UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?`,
+        [item.quantity, item.product_id]
+      )
     }
 
     await connection.commit()
@@ -293,49 +293,49 @@ export const deletePayment = async (req: Request, res: Response) => {
 };
 
 
-export const getTotalRevenue = async (req: Request, res: Response) => {
-  const connection = await db.getConnection();
-  try {
-    const [rows] = await connection.query(
-      `SELECT get_total_revenue() AS total_revenue`
-    );
+// export const getTotalRevenue = async (req: Request, res: Response) => {
+//   const connection = await db.getConnection();
+//   try {
+//     const [rows] = await connection.query(
+//       `SELECT get_total_revenue() AS total_revenue`
+//     );
 
-    const totalRevenue = (rows as any[])[0].total_revenue || 0;
+//     const totalRevenue = (rows as any[])[0].total_revenue || 0;
     
-    res.json({ totalRevenue });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to get total revenue" });
-  } finally { 
-    connection.release();
-  }
-};
+//     res.json({ totalRevenue });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Failed to get total revenue" });
+//   } finally { 
+//     connection.release();
+//   }
+// };
 
-// export const getTotalRevenue = async (req: Request, res: Response) => { const connection = await db.getConnection(); try { const [rows] = await connection.query( `SELECT SUM(pi.quantity * pi.price - p.discount_amount) AS total_revenue FROM payment p LEFT JOIN paymentitem pi ON p.payment_id = pi.payment_id` ); const totalRevenue = (rows as any[])[0].total_revenue || 0; res.json({ totalRevenue }); } catch (err) { console.error(err); res.status(500).json({ error: "Failed to get total revenue" }); } finally { connection.release(); } };
+export const getTotalRevenue = async (req: Request, res: Response) => { const connection = await db.getConnection(); try { const [rows] = await connection.query( `SELECT SUM(pi.quantity * pi.price - p.discount_amount) AS total_revenue FROM payment p LEFT JOIN paymentitem pi ON p.payment_id = pi.payment_id` ); const totalRevenue = (rows as any[])[0].total_revenue || 0; res.json({ totalRevenue }); } catch (err) { console.error(err); res.status(500).json({ error: "Failed to get total revenue" }); } finally { connection.release(); } };
 
 
-export const getBestSellingProduct = async (req: Request, res: Response) => {
-  try {
-    const [rows] = await db.query("CALL get_best_selling_product()");
+// export const getBestSellingProduct = async (req: Request, res: Response) => {
+//   try {
+//     const [rows] = await db.query("CALL get_best_selling_product()");
 
-    res.json((rows as any[])[0][0]);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to fetch best-selling product" });
-  }
-};
+//     res.json((rows as any[])[0][0]);
+//   } catch (err) {
+//     res.status(500).json({ message: "Failed to fetch best-selling product" });
+//   }
+// };
 
-// export const getBestSellingProduct = async (req: Request, res: Response) => { try { const [rows] = await db.query( `SELECT p.product_id, p.name, SUM(pi.quantity) AS total_sold FROM PaymentItem pi JOIN Product p ON pi.product_id = p.product_id GROUP BY p.product_id, p.name ORDER BY total_sold DESC LIMIT 1;` ); res.json((rows as any[])[0]); } catch (err) { res.status(500).json({ message: "Failed to fetch best-selling product" }); } };
+export const getBestSellingProduct = async (req: Request, res: Response) => { try { const [rows] = await db.query( `SELECT p.product_id, p.name, SUM(pi.quantity) AS total_sold FROM PaymentItem pi JOIN Product p ON pi.product_id = p.product_id GROUP BY p.product_id, p.name ORDER BY total_sold DESC LIMIT 1;` ); res.json((rows as any[])[0]); } catch (err) { res.status(500).json({ message: "Failed to fetch best-selling product" }); } };
 
-export const getGrossProfit = async (req: Request, res: Response) => {
-  try {
-    const [rows] = await db.query(`
-      SELECT get_gross_profit() AS gross_profit
-    `);
+// export const getGrossProfit = async (req: Request, res: Response) => {
+//   try {
+//     const [rows] = await db.query(`
+//       SELECT get_gross_profit() AS gross_profit
+//     `);
 
-    res.json((rows as any[])[0]);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to compute gross profit" });
-  }
-};
+//     res.json((rows as any[])[0]);
+//   } catch (err) {
+//     res.status(500).json({ message: "Failed to compute gross profit" });
+//   }
+// };
 
-// export const getGrossProfit = async (req: Request, res: Response) => { try { const [rows] = await db.query(`SELECT SUM(pi.quantity * pi.price) AS total_revenue, SUM(pi.quantity * pr.cost) AS total_cogs, SUM(pi.quantity * pi.price) - SUM(pi.quantity * pr.cost) AS gross_profit FROM paymentitem pi JOIN product pr ON pi.product_id = pr.product_id` ); res.json((rows as any[])[0]); } catch (err) { res.status(500).json({ message: "Failed to compute gross profit" }); } };
+export const getGrossProfit = async (req: Request, res: Response) => { try { const [rows] = await db.query(`SELECT SUM(pi.quantity * pi.price) AS total_revenue, SUM(pi.quantity * pr.cost) AS total_cogs, SUM(pi.quantity * pi.price) - SUM(pi.quantity * pr.cost) AS gross_profit FROM paymentitem pi JOIN product pr ON pi.product_id = pr.product_id` ); res.json((rows as any[])[0]); } catch (err) { res.status(500).json({ message: "Failed to compute gross profit" }); } };

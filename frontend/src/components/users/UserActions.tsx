@@ -9,6 +9,7 @@ import type { User } from "./Columns";
 import { mutate } from "swr";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import UserForm, { type UserFormValues } from "./UserForm";
+import { API_BASE } from "@/hooks/useAPI";
 
 async function updateUser(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
@@ -38,8 +39,8 @@ async function deleteUser(url: string) {
 
 
 export default function UserActions({ user }: { user: User }) {
-  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/user/${user.user_id}`, updateUser)
-  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`http://localhost:5000/api/user/${user.user_id}`, deleteUser)
+  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`${API_BASE}/api/user/${user.user_id}`, updateUser)
+  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`${API_BASE}/api/user/${user.user_id}`, deleteUser)
 
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [openSheet, setOpenSheet] = useState(false)
@@ -85,7 +86,7 @@ export default function UserActions({ user }: { user: User }) {
   const handleDelete = async () => {
     try {
       await deleteTrigger()
-      mutate("http://localhost:5000/api/user")
+      mutate(`${API_BASE}/api/user`)
       toast({
         title: `${user.username} is deleted!`,
         action: <ToastAction altText="OK">OK</ToastAction>

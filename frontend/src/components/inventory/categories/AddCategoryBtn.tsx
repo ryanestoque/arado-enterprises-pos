@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
 import CategoryForm, { type CategoryFormValues } from "./CategoryForm";
+import { API_BASE } from "@/hooks/useAPI";
 
 async function postCategory(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
@@ -18,7 +19,7 @@ async function postCategory(url: string, { arg }: { arg: any }) {
 }
 
 export default function AddCategoryBtn() {
-  const { trigger, isMutating } = useSWRMutation("http://localhost:5000/api/category", postCategory)
+  const { trigger, isMutating } = useSWRMutation(`${API_BASE}/api/category`, postCategory)
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [open, setOpen] = useState(false)
 

@@ -6,7 +6,7 @@ import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
-import { useCategory, useSupplier } from "@/hooks/useAPI";
+import { API_BASE, useCategory, useSupplier } from "@/hooks/useAPI";
 
 async function postProduct(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
@@ -22,7 +22,7 @@ export default function AddProductBtn() {
   const { data: categories = [] } = useCategory()
   const { data: suppliers = [] } = useSupplier()
 
-  const { trigger, isMutating } = useSWRMutation("http://localhost:5000/api/product", postProduct)
+  const { trigger, isMutating } = useSWRMutation(`${API_BASE}/api/product`, postProduct)
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [open, setOpen] = useState(false)
 

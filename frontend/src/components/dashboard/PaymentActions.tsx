@@ -28,7 +28,7 @@ import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "../ui/toast";
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
-import { usePaymentById } from "@/hooks/useAPI";
+import { API_BASE, usePaymentById } from "@/hooks/useAPI";
 import { useRef } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -47,7 +47,7 @@ async function deletePayment(url: string) {
 
 
 export default function PaymentActions({ payment }: { payment: Payment }) {
-  const { trigger: deleteTrigger} = useSWRMutation(`http://localhost:5000/api/payment/${payment.payment_id}`, deletePayment)
+  const { trigger: deleteTrigger} = useSWRMutation(`${API_BASE}/api/payment/${payment.payment_id}`, deletePayment)
 
   const { data: paymentById  } = usePaymentById(payment.payment_id);
 

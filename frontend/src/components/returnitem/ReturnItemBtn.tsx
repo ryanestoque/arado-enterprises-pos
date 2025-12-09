@@ -5,7 +5,7 @@ import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
-import { useProduct, useSupplier, useUser } from "@/hooks/useAPI";import type { ReturnItemFormValues } from "./ReturnItemForm";
+import { API_BASE, useProduct, useSupplier, useUser } from "@/hooks/useAPI";import type { ReturnItemFormValues } from "./ReturnItemForm";
 import ReturnForm from "./ReturnItemForm";
 ;
 
@@ -23,7 +23,7 @@ export default function ReturnItemBtn() {
   const { data: users = [] } = useUser()
   const { data: products = [] } = useProduct()
 
-  const { trigger, isMutating } = useSWRMutation("http://localhost:5000/api/return", postReturnItem)
+  const { trigger, isMutating } = useSWRMutation(`${API_BASE}/api/return`, postReturnItem)
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [open, setOpen] = useState(false)
 

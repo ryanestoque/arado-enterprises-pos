@@ -137,8 +137,8 @@ export const columns: ColumnDef<Product>[] = [
       const stock = row.getValue("stock_quantity") as number
       const reorder = row.original.reorder_level
       if (stock === 0) return <Badge variant="destructive">Out of Stock</Badge>
-      if (stock <= reorder) return <Badge variant="secondary">Low ({stock})</Badge>
-      return stock
+      if (stock <= reorder) return <Badge variant="lowStock">Low ({stock})</Badge>
+      return <Badge variant="inStock"> {stock}</Badge>
     }
   },
   {

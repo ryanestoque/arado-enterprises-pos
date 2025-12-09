@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const supplierSchema = z.object({
   name: z.string().min(1, "Supplier name is required"),
@@ -22,6 +22,7 @@ const supplierSchema = z.object({
     message: "Email is invalid."
   }),
   address: z.string().default("").optional(),
+  status: z.string().min(1, "Status is required"),
 });
 
 export type SupplierFormValues = z.infer<typeof supplierSchema>;
@@ -131,6 +132,30 @@ export default function SupplierForm({
                   placeholder="Manhattan, New York City" 
                   {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Status</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Active or Inactive" />
+                </SelectTrigger>
+              </FormControl>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Status</SelectLabel>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

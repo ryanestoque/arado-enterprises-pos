@@ -12,6 +12,8 @@ import AuditLogs from "./pages/AuditLogs/AuditLogs";
 import ReturnItem from "./pages/Sales/ReturnItem";
 
 export default function App() {
+  console.log("🔍 MY API URL IS:", import.meta.env.VITE_API_BASE_URL);
+
   return(
     <Routes>
       <Route path="/" element={<Authentication />}/>

@@ -7,6 +7,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { mutate } from "swr";
 import type { User } from "../users/Columns";
 import PasswordForm, { type PasswordFormValues } from "./PasswordForm";
+import { API_BASE } from "@/hooks/useAPI";
 
 async function updatePassword(url: string, { arg }: { arg: any }) {
   const res = await fetch(url, {
@@ -24,7 +25,7 @@ async function updatePassword(url: string, { arg }: { arg: any }) {
 
 
 export default function ChangePasswordBtn({ user }: { user: User }) {
-  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/user/change-password/${user.user_id}`, updatePassword)
+  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`${API_BASE}/api/user/change-password/${user.user_id}`, updatePassword)
 
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [openSheet, setOpenSheet] = useState(false)
@@ -35,7 +36,7 @@ export default function ChangePasswordBtn({ user }: { user: User }) {
     try {
       await updateTrigger(values)
       setSuccess(true)
-      mutate(`http://localhost:5000/api/user/${user.user_id}`)
+      mutate(`${API_BASE}/api/user/${user.user_id}`)
       setOpenSheet(false)
     } catch (error) {
       console.error(error)

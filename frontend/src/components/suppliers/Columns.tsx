@@ -4,6 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import SupplierActions from "./SupplierActions"
+import { Badge } from "../ui/badge"
 
 export type Supplier = {
   supplier_id: number
@@ -12,6 +13,7 @@ export type Supplier = {
   phone_number: string
   email?: string
   address?: string
+  status: string
 }
 
 export const columns: ColumnDef<Supplier>[] = [
@@ -109,6 +111,27 @@ export const columns: ColumnDef<Supplier>[] = [
     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
       {row.getValue("address")}
     </div>,
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="p-0"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const status = row.getValue("status")
+      if (status === "Inactive") return <Badge variant="destructive">Inactive</Badge>
+      if (status === "Active") return <Badge variant="inStock">Active</Badge>
+      return status
+    }
   },
   {
     id: "actions",

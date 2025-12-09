@@ -56,6 +56,7 @@ interface Supplier {
   phone: string
   email: string
   address: string
+  status: string
 }
 
 interface User {
@@ -143,6 +144,7 @@ const fetcher = async <T>(url: string): Promise<T> => {
   return res.json()
 };
 
+
 // const CATEGORY_URL = "http://localhost:5000/api/category"
 // const PRODUCT_URL = "http://localhost:5000/api/product"
 // const PAYMENT_URL = "http://localhost:5000/api/payment"
@@ -152,14 +154,16 @@ const fetcher = async <T>(url: string): Promise<T> => {
 // const RETURNITEM_URL = "http://localhost:5000/api/return"
 // const AUDITLOGS_URL = "http://localhost:5000/api/auditlog"
 
-const CATEGORY_URL = "http://localhost:5000/api/category"
-const PRODUCT_URL = "http://localhost:5000/api/product"
-const PAYMENT_URL = "http://localhost:5000/api/payment"
-const SUPPLIER_URL = "http://localhost:5000/api/supplier"
-const USER_URL = "http://localhost:5000/api/user"
-const STOCKIN_URL = "http://localhost:5000/api/stockin"
-const RETURNITEM_URL = "http://localhost:5000/api/return"
-const AUDITLOGS_URL = "http://localhost:5000/api/auditlog"
+export const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+const CATEGORY_URL = `${API_BASE}/api/category`;
+const PRODUCT_URL = `${API_BASE}/api/product`;
+const PAYMENT_URL = `${API_BASE}/api/payment`;
+const SUPPLIER_URL = `${API_BASE}/api/supplier`;
+const USER_URL = `${API_BASE}/api/user`;
+const STOCKIN_URL = `${API_BASE}/api/stockin`;
+const RETURNITEM_URL = `${API_BASE}/api/return`;
+const AUDITLOGS_URL = `${API_BASE}/api/auditlog`;
 
 export function useProduct() {
   return useSWR<Product[]>(PRODUCT_URL, fetcher)

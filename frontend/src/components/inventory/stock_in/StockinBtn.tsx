@@ -5,7 +5,7 @@ import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
-import { useProduct, useSupplier, useUser } from "@/hooks/useAPI";
+import { API_BASE, useProduct, useSupplier, useUser } from "@/hooks/useAPI";
 import type { StockinFormValues } from "./StockinForm";
 import StockinForm from "./StockinForm";
 import { mutate } from "swr";
@@ -25,7 +25,7 @@ export default function StockinBtn() {
   const { data: suppliers = [] } = useSupplier()
   const { data: products = [] } = useProduct()
 
-  const { trigger, isMutating } = useSWRMutation("http://localhost:5000/api/stockin", postStockin)
+  const { trigger, isMutating } = useSWRMutation(`${API_BASE}/api/stockin`, postStockin)
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [open, setOpen] = useState(false)
 
@@ -34,7 +34,7 @@ export default function StockinBtn() {
       await trigger(values)
       setSuccess(true)
       setOpen(false)
-      mutate("http://localhost:5000/api/product")
+      mutate(`${API_BASE}/api/product`)
     } catch (error) {
       console.error(error)
       setSuccess(false)

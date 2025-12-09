@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import ProductForm, { type ProductFormValues } from "./ProductForm";
-import { useCategory, useSupplier } from "@/hooks/useAPI";
+import { API_BASE, useCategory, useSupplier } from "@/hooks/useAPI";
 import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -42,8 +42,8 @@ export default function InventoryActions({ product }: { product: Product }) {
   const { data: categories = [] } = useCategory()
   const { data: suppliers = [] } = useSupplier()
 
-  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`http://localhost:5000/api/product/${product.product_id}`, updateProduct)
-  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`http://localhost:5000/api/product/${product.product_id}`, deleteProduct)
+  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`${API_BASE}/${product.product_id}`, updateProduct)
+  const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`${API_BASE}/api/product/${product.product_id}`, deleteProduct)
 
   const [isSuccess, setSuccess] = useState<boolean>(true);
   const [openSheet, setOpenSheet] = useState(false)
@@ -55,8 +55,8 @@ export default function InventoryActions({ product }: { product: Product }) {
     try {
       await updateTrigger(values)
       setSuccess(true)
-      mutate("http://localhost:5000/api/product")
-      mutate("http://localhost:5000/api/auditlog")
+      mutate(`${API_BASE}/api/product`)
+      mutate(`${API_BASE}/api/auditlog`)
       setOpenSheet(false)
     } catch (error) {
       console.error(error)
