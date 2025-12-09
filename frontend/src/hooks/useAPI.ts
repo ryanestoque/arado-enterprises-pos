@@ -160,6 +160,7 @@ const CATEGORY_URL = `${API_BASE}/api/category`;
 const PRODUCT_URL = `${API_BASE}/api/product`;
 const PAYMENT_URL = `${API_BASE}/api/payment`;
 const SUPPLIER_URL = `${API_BASE}/api/supplier`;
+const ACTIVE_SUPPLIER_URL = `${API_BASE}/api/supplier/active`;
 const USER_URL = `${API_BASE}/api/user`;
 const STOCKIN_URL = `${API_BASE}/api/stockin`;
 const RETURNITEM_URL = `${API_BASE}/api/return`;
@@ -215,6 +216,10 @@ export function useGrossProfit() {
 
 export function useSupplier() {
   return useSWR<Supplier[]>(SUPPLIER_URL, fetcher)
+}
+
+export function useActiveSupplier() {
+  return useSWR<Supplier[]>(ACTIVE_SUPPLIER_URL, fetcher)
 }
 
 export function useUser() {
