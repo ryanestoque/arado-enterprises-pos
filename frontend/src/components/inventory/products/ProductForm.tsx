@@ -21,7 +21,7 @@ const productSchema = z.object({
   supplier_id: z.coerce.number<number>(),
   price: z.coerce.number<number>().min(1, "Price is required"),
   cost: z.coerce.number<number>().min(1, "Cost is required"),
-  stock_quantity: z.coerce.number<number>().min(1, "Stock quantity is required"),
+  stock_quantity: z.coerce.number<number>().min(0, "Stock quantity is required"),
   reorder_level: z.coerce.number<number>().optional(),
   barcode: z.string().default("").optional(),
   sku: z.string().min(1, "SKU is required"),
@@ -230,7 +230,7 @@ export default function ProductForm({
             <FormItem>
               <FormLabel>Stock Quantity</FormLabel>
               <FormControl>
-                <Input type="number" min={1} {...field} />
+                <Input type="number" min={0} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -243,7 +243,7 @@ export default function ProductForm({
             <FormItem>
               <FormLabel>Reorder Level</FormLabel>
               <FormControl>
-                <Input type="number" min={1} {...field} />
+                <Input type="number" min={0} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

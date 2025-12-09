@@ -13,6 +13,16 @@ export const getAllSuppliers = async (req: Request, res: Response) => {
   }
 }
 
+export const getAllActiveSuppliers = async (req: Request, res: Response) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM Supplier WHERE status = 'Active'");
+    res.json(rows);
+  } catch(err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch suppliers" });
+  }
+}
+
 export const addSupplier = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;

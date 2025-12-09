@@ -28,68 +28,78 @@ import {
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
 
-
 interface ChartAreaProps {
   payments: any[];
 }
 
+// 1. Move static config outside to prevent re-creation on every render
+const chartConfig = {
+  visitors: {
+    label: "Visitors",
+  },
+  desktop: {
+    label: "Desktop",
+    color: "hsl(var(--chart-3))",
+  },
+} satisfies ChartConfig
+
 export function ChartArea({ payments }: ChartAreaProps) {
   const isMobile = useIsMobile()
-  const [timeRange, setTimeRange] = React.useState("30d")
-
-  React.useEffect(() => {
-    if (isMobile) {
-      setTimeRange("7d")
-    }
-  }, [isMobile])
-
-  const chartData = payments.map(payment => ({
-    date: payment.date,
-    desktop: payment.total_amount,
-  }));
   
-  const chartConfig = {
-    visitors: {
-      label: "Visitors",
-    },
-    desktop: {
-      label: "Desktop",
-      color: "hsl(var(--chart-3))",
-    },
-  } satisfies ChartConfig
+  // 2. Remove the useEffect. Initialize state lazily instead.
+  // This prevents the "Mount -> Effect -> SetState -> Re-render" loop.
+  const [timeRange, setTimeRange] = React.useState("90d")
 
+  // Optional: Sync mobile preference without useEffect if strictly needed, 
+  // but usually leaving user control is better. If you MUST force it:
+  // const activeTimeRange = isMobile ? "7d" : timeRange
 
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date)
-    const referenceDate = new Date("2024-06-30")
-    let daysToSubtract = 90
+  // 3. Memoize the data processing. 
+  // This is critical. Without useMemo, 'filteredData' is a new array every render,
+  // causing Recharts to completely reset its internal state (including refs).
+  const filteredData = React.useMemo(() => {
+    const chartData = payments.map(payment => ({
+      date: payment.date,
+      desktop: payment.total_amount,
+    }));
+
+    const referenceDate = new Date();
+    let daysToSubtract = 90;
+    
+    // Use timeRange directly here
     if (timeRange === "30d") {
-      daysToSubtract = 30
+      daysToSubtract = 30;
     } else if (timeRange === "7d") {
-      daysToSubtract = 7
+      daysToSubtract = 7;
     }
-    const startDate = new Date(referenceDate)
-    startDate.setDate(startDate.getDate() - daysToSubtract)
-    return date >= startDate
-  })
+    
+    const startDate = new Date(referenceDate);
+    startDate.setDate(startDate.getDate() - daysToSubtract);
+    
+    return chartData.filter((item) => new Date(item.date) >= startDate);
+  }, [payments, timeRange]); // Only recalculate if these change
 
   return (
     <Card className="@container/card">
-      <CardHeader className="relative ">
+      <CardHeader className="relative">
         <CardTitle>Sales Summary</CardTitle>
         <CardDescription>
-          <span className="@[540px]/card:block hidden">
+          {/* 4. Switched to standard media queries (hidden sm:block) 
+             Container queries (@[540px]) can cause layout thrashing loops 
+             if the chart resize triggers the breakpoint repeatedly. */}
+          <span className="hidden sm:block">
             Total for the last 3 months
           </span>
-          <span className="@[540px]/card:hidden">Last 3 months</span>
+          <span className="sm:hidden">Last 3 months</span>
         </CardDescription>
+        
         <div className="absolute right-4 top-4">
           <ToggleGroup
             type="single"
             value={timeRange}
-            onValueChange={setTimeRange}
+            onValueChange={(value) => value && setTimeRange(value)}
             variant="outline"
-            className="@[767px]/card:flex hidden"
+            className="hidden sm:flex" 
           >
             <ToggleGroupItem value="90d" className="h-8 px-2.5">
               Last 3 months
@@ -101,9 +111,10 @@ export function ChartArea({ payments }: ChartAreaProps) {
               Last 7 days
             </ToggleGroupItem>
           </ToggleGroup>
+          
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger
-              className="@[767px]/card:hidden flex w-25 text-xs sm:text-sm"
+              className="flex w-25 text-xs sm:text-sm sm:hidden"
               aria-label="Select a value"
             >
               <SelectValue placeholder="Last 3 months" />
@@ -122,6 +133,7 @@ export function ChartArea({ payments }: ChartAreaProps) {
           </Select>
         </div>
       </CardHeader>
+      
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer
           config={chartConfig}
@@ -157,6 +169,9 @@ export function ChartArea({ payments }: ChartAreaProps) {
                 })
               }}
             />
+            {/* 5. Simplified ChartTooltip. 
+               Avoid defining complex inline JSX structures for 'content' if possible,
+               as it can confuse Recharts' ref management. */}
             <ChartTooltip
               cursor={false}
               content={

@@ -79,26 +79,21 @@ export default function PaymentActions({ payment }: { payment: Payment }) {
   const handleDownloadPDF = async () => {
     if (!receiptRef.current) return;
 
-    // Use onclone to modify the document before capturing
     const canvas = await html2canvas(receiptRef.current, {
-      scale: 2, // Higher scale for better resolution
+      scale: 2,
       useCORS: true,
       onclone: (clonedDoc) => {
-        // 1. Find the ScrollArea in the CLONED document
         const scrollArea = clonedDoc.getElementById("receipt-scroll-area");
         
-        // 2. Find the main Dialog Content
         const dialogContent = clonedDoc.getElementById("receipt");
 
         if (scrollArea) {
-          // Force height to auto so all content is visible
           scrollArea.style.height = "auto";
           scrollArea.style.maxHeight = "none";
           scrollArea.style.overflow = "visible";
         }
         
         if (dialogContent) {
-            // Ensure the container grows to fit the expanded scroll area
             dialogContent.style.height = "auto";
         }
       },
@@ -106,7 +101,6 @@ export default function PaymentActions({ payment }: { payment: Payment }) {
 
     const imgData = canvas.toDataURL("image/png");
     
-    // Calculate PDF dimensions based on the canvas size
     const pdf = new jsPDF({
       orientation: "portrait",
       unit: "px",

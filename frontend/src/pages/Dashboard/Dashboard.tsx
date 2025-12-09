@@ -27,9 +27,9 @@ export default function Dashboard() {
         <section className="@container/main w-full flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
             <SectionCards />
-            {/* <div className="px-4 lg:px-6">
-              <ChartArea payments={localPayments}/>
-            </div> */}
+            <div className="px-4 lg:px-6">
+              {/* <ChartArea payments={localPayments}/> */}
+            </div>
             <Card className="mx-4 lg:mx-6">
               <CardHeader className="pb-2">  
                 <CardTitle>
