@@ -42,7 +42,7 @@ export default function InventoryActions({ product }: { product: Product }) {
   const { data: categories = [] } = useCategory()
   const { data: suppliers = [] } = useSupplier()
 
-  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`${API_BASE}/${product.product_id}`, updateProduct)
+  const { trigger: updateTrigger, isMutating: isUpdating } = useSWRMutation(`${API_BASE}/api/product/${product.product_id}`, updateProduct)
   const { trigger: deleteTrigger, isMutating: isDeleting } = useSWRMutation(`${API_BASE}/api/product/${product.product_id}`, deleteProduct)
 
   const [isSuccess, setSuccess] = useState<boolean>(true);
