@@ -143,6 +143,15 @@ const fetcher = async <T>(url: string): Promise<T> => {
   return res.json()
 };
 
+// const CATEGORY_URL = "http://localhost:5000/api/category"
+// const PRODUCT_URL = "http://localhost:5000/api/product"
+// const PAYMENT_URL = "http://localhost:5000/api/payment"
+// const SUPPLIER_URL = "http://localhost:5000/api/supplier"
+// const USER_URL = "http://localhost:5000/api/user"
+// const STOCKIN_URL = "http://localhost:5000/api/stockin"
+// const RETURNITEM_URL = "http://localhost:5000/api/return"
+// const AUDITLOGS_URL = "http://localhost:5000/api/auditlog"
+
 const CATEGORY_URL = "http://localhost:5000/api/category"
 const PRODUCT_URL = "http://localhost:5000/api/product"
 const PAYMENT_URL = "http://localhost:5000/api/payment"
