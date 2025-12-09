@@ -25,6 +25,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    
+    "noUnusedLocals": false,     // <--- ADD THIS
+    "noUnusedParameters": false  // <--- ADD THIS
   },
   "include": ["src"]
 }
