@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "../ui/textarea";
 import { useAuth } from "@/context/AuthContext";
 
@@ -21,6 +21,7 @@ const returnItemSchema = z.object({
   return_quantity: z.coerce.number<number>().min(1, "Quantity is required"),
   return_reason: z.string().min(1, "Return reason cannot be blank"),
   user_id: z.coerce.number<number>(),
+  status: z.string().min(1, "Status is required"),
 });
 
 export type ReturnItemFormValues = z.infer<typeof returnItemSchema>;
@@ -141,6 +142,30 @@ export default function ReturnForm({
               <FormControl>
                 <Textarea {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Status</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Active or Inactive" />
+                </SelectTrigger>
+              </FormControl>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Status</SelectLabel>
+                    <SelectItem value="Unreviewed">Subject for review</SelectItem>
+                    <SelectItem value="Reviewed">Reviewed</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
