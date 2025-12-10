@@ -4,6 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import ReturnItemActions from "./ReturnItemActions"
+import { Badge } from "../ui/badge"
 
 export type ReturnItem = {
   return_id: number
@@ -15,6 +16,7 @@ export type ReturnItem = {
   product_id: number
   username?: string
   product_name?: string
+  status: string
 }
 
 export const columns: ColumnDef<ReturnItem>[] = [
@@ -112,6 +114,27 @@ export const columns: ColumnDef<ReturnItem>[] = [
     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
       {row.getValue("username")}
     </div>,
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="p-0"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const status = row.getValue("status")
+      if (status === "Unreviewed") return <Badge variant="lowStock">Subject for review</Badge>
+      if (status === "Reviewed") return <Badge variant="inStock">Reviewed</Badge>
+      return status
+    }
   },
   {
     id: "actions",
