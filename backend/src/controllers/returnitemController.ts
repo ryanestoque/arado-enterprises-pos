@@ -157,7 +157,7 @@ export const updateReturn = async (req: Request, res: Response) => {
     `
 
     const values = [
-      return_quantity, return_reason, user_id, product_id, return_id, status
+      return_quantity, return_reason, user_id, product_id, status, return_id, 
     ];
   
     await db.query(sql, values)
