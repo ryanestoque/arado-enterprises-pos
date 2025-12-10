@@ -13,6 +13,7 @@ interface ReturnItemWithNames extends RowDataPacket {
   product_id: number;
   product_name: string;
   username: string;
+  status: string;
 }
 
 export const getAllReturns = async (req: Request, res: Response) => {
@@ -45,15 +46,16 @@ export const makeReturn = async (req: Request, res: Response) => {
       return_quantity,
       return_reason,
       user_id,
-      product_id
+      product_id,
+      status
     } = req.body;
 
     const insertSql = `
       INSERT INTO ReturnItem
-      (return_quantity, return_date, return_reason, user_id, product_id)
-      VALUES (?, NOW(), ?, ?, ?)
+      (return_quantity, return_date, return_reason, user_id, product_id, status)
+      VALUES (?, NOW(), ?, ?, ?, ?)
     `;
-    const insertValues = [return_quantity, return_reason, user_id, product_id];
+    const insertValues = [return_quantity, return_reason, user_id, product_id, status];
 
     const [insertResult] = await connection.query<ResultSetHeader>(
       insertSql,
@@ -127,7 +129,8 @@ export const updateReturn = async (req: Request, res: Response) => {
       return_quantity,
       return_reason,
       user_id,
-      product_id
+      product_id,
+      status
     } = req.body;
 
     const [beforeRows] = await db.query<ReturnItemWithNames[]>(
@@ -149,12 +152,12 @@ export const updateReturn = async (req: Request, res: Response) => {
   
     const sql = `
       UPDATE ReturnItem SET 
-        return_quantity=?, return_date=NOW(), return_reason=?, user_id=?, product_id=?
+        return_quantity=?, return_date=NOW(), return_reason=?, user_id=?, product_id=?, status=?
       WHERE return_id=?
     `
 
     const values = [
-      return_quantity, return_reason, user_id, product_id, return_id,
+      return_quantity, return_reason, user_id, product_id, return_id, status
     ];
   
     await db.query(sql, values)
