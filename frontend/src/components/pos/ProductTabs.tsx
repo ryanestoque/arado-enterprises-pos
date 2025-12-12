@@ -47,7 +47,7 @@ export function ProductTabs({ sortBy, searchQuery, onAddToCart,localProducts }: 
           data-[state=open]:animate-collapsible-down"
         >
           <TabsList 
-            className="
+            className="y
               flex flex-wrap gap-2 flex-1
               rounded-none bg-white -mx-[2px] pb-4 text-muted-foreground/75
             "
@@ -58,7 +58,7 @@ export function ProductTabs({ sortBy, searchQuery, onAddToCart,localProducts }: 
             {categories.map((category) => (
               <TabsTrigger
                 key={category.category_id}
-                value={category.category_id}
+                value={String(category.category_id)}
                 className="flex-1"
               >
                 {category.name}
