@@ -12,7 +12,6 @@ const db = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  🚨 CRITICAL FOR TIDB CLOUD: 🚨
   ssl: {
     rejectUnauthorized: true,
     minVersion: 'TLSv1.2'
