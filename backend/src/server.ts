@@ -20,7 +20,7 @@ const port = process.env.PORT || 5000;
 app.use(cors({
     origin: [
         "http://localhost:5173",             // Keep this for local dev
-        "https://arado-enterprises.vercel.app"       // <--- ADD YOUR NEW VERCEL DOMAIN HERE
+        "mysql-production-275d.up.railway.app"       // <--- ADD YOUR NEW VERCEL DOMAIN HERE
     ],
     credentials: true
 }));
